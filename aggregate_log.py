@@ -58,7 +58,7 @@ class NodeConnection(asyncore.dispatcher):
             self.__handle_data()
 
     def handle_error(self):
-        print >> sys.stderr, "Could not connect to %s" % self.ip
+        print >> sys.stderr, "Connection closed: %s" % self.ip
 
     def __handle_data(self):
         ''' Print the data received line by line '''
