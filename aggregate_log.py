@@ -43,6 +43,8 @@ class NodeConnection(asyncore.dispatcher):
         if self.read_buff != '':
             self.__print_line(self.read_buff + '\n')
             self.read_buff = ''
+
+        print >> sys.stderr, '%s;Connection closed' % self.ip
         self.close()
 
     def handle_read(self):
@@ -51,14 +53,15 @@ class NodeConnection(asyncore.dispatcher):
         Close socket if read string is empty
         '''
         rec_data = self.recv(8192)
-        if rec_data == '':
-            self.handle_close()
-        else:
+        if rec_data != '':
             self.read_buff += rec_data
             self.__handle_data()
+        else:
+            # connection will be closed
+            pass
 
     def handle_error(self):
-        print >> sys.stderr, "Connection closed: %s" % self.ip
+        print >> sys.stderr, "%s;Connection error" % self.ip
 
     def __handle_data(self):
         ''' Print the data received line by line '''
