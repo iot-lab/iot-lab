@@ -1,0 +1,5 @@
+[REPORTS]
+
+reports = no
+msg-template = "{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}"
+

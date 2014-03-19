@@ -1,6 +1,9 @@
 #! /bin/bash
+export PYTHONPATH="../:$PYTHONPATH"
+FILES="$(find .. -name '*py')"
 
+coverage run --branch -m doctest $FILES
+coverage report $FILES
 
-coverage run --branch -m doctest  ../parse_json.py ../serial_aggregator.py
-coverage report ../parse_json.py ../serial_aggregator.py
-
+pylint --rcfile=$(dirname $0)/pylint.rc $FILES
+pep8 $FILES

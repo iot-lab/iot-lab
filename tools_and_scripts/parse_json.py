@@ -11,7 +11,7 @@ import sys
 import json
 
 
-def extract_json(input):
+def extract_json(json_str):
     """ Parse json input string to a python object
     >>> extract_json('{}')
     {}
@@ -25,7 +25,7 @@ def extract_json(input):
     SystemExit: 1
     """
     try:
-        answer_dict = json.loads(input)
+        answer_dict = json.loads(json_str)
     except ValueError:
         print >> sys.stderr, 'Could not load JSON object from input.'
         sys.exit(1)
@@ -75,8 +75,8 @@ def _main(argv):  # pragma: no cover
     """
 
     format_func = get_formatter(argv[1:])
-    input = sys.stdin.read()
-    json_dict = extract_json(input)
+    json_str = sys.stdin.read()
+    json_dict = extract_json(json_str)
 
     value = format_func(json_dict)
     print value
