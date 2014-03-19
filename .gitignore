@@ -1,4 +1,5 @@
 *.pyc
 *.swp
 .coverage
+*,cover
 parts/
