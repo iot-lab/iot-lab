@@ -82,6 +82,10 @@ class Event(list):
     >>> e(2)
     g(2)
 
+
+    >>> e   # doctest: +ELLIPSIS
+    Event('[<function g at 0x...>]')
+
     """
 
     def __call__(self, *args, **kwargs):
@@ -111,30 +115,21 @@ class NodeConnection(asyncore.dispatcher):  # pylint:disable=I0011,R0904
 
     def start(self):
         """ Connects to node serial port """
+        self.read_buff = ''      # reset data
         self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
         self.connect((self.node_id, PORT))
 
     def handle_close(self):
         """ Print the last data still not printed and close the connection """
         # Do not print empty lines
-        if self.read_buff != '':
-            self.line_handler(self.node_id, self.read_buff)
         self.read_buff = ''
-
         LOGGER.error('%s;Connection closed', self.node_id)
         self.close()
 
     def handle_read(self):
-        """
-        Append read bytes to buffer and run data handler,
-        Close socket if read string is empty
-        """
-        rec_data = self.recv(8192)
-        if rec_data != '':
-            self.read_buff += rec_data
-            self._handle_data()
-        else:
-            pass  # connection will be closed
+        """ Append read bytes to buffer and run data handler. """
+        self.read_buff += self.recv(8192)
+        self._handle_data()
 
     def handle_error(self):
         """ Connection failed """
@@ -148,7 +143,7 @@ class NodeConnection(asyncore.dispatcher):  # pylint:disable=I0011,R0904
             if line[-1] == '\n':
                 self.line_handler(self.node_id, line[:-1])
             else:
-                self.read_buff = line  # incomplete line
+                self.read_buff = line  # last incomplete line
 
     @staticmethod
     def _print_line(identifier, line):
@@ -200,7 +195,18 @@ def extract_nodes(ressources_json, server_hostname):
 
 
 def extract_json(json_str):
-    """ Extract the json from the given json string """
+    """ Extract the json from the given json string
+
+    >>> extract_json('{}')
+    {}
+    >>> extract_json('{"a":1, "2": [3]}')
+    {u'a': 1, u'2': [3]}
+
+    >>> extract_json('invalid str')
+    Traceback (most recent call last):
+    ...
+    SystemExit: 1
+    """
     import json
     try:
         json_dict = json.loads(json_str)
