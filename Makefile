@@ -18,7 +18,8 @@ $(contiki_plug):
 
 
 parts/%:
-	git clone git@github.com:iot-lab/$*.git parts/$*
+	git clone https://github.com/iot-lab/$*.git parts/$*
+#	git clone git@github.com:iot-lab/$*.git parts/$*
 
 setup-%: parts/%;
 
