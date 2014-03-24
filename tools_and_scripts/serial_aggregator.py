@@ -1,4 +1,5 @@
 #! /usr/bin/env python
+# -*- coding:utf-8 -*-
 
 """
 Serial aggregator
@@ -44,6 +45,7 @@ import asyncore
 import socket
 import logging
 import threading
+import sys
 
 PORT = 20000
 
@@ -133,7 +135,7 @@ class NodeConnection(asyncore.dispatcher):  # pylint:disable=I0011,R0904
 
     def handle_error(self):
         """ Connection failed """
-        LOGGER.error('%s;Connection error', self.node_id)
+        LOGGER.error('%s;%r', self.node_id, sys.exc_info())
 
     def _handle_data(self):
         """ Print the data received line by line """
@@ -141,7 +143,9 @@ class NodeConnection(asyncore.dispatcher):  # pylint:disable=I0011,R0904
         lines = self.read_buff.splitlines(True)
         for line in lines:
             if line[-1] == '\n':
-                self.line_handler(self.node_id, line[:-1])
+                # Handle Unicode.
+                self.line_handler(
+                    self.node_id, line[:-1].decode('utf-8', errors='replace'))
             else:
                 self.read_buff = line  # last incomplete line
 
@@ -220,7 +224,6 @@ def main():
     """ Reads nodes from ressource json in stdin and
     aggregate serial links of all nodes
     """
-    import sys
     import signal
     import os
 
