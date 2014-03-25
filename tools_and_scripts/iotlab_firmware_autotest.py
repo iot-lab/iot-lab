@@ -9,10 +9,16 @@ import os
 import logging
 import threading
 import serial_aggregator
+import sys
 
 import unittest
+
+# relative import from iotlabcli
+CUR_DIR = os.path.realpath(os.path.dirname(__file__))
+sys.path.append(CUR_DIR + '/../parts/cli-tools/')
 import iotlabcli
 from iotlabcli import rest
+
 import json
 
 HOSTNAME = os.uname()[1]
@@ -50,6 +56,3 @@ class AutomatedIoTLABTests(unittest.TestCase):  # pylint:disable=I0011,R0904
 
     def tearDown(self):
         self.nodes.stop()
-
-if __name__ == "__main__":
-    unittest.main()

@@ -49,3 +49,13 @@ Get all 'Alive' nodes from Grenoble site
     171-183+185-191+194-201+204-215+217-222+224-227+229-235+237-251+253-255
 
 
+
+
+IoT-LAB Firmware Autotest
+-------------------------
+
+Base class to help writing automated firmware testing on IoT-LAB.
+Inspired by what is done in Contiki regression-tests using Cooja.
+
+BETA script (at 2014-03-25)
+

@@ -1,4 +1,4 @@
-REPOS = contiki wsn430 openlab
+REPOS = contiki wsn430 openlab cli-tools
 
 help:
 	@printf "\nWelcome to the IoT-LAB development environment setup.\n\n"
@@ -15,6 +15,8 @@ setup-openlab: parts/openlab
 
 setup-contiki: parts/openlab parts/contiki
 	less parts/contiki/README-BUILDING.md
+
+setup-cli-tools: parts/cli-tools
 
 parts/%:
 	git clone https://github.com/iot-lab/$*.git parts/$*
