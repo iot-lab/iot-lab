@@ -24,7 +24,7 @@ parts/%:
 
 # Pull in new changes
 
-pull: $(addprefix pull-, $(REPOS))
+pull: $(subst parts/,pull-,$(wildcard parts/*))
 	git pull
 pull-%: parts/%
 	cd $^; git pull; cd -
