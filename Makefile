@@ -22,6 +22,9 @@ parts/%:
 	git clone https://github.com/iot-lab/$*.git parts/$*
 
 
+all: $(addprefix setup-, $(REPOS))
+
+
 # Pull in new changes
 
 pull: $(subst parts/,pull-,$(wildcard parts/*))
