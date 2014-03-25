@@ -27,7 +27,9 @@ parts/%:
 pull: $(addprefix pull-, $(REPOS))
 	git pull
 pull-%: parts/%
-	git --work-tree=$(shell readlink -e $^) --git-dir=$(shell readlink -e $^/.git) pull
+	cd $^; git pull; cd -
+	@# Following does not work on the server because of a git bug 1.7.2.5
+	@# git --work-tree=$(shell readlink -e $^) --git-dir=$(shell readlink -e $^/.git) pull
 
 setup-%: parts/%;
 
