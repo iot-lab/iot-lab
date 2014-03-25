@@ -11,7 +11,7 @@ Aggregate all the serial links of an experiment and print it to stdout.
 
 ### Usage ###
 
-    $ experiment-cli get -r -i <exp_id> | ./aggregate_log.py
+    $ experiment-cli get -r -i <exp_id> | ./serial_aggregator.py
     1395240359.286712;node46; Type Enter to stop printing this help
     1395240359.286853;node46;
     1395240359.292523;node9;
