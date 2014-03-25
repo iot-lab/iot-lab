@@ -2,4 +2,6 @@
 *.swp
 .coverage
 *,cover
+
+cli-tools/
 parts/

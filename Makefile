@@ -9,12 +9,8 @@ setup-wsn430 : parts/wsn430
 setup-openlab: parts/openlab
 	less parts/openlab/README_COMPILING
 
-contiki_plug = parts/contiki/platform/openlab/git
-setup-contiki: parts/openlab parts/contiki $(contiki_plug)
+setup-contiki: parts/openlab parts/contiki
 	less parts/contiki/README-BUILDING.md
-
-$(contiki_plug):
-	ln -sT ../../../openlab $@
 
 
 parts/%:
