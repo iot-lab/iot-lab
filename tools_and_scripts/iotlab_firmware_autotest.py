@@ -18,6 +18,7 @@ CUR_DIR = os.path.realpath(os.path.dirname(__file__))
 sys.path.append(CUR_DIR + '/../parts/cli-tools/')
 import iotlabcli
 from iotlabcli import rest
+import iotlabcli.node_parser
 
 import json
 
@@ -56,3 +57,29 @@ class AutomatedIoTLABTests(unittest.TestCase):  # pylint:disable=I0011,R0904
 
     def tearDown(self):
         self.nodes.stop()
+
+    @staticmethod
+    def nodes_cli(command, nodes_list=None, firmware=None):
+        """ Run node-cli on nodes_list """
+        if command not in ['--reset', '--update']:
+            raise ValueError
+        _cmd_list = HOSTNAME + ',{node_type},{nodes}'
+
+        nodes_list = nodes_list or []
+        fw_args = []
+        if firmware is not None:
+            fw_args.append(firmware)
+
+        cmd_list = []
+
+        _split = [node.split('-') for node in nodes_list]
+        nodes_m3 = '+'.join([num for archi, num in _split if archi == 'm3'])
+
+        if nodes_m3:
+            cmd_list.append('--list')
+            cmd_list.append(_cmd_list.format(
+                node_type='m3', nodes='+'.join(nodes_m3)))
+
+        arguments = cmd_list + [command] + fw_args
+
+        iotlabcli.node_parser.main(arguments)
