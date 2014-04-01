@@ -1,9 +1,10 @@
 #!/bin/bash
 
-cat faillogs/* | cut -f1 -d: | sort | uniq \
+logsdir=${1:-faillogs}
+cat "$logsdir"/* | cut -f1 -d: | sort | uniq \
 | while read node; do
-	grep "$node" faillogs/* \
-	| sed 's/[^.]*\.//;s/:/ /' \
+	grep "$node" "$logsdir"/* \
+	| sed "s|$logsdir/faillog.||;s/:/ /" \
 	| sort -k 1 -n \
 	| head -1 
 done \
