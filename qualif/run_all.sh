@@ -31,17 +31,21 @@ run_test() {
 	exp_id=$($1 | get_json "id")
 	[ ! $exp_id ] && echo "failed to start" && return 0
 	printf "$exp_id, "
-	wait_for_exp_state $exp_id "Running"
+	wait_for_exp_state $exp_id "Running" || return 0
 	./get_experiment_status.sh $exp_id
 	printf "+ dumping logs...\r"
 	./get_failed_logs.sh $exp_id > $dir_$faillog_pfx$exp_id
 	printf "+ waiting for experiment $i to end...\r"
-	wait_for_exp_state $exp_id "Terminated"
+	wait_for_exp_state $exp_id "Terminated" || return 0
 	printf "%*c\r" 50
 }
 
 wait_for_exp_state() {
 	while [ "$(get_exp_state $1)" != '"'$2'"' ]; do
+		if [ "$(get_exp_state $1)" = '"Error"' ]; then
+			echo "! error while waiting for experiment $1 / $2"
+			return 1
+		fi
 		sleep 1
 	done
 }
