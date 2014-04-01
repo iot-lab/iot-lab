@@ -45,7 +45,22 @@ Get all 'Alive' nodes from Grenoble site
     $ experiment-cli info -li | ./parse_json.py "[entry['$HOSTNAME']['wsn430']['Alive'] for entry in x['items'] if '$HOSTNAME' in entry.keys()][0]"
     1-7+9-47+49+51+53-67+70-72+74-99+101-102+126-129+131-134+136-166+168-169+171-183+185-191+194-201+204-215+217-222+224-227+229-235+237-251+253-255
 
+OML plotter
+-----------
 
+oml_plot.py
+
+plot oml filename [-tpvcah] -i <filename> or --input=<filename>
+
+for time verification --time or -t
+for begin sample --begin=<sample_beg> or -b <sample_beg>
+for end sample --end=<sample_end> or -e <sample_end>
+for label title plot --label=<title> or -l <title>
+for plot consumption --power or -p
+for plot voltage --voltage or -v
+for plot current --current or -c
+for all plot --all or -a
+for help use --help or -h
 
 
 IoT-LAB Firmware Autotest
