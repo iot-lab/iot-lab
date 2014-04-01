@@ -20,7 +20,7 @@ submit_exp() {
 	node_type=m3
 	node_list=$(get_valid_nodes $node_type)
 	firmware=./firmware/serial_echo.elf
-	firmware=./firmware/test_serial_flood.elf
+	firmware=./firmware/serial_flood.elf
 	#profile=profile_test_ftdi2
 	experiment-cli submit -d $duration   \
 	-l $site,$node_type,$node_list,$firmware,$profile
