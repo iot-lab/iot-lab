@@ -92,7 +92,6 @@ def oml_plot(data, title, labely, channel):
        channel to plot 5 = power, 6 = voltage, 7 = current
     """
     timestamps = data[:, FIELDS['t_s']] + data[:, FIELDS['t_us']] / 1e6
-    print data[0, :]
 
     plt.figure()
     plt.title(title)
