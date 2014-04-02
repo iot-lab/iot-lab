@@ -15,10 +15,13 @@ for plot current --current or -c
 for all plot --all or -a
 for help use --help or -h
 """
+
 import sys
 import getopt
 import numpy as np
 import matplotlib.pyplot as plt
+
+FIELDS = {'t_s': 3, 't_us': 4, 'power': 5, 'voltage': 6, 'current': 7}
 
 
 def oml_load(filename):
@@ -36,79 +39,72 @@ def oml_load(filename):
     """
     try:
         data = np.loadtxt(filename, skiprows=10)
-    except:
-        print "Error:oml file not found"
+    except IOError as err:
+        print "Error opening oml file:\n{}".format(err)
         usage()
         sys.exit(2)
 
     return data
 
 
-def oml_all_plot(data, echd, echf, title):
+def oml_all_plot(data, title):
     """ Plot iot-lab oml all data
 
     Parameters:
     ------------
     data: numpy array
       [oml_timestamp 1 count timestamp_s timestamp_us power voltage current]
-    echd : int
-       sample count begin
-    echf : int
-       sample count end
     title: string
        title of the plot
     """
+
+    timestamps = data[:, FIELDS['t_s']] + data[:, FIELDS['t_us']] / 1e6
 
     plt.figure()
     plt.subplot(311)
     plt.grid()
     plt.title(title)
-    plt.plot(data[echd:echf, 3] + data[echd:echf, 4] / 1e6,
-             data[echd:echf, 5])
+    plt.plot(timestamps, data[:, FIELDS['power']])
     plt.ylabel('Power (W)')
     plt.subplot(312)
     plt.grid()
     plt.title("node2")
-    plt.plot(data[echd:echf, 3] + data[echd:echf, 4] / 1e6,
-             data[echd:echf, 6])
+    plt.plot(timestamps, data[:, FIELDS['voltage']])
     plt.ylabel('Voltage (V)')
     plt.subplot(313)
     plt.grid()
-    plt.plot(data[echd:echf, 3] + data[echd:echf, 4] / 1e6,
-             data[echd:echf, 7])
+    plt.plot(timestamps, data[:, FIELDS['current']])
     plt.ylabel('Current (A)')
     plt.xlabel('Sample Time (sec)')
     return
 
 
-def oml_plot(data, echd, echf, title, labely, channel):
+def oml_plot(data, title, labely, channel):
     """ Plot iot-lab oml data
 
     Parameters:
     ------------
     data: numpy array
       [oml_timestamp 1 count timestamp_s timestamp_us power voltage current]
-    echd : int
-       sample count begin
-    echf : int
-       sample count end
     title: string
        title of the plot
     channel: number
        channel to plot 5 = power, 6 = voltage, 7 = current
     """
+    timestamps = data[:, FIELDS['t_s']] + data[:, FIELDS['t_us']] / 1e6
+    print data[0, :]
+
     plt.figure()
     plt.title(title)
     plt.grid()
-    plt.plot(data[echd:echf, 3] + data[echd:echf, 4] / 1e6,
-             data[echd:echf, channel])
+    plt.plot(timestamps, data[:, FIELDS[channel]])
     plt.xlabel('Sample Time (sec)')
     plt.ylabel(labely)
 
     return
 
 
-def oml_clock(data, echd, echf):
+def oml_clock(data):
     """ Clock time plot and verification
 
     Parameters:
@@ -123,7 +119,7 @@ def oml_clock(data, echd, echf):
     plt.figure()
     plt.title("Clock time verification")
     plt.grid()
-    time = data[echd:echf, 3] + data[echd:echf, 4] / 1e6
+    time = data[:, FIELDS['t_s']] + data[:, FIELDS['t_us']] / 1e6
     clock = np.diff(time) * 1000
     plt.plot(clock)
 
@@ -151,11 +147,9 @@ def main(argv):
     options = []
     filename = ""
     try:
-        opts, args = getopt.getopt(argv, "i:htpcvab:e:l:",
-                                   ["input=", "help", "time",
-                                    "power", "current",
-                                    "voltage", "all", "begin=", "end=",
-                                    "label="])
+        opts, _ = getopt.getopt(argv, "i:htpcvab:e:l:",
+                                ["input=", "help", "time", "power", "current",
+                                 "voltage", "all", "begin=", "end=", "label="])
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -191,23 +185,23 @@ def main(argv):
         sys.exit(2)
 
     # Load file
-    data = oml_load(filename)
+    data = oml_load(filename)[s_beg:s_end, :]
     # Plot power consumption
     if "-p" in options:
-        oml_plot(data, s_beg, s_end, title +
-                 " power consumption", "Power (W)", 5)
+        oml_plot(data, title +
+                 " power consumption", "Power (W)", 'power')
     # Plot voltage
     if "-v" in options:
-        oml_plot(data, s_beg, s_end, title + " voltage", "Voltage (V)", 6)
+        oml_plot(data, title + " voltage", "Voltage (V)", 'voltage')
     # Plot voltage
     if "-c" in options:
-        oml_plot(data, s_beg, s_end, title + " current", "Current (A)", 7)
+        oml_plot(data, title + " current", "Current (A)", 'current')
     # All Plot
     if "-a" in options:
-        oml_all_plot(data, s_beg, s_end, title)
+        oml_all_plot(data, title)
     # All Plot
     if "-t" in options:
-        oml_clock(data, s_beg, s_end)
+        oml_clock(data)
 
     plt.show()
 
