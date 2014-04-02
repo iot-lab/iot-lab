@@ -78,8 +78,12 @@ def _main(argv):  # pragma: no cover
     json_str = sys.stdin.read()
     json_dict = extract_json(json_str)
 
-    value = format_func(json_dict)
-    print value
+    try:
+        value = format_func(json_dict)
+        print value
+    except Exception as e:
+        print >> sys.stderr, "error formatting output:", type(e).__name__, e.args[0]
+        sys.exit(1)
 
 
 if __name__ == '__main__':  # pragma: no cover
