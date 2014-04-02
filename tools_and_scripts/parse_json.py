@@ -63,7 +63,7 @@ def get_formatter(args):
     except IndexError:
         extract = 'x'
 
-    lambda_str = '(lambda x: %s)' % extract
+    lambda_str = '(lambda x: {})'.format(extract)
     format_func = eval(lambda_str)
     return format_func
 
@@ -81,8 +81,8 @@ def _main(argv):  # pragma: no cover
     try:
         value = format_func(json_dict)
         print value
-    except Exception as e:
-        print >> sys.stderr, "error formatting output:", type(e).__name__, e.args[0]
+    except Exception as err:  # pylint:disable=I0011,W0703
+        print >> sys.stderr, "Parsing error: {err!r}".format(err=err)
         sys.exit(1)
 
 
