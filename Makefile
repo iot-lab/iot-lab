@@ -36,5 +36,20 @@ pull-%: parts/%
 
 setup-%: parts/%;
 
-.PHONY: help setup-% pull pull-%
+
+
+#
+# Run tests
+#
+tests: openlab-tests contiki-tests
+%-tests: parts/%
+	make -C $^ -f iotlab.makefile tests
+
+tests-clean: openlab-tests-clean contiki-tests-clean
+%-tests-clean: parts/%
+	make -C $^ -f iotlab.makefile clean
+
+
+
+.PHONY: help setup-% pull pull-% tests tests-%
 .PRECIOUS: parts/%
