@@ -2,7 +2,7 @@
 set -e
 
 nb_runs=${nb_runs:-100}
-duration=${duration:-1}
+duration=${duration:-5}
 site=${site:-devgrenoble}
 faillog_pfx=faillogs/faillog.
 
@@ -17,13 +17,15 @@ main() {
 }
 
 submit_exp() {
-	node_type=m3
+	#node_type=m3
+	node_type=a8
 	node_list=$(get_valid_nodes $node_type)
-	firmware=./firmware/serial_echo.elf
-	firmware=./firmware/serial_flood.elf
+	#firmware=./firmware/serial_echo.elf
+	#firmware=./firmware/serial_flood.elf
 	#profile=profile_test_ftdi2
 	experiment-cli submit -d $duration   \
-	-l $site,$node_type,$node_list,$firmware,$profile
+	-l $site,$node_type,$node_list
+	#-l $site,$node_type,$node_list,$firmware
 }
 
 run_test() {
@@ -33,8 +35,11 @@ run_test() {
 	printf "$exp_id, "
 	wait_for_exp_state $exp_id "Running" || return 0
 	./get_experiment_status.sh $exp_id
-	printf "+ dumping logs...\r"
-	./get_failed_logs.sh $exp_id > $dir_$faillog_pfx$exp_id
+	printf "+ dumping gateway logs...\r"
+	./get_failed_gateway_logs.sh $exp_id > $dir_$faillog_pfx$exp_id
+        #sleep 90
+        #printf "+ dumping open nodes A8 logs...\r"
+        #./get_failed_open_node_a8_logs.sh $exp_id >> $dir_$faillog_pfx$exp_id
 	printf "+ waiting for experiment $i to end...\r"
 	wait_for_exp_state $exp_id "Terminated" || return 0
 	printf "%*c\r" 50
