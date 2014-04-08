@@ -7,6 +7,7 @@ exp_id=$1
 cd "$(dirname "$0")"
 NODES_LIST=$(./get_failed_nodes.sh $exp_id)
 
+max_retries=20
 nodes=$NODES_LIST
 while [ "$nodes" ]; do
 for node in $nodes
@@ -23,6 +24,7 @@ do
 done
 wait
 nodes=$(touch /tmp/$$.failed; cat /tmp/$$.failed; \rm /tmp/$$.failed)
+[ $[--max_retries] = 0 ] && echo "failed to get logs for:" && echo "$nodes" && false
 done
 
 for node in $NODES_LIST
