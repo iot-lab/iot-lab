@@ -20,10 +20,3 @@ TEST
 
         ssh m3-1 or ssh a8-1
 
-ENHANCEMENT :
-
-1) add on open node a8 test for using gateway serial communication:
-
-    root@iotlab-board:~# while true; do cat /dev/mtd2 > /dev/null ; sleep 5; done
-
-2) add in run_all.sh an ssh connexion check before launching get_failed_open_node_a8_logs.sh script
