@@ -7,7 +7,8 @@ if [ ! "$exp_id" ]; then
 fi
 
 NODES_LIST=$(experiment-cli get -i $exp_id -p | ./parse_json.py "
-	' '.join([str('node-'+node) for node in x['nodes']])")
+	' '.join([str('node-'+node)
+	for node in x['deploymentresults']['0']])")
 
 max_retries=50
 nodes=$NODES_LIST
