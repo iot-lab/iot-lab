@@ -141,6 +141,7 @@ class NodeConnection(asyncore.dispatcher):  # pylint:disable=I0011,R0904
         """ Print the data received line by line """
 
         lines = self.read_buff.splitlines(True)
+        self.read_buff = ''
         for line in lines:
             if line[-1] == '\n':
                 # Handle Unicode.
