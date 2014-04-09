@@ -11,4 +11,7 @@ cd "$(dirname "$0")"
 experiment-cli get -i $1 -p  \
 | ./parse_json.py "[len(nodes) for nodes in x['deploymentresults'].values()]" \
 | tr -d '][,' \
-| awk '{print "ok: " $2 ", failed: " $1 ", total: " $1+$2}'
+| awk '{
+	if (! $2) { $2 = $1; $1 = 0; }
+	print "ok: " $2 ", failed: " $1 ", total: " $1+$2
+       }'
