@@ -26,7 +26,6 @@ main() {
 }
 
 submit_exp_m3() {
-	node_type=m3
 	node_list=$(get_valid_nodes $node_type)
 	#firmware=./firmware/serial_echo.elf
 	firmware=./firmware/serial_flood.elf
@@ -36,7 +35,6 @@ submit_exp_m3() {
 }
 
 submit_exp_a8() {
-	node_type=a8
 	node_list=$(get_valid_nodes $node_type)
 	experiment-cli submit -d $duration   \
 	-l $site,$node_type,$node_list
@@ -51,11 +49,8 @@ run_test() {
 	./get_experiment_status.sh $exp_id
 	printf "+ dumping gateway logs...\r"
 	./get_failed_gateway_logs.sh $exp_id > $dir_$faillog_pfx$exp_id
-	if [ "$node_type" = "a8" ]; then
-		printf "+ dumping A8 open nodes logs...\r"
-		./get_failed_open_node_a8_logs.sh $exp_id \
-			>> $dir_$faillog_pfx$exp_id
-	fi
+	printf "+ running node-specific setup...\r"
+	${node_type}_setup
 	printf "+ waiting for experiment $i to end...\r"
 	wait_for_exp_state $exp_id "Terminated" || return 0
 	printf "%*c\r" 50
@@ -69,6 +64,17 @@ wait_for_exp_state() {
 		fi
 		sleep 1
 	done
+}
+
+m3_setup() {
+	true
+}
+
+a8_setup() {
+	printf "+ waiting for ssh access...\r"
+	./wait_for_ssh_access.sh $exp_id
+	printf "+ performing a8 open nodes init...\r"
+	./setup_a8_nodes.sh $exp_id >> $dir_$faillog_pfx$exp_id
 }
 
 check_create_logs_dir() {
@@ -107,6 +113,7 @@ case $1 in
 		echo "usage: $(basename "$0") m3|a8"
 		;;
 	m3|a8)
+		node_type=$1
 		run_all_$1
 		;;
 	*)
