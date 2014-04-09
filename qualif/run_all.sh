@@ -2,28 +2,44 @@
 set -e
 
 nb_runs=${nb_runs:-100}
-duration=${duration:-1}
 site=${site:-devgrenoble}
 faillog_pfx=faillogs/faillog.
+
+run_all_m3() {
+	duration=${duration:-1}
+	run_all submit_exp_m3
+}
+
+run_all_a8() {
+	duration=${duration:-5}
+	run_all submit_exp_a8
+}
 
 main() {
 	echo "nb_runs=$nb_runs, duration=$duration, site=$site"
 	echo "failure logs go in $faillog_pfx<exp_id>"
 	echo "==== starting  @ $(date +'%F %T') ===="
 	for i in $(seq $nb_runs); do
-		run_test submit_exp
+		run_test $1
 	done
 	echo "==== completed @ $(date +'%F %T') ===="
 }
 
-submit_exp() {
+submit_exp_m3() {
 	node_type=m3
 	node_list=$(get_valid_nodes $node_type)
-	firmware=./firmware/serial_echo.elf
+	#firmware=./firmware/serial_echo.elf
 	firmware=./firmware/serial_flood.elf
 	#profile=profile_test_ftdi2
 	experiment-cli submit -d $duration   \
 	-l $site,$node_type,$node_list,$firmware,$profile
+}
+
+submit_exp_a8() {
+	node_type=a8
+	node_list=$(get_valid_nodes $node_type)
+	experiment-cli submit -d $duration   \
+	-l $site,$node_type,$node_list
 }
 
 run_test() {
@@ -33,8 +49,13 @@ run_test() {
 	printf "$exp_id, "
 	wait_for_exp_state $exp_id "Running" || return 0
 	./get_experiment_status.sh $exp_id
-	printf "+ dumping logs...\r"
-	./get_failed_logs.sh $exp_id > $dir_$faillog_pfx$exp_id
+	printf "+ dumping gateway logs...\r"
+	./get_failed_gateway_logs.sh $exp_id > $dir_$faillog_pfx$exp_id
+	if [ "$node_type" = "a8" ]; then
+		printf "+ dumping A8 open nodes logs...\r"
+		./get_failed_open_node_a8_logs.sh $exp_id \
+			>> $dir_$faillog_pfx$exp_id
+	fi
 	printf "+ waiting for experiment $i to end...\r"
 	wait_for_exp_state $exp_id "Terminated" || return 0
 	printf "%*c\r" 50
@@ -70,7 +91,25 @@ get_json() {
 	grep '"'$1'":' | awk '{print $2}'
 }
 
-dir_="$(pwd)/"
-cd "$(dirname "$0")"
-check_create_logs_dir
-main
+setup() {
+	dir_="$(pwd)/"
+	cd "$(dirname "$0")"
+	check_create_logs_dir
+}
+
+run_all() {
+	setup
+	main $1
+}
+
+case $1 in
+	""|-h|--help)
+		echo "usage: $(basename "$0") m3|a8"
+		;;
+	m3|a8)
+		run_all_$1
+		;;
+	*)
+		echo "unsupported option: $1" && exit 1
+		;;
+esac
