@@ -72,7 +72,7 @@ m3_setup() {
 
 a8_setup() {
 	printf "+ waiting for ssh access...       \r"
-	./wait_for_ssh_access.sh $exp_id
+	./wait_for_ssh_access.sh $exp_id | tee /tmp/failed.ssh.$exp_id || true
 	printf "+ performing a8 open nodes init...\r"
 	./setup_a8_nodes.sh $exp_id >> $dir_$faillog_pfx$exp_id
 }

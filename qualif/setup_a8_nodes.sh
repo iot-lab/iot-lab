@@ -12,6 +12,13 @@ cd "$(dirname "$0")"
 NODES_LIST=$(experiment-cli get -i $exp_id -p | ./parse_json.py "
 	' '.join([str('node-'+node)
 	for node in x['deploymentresults']['0']])")
+
+# wait_for_ssh_access.sh may fail on some nodes; failed nodes are reported
+# by run_all.sh in /tmp/failed.ssh.$exp_id (with header line). Filter 'em out.
+
+failed_ssh_nodes=$(tail -n +2 /tmp/failed.ssh.$exp_id)
+NODES_LIST=$(echo "$NODES_LIST" | tr ' ' '\n' | grep -v "$failed_ssh_nodes")
+
 NODES_ARRAY=($NODES_LIST)
 scp ./firmware/serial_flood.a8.elf ${NODES_ARRAY[0]}: > /dev/null
 for node in $NODES_LIST
