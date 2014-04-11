@@ -8,7 +8,9 @@ then
 fi
 
 cd "$(dirname "$0")"
-NODES_LIST=$(experiment-cli get -i $1 -p | ./parse_json.py "' '.join([str('node-'+node) for node in x['nodes']])")
+NODES_LIST=$(experiment-cli get -i $exp_id -p | ./parse_json.py "
+	' '.join([str('node-'+node)
+	for node in x['deploymentresults']['0']])")
 NODES_ARRAY=($NODES_LIST)
 scp ./firmware/serial_flood.a8.elf ${NODES_ARRAY[0]}: > /dev/null
 for node in $NODES_LIST
