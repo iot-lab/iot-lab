@@ -1,6 +1,7 @@
 #! /bin/bash
 
-if [[ $# != 1 ]]
+exp_id=$1
+if [ ! "$exp_id" ]
 then
     echo "Usage: $0 <experiment_id>"
     echo "       Return the status for open nodes A8 belonging to specified experiment"
