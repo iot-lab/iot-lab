@@ -14,7 +14,7 @@ setup-openlab: parts/openlab
 	less parts/openlab/README_COMPILING
 
 setup-contiki: parts/openlab parts/contiki
-	less parts/contiki/README-BUILDING.md
+	less parts/contiki/README-IoT-LAB.md
 
 setup-cli-tools: parts/cli-tools
 
