@@ -5,15 +5,16 @@
     use "experiment-cli info".  Utility parse_json.py helps
     getting this (static) piece of information back into python.
 
-    Nodes in Grenoble are arranged in a flat setup.  The following
-    command provides xy coordinates together with node's short name.
+    The following command provides xyz coordinates together with node's
+    short name.
 
-        $  experiment-cli info --site devgrenoble -l | ./parse_json.py '
+        $  experiment-cli info --site grenoble -l | ./parse_json.py '
 	[
 		[
 			node["network_address"].split(".")[0],
 			float(node["x"]),
-			float(node["y"])
+			float(node["y"]),
+			float(node["z"])
 		]
 		for node in x["items"]
 	]'
@@ -31,13 +32,13 @@ def list_nodes(type):
 	for n in nodes:
 		if n[0][0:len(type_str)] == type_str:
 			id = n[0].replace(type_str, "")
-			dict[id] = [n[1], n[2]]
+			dict[id] = [n[1], n[2], n[3]]
 	return dict
 
 def dump(nodes_dict):
 	for id in nodes_dict:
-		x, y = nodes_dict[id]	
-		print id, x, y
+		x, y, z = nodes_dict[id]	
+		print id, x, y, z
 
 def test():
 	m3 = list_nodes("m3")
