@@ -8,7 +8,7 @@ help:
 	@echo  ""
 
 setup-wsn430 : parts/wsn430
-	parts/wsn430/install.sh | less
+	less parts/wsn430/README.md
 
 setup-openlab: parts/openlab
 	less parts/openlab/README_COMPILING
