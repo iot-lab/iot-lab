@@ -16,6 +16,8 @@ for all plot --all or -a
 for help use --help or -h
 """
 
+# disabling pylint errors 'E1101' no-member, false positive from pylint
+
 import sys
 import getopt
 import numpy as np
@@ -38,7 +40,7 @@ def oml_load(filename):
     [oml_timestamp 1 count timestamp_s timestamp_us power voltage current]
     """
     try:
-        data = np.loadtxt(filename, skiprows=10)
+        data = np.loadtxt(filename, skiprows=10)  # pylint:disable=I0011,E1101
     except IOError as err:
         print "Error opening oml file:\n{}".format(err)
         usage()
@@ -119,15 +121,15 @@ def oml_clock(data):
     plt.title("Clock time verification")
     plt.grid()
     time = data[:, FIELDS['t_s']] + data[:, FIELDS['t_us']] / 1e6
-    clock = np.diff(time) * 1000
+    clock = np.diff(time) * 1000  # pylint:disable=I0011,E1101
     plt.plot(clock)
 
     print 'NB Points      =', len(time)
     print 'Duration    (s)=', time[-1] - time[0]
     print 'Steptime    (ms)=', 1000 * (time[-1] - time[0]) / len(time)
     print 'Time to', time[0], 'From', time[-1]
-    print 'Clock mean (ms)=', np.mean(clock)
-    print 'Clock std  (ms)=', np.std(clock)
+    print 'Clock mean (ms)=', np.mean(clock)  # pylint:disable=I0011,E1101
+    print 'Clock std  (ms)=', np.std(clock)  # pylint:disable=I0011,E1101
     print 'Clock max  (ms)=', np.max(clock)
     print 'Clock min  (ms)=', np.min(clock)
     return
