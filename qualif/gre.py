@@ -28,7 +28,7 @@ never_dead = """
 m3 = geo.grenoble.list_nodes("m3")
 def dump(nodes):
 	for id in nodes:
-		x, y = m3[id]
+		x, y, z = m3[int(id)]
 		print id, x, y
 
 #dump(failed_nodes)
