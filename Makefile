@@ -41,13 +41,13 @@ setup-%: parts/%;
 #
 # Run tests
 #
-tests: openlab-tests contiki-tests tools_and_scripts__tests
+tests: openlab-tests contiki-tests wsn430-tests tools_and_scripts__tests
 tools_and_scripts__tests:
 	bash tools_and_scripts/tests/run_tests.sh
 %-tests: parts/%
 	make -C $^ -f iotlab.makefile tests
 
-tests-clean: openlab-tests-clean contiki-tests-clean
+tests-clean: openlab-tests-clean contiki-tests-clean wsn430-tests
 %-tests-clean: parts/%
 	make -C $^ -f iotlab.makefile clean
 
