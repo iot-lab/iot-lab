@@ -11,7 +11,7 @@ setup-wsn430 : parts/wsn430
 	less parts/wsn430/README.md
 
 setup-openlab: parts/openlab
-	less parts/contiki/README-IoT-LAB.md
+	less parts/openlab/README-IoT-LAB.md
 
 setup-contiki: parts/openlab parts/contiki
 	less parts/contiki/README-IoT-LAB.md
