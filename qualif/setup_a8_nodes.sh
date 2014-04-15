@@ -32,9 +32,11 @@ scp ./firmware/serial_flood.a8.elf ${NODES_ARRAY[0]}: > /dev/null
 for node in $NODES_LIST
 do 
     ssh $node 2>/dev/null '
-        source /etc/profile;
-        ftdi-devices-list -t 2232 | grep -q Description || echo FTDI: No Open Node;
-        flash_a8.sh /home/root/serial_flood.a8.elf > /dev/null || echo Flash Firmware failed on m3
+	source /etc/profile
+	ftdi-devices-list -t 2232 | grep -q Description \
+		|| echo FTDI: No Open Node
+	flash_a8.sh /home/root/serial_flood.a8.elf > /dev/null \
+		|| echo Flash Firmware failed on m3
 	serial_flooder() {
 		while true; do cat /dev/mtd2 > /dev/null ; sleep 5; done
 	}
