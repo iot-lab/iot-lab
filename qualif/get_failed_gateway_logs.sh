@@ -27,11 +27,11 @@ do
 	| egrep "Flash firmware failed on (gwt|m3)"
 	ftdi-devices-list -t 4232 | grep -q ControlNode || echo FTDI: No Control Node
 	ftdi-devices-list -t 2232 | grep -q Description || echo FTDI: No Open Node
-    ' > /tmp/$$.$node || echo $node >> /tmp/$$.failed &
+    ' > /tmp/$$.$node || echo $node > /tmp/$$.failed.$node &
     [ $[ i = (i+1) % 10 ] = 0 ] && sleep 1
 done
 wait
-nodes=$(touch /tmp/$$.failed; cat /tmp/$$.failed; \rm /tmp/$$.failed)
+nodes=$(touch /tmp/$$.failed; cat /tmp/$$.failed*; \rm /tmp/$$.failed*)
 [ $[--max_retries] = 0 ] && echo "failed to get logs for:" && echo "$nodes" && false
 done
 
