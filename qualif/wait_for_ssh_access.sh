@@ -10,19 +10,18 @@ NODES_LIST=$(experiment-cli get -i $exp_id -p | ./parse_json.py "
 	' '.join([str('node-'+node)
 	for node in x['deploymentresults']['0']])")
 
-max_retries=10
+max_retries=15
 nodes=$NODES_LIST
 while [ "$nodes" ]; do
 	for node in $nodes
 	do 
 		ssh $node -o ConnectTimeout=5 &>/dev/null \
-			date || echo $node >> /tmp/$$.failed &
+			date || echo $node > /tmp/$$.failed.$node &
 		[ $[ i = (i+1) % 10 ] = 0 ] && sleep 1
 	done
 	wait
-	nodes=$(touch /tmp/$$.failed; cat /tmp/$$.failed; \rm /tmp/$$.failed)
+	nodes=$(touch /tmp/$$.failed; cat /tmp/$$.failed*; \rm /tmp/$$.failed*)
 	if [ $[--max_retries] = 0 ]; then
-		echo "failed waiting for:"
 		echo "$nodes"
 		exit 2
 	fi
