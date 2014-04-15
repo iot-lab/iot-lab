@@ -48,12 +48,7 @@ wait
 
 for node in $NODES_LIST
 do
-	out=$(wc -l /tmp/$$.$node)
-	size=${out% *}
-        if [[ $size -ne 0 ]]; then
-           echo -n "$node: "
-           cat /tmp/$$.$node | tr '\n' ' '
-           \rm /tmp/$$.$node
-           echo
-        fi
+	out=$(cat /tmp/$$.$node | tr '\n' ' ')
+	[ "$out" ] && echo "$node: $out"
+	\rm /tmp/$$.$node
 done
