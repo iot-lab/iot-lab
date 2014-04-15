@@ -22,7 +22,7 @@ while [ "$nodes" ]; do
 	wait
 	nodes=$(touch /tmp/$$.failed; cat /tmp/$$.failed*; \rm /tmp/$$.failed*)
 	if [ $[--max_retries] = 0 ]; then
-		echo "$nodes"
+		echo "$nodes" | sort -t - -n -k3
 		exit 2
 	fi
 done
