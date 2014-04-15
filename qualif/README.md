@@ -1,9 +1,10 @@
 TEST 
 ====
 
-1°) Edit run_all.sh and change parameters : site, duration
+0°) You need root ssh access to the frontend to fetch gateway logs
 
-2°) Add in your config SSH (e.g. ~/.ssh/config) :
+
+1°) Add the following lines in your ssh config (e.g. ~/.ssh/config) :
 
 	Host fit-$site 
     	   Hostname $site.iot-lab.info
@@ -16,7 +17,21 @@ TEST
     	   ProxyCommand ssh fit-$site -W %h:%p
     	   StrictHostKeyChecking no
 
-3°) Test your ssh configuration
+2°) Test your ssh configuration :
 
         ssh m3-1 or ssh a8-1
 
+
+3°) Test the tests :
+
+	site=$site nb_runs=1 ./run_all m3
+	site=$site nb_runs=1 ./run_all a8
+
+4°) Optionally, edit ``run_all.sh`` and set default value for site
+
+	``site=${site:-devgrenoble}`` => set to your $site
+
+5°) Run the tests :
+
+	./run_all.sh m3
+	./run_all.sh a8
