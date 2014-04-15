@@ -11,7 +11,7 @@ run_all_m3() {
 }
 
 run_all_a8() {
-	duration=${duration:-5}
+	duration=${duration:-10}
 	run_all submit_exp_a8
 }
 
