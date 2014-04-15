@@ -39,7 +39,7 @@ do
 		while true; do cat /dev/mtd2 > /dev/null ; sleep 5; done
 	}
 	serial_flooder &
-    ' > /tmp/$$.$node || echo $node >> /tmp/$$.failed &
+    ' > /tmp/$$.$node &
     [ $[ i = (i+1) % 10 ] = 0 ] && sleep 1
 done
 wait
