@@ -71,10 +71,16 @@ m3_setup() {
 }
 
 a8_setup() {
+	log_file=$dir_$faillog_pfx$exp_id
+	failed_ssh=/tmp/failed.ssh.$exp_id
 	printf "+ waiting for ssh access...       \r"
-	./wait_for_ssh_access.sh $exp_id | tee /tmp/failed.ssh.$exp_id || true
+	./wait_for_ssh_access.sh $exp_id > $failed_ssh || (
+		echo "! failed ssh to ok nodes: $(cat $failed_ssh | wc -l)"
+		cat $failed_ssh | sed 's/$/: ssh access failed/' >> $log_file
+	)
 	printf "+ performing a8 open nodes init...\r"
-	./setup_a8_nodes.sh $exp_id >> $dir_$faillog_pfx$exp_id
+	./setup_a8_nodes.sh $exp_id $failed_ssh >> $log_file
+	\rm -f $failed_ssh
 }
 
 check_create_logs_dir() {
