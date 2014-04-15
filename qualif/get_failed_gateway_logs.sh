@@ -1,8 +1,16 @@
 #! /bin/bash -e
 
 exp_id=$1
-
-[ ! $exp_id ] && echo "usage: $0 <exp_id>" && false
+if [ ! $exp_id ]
+then
+    echo "usage: $0 <exp_id>"
+    echo "
+        Gets first error found in gateway logs
+        for nodes belonging to specified exepriment.
+        Requires root ssh access to gateways.
+    "
+    exit 1
+fi
 
 cd "$(dirname "$0")"
 NODES_LIST=$(./get_failed_nodes.sh $exp_id)

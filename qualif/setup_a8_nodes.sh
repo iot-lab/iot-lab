@@ -4,7 +4,13 @@ exp_id=$1
 if [ ! "$exp_id" ]
 then
     echo "Usage: $0 <experiment_id>"
-    echo "       Return the status for open nodes A8 belonging to specified experiment"
+    echo "
+       Flashes a8-m3 nodes and spawns a8-gw serial flooder
+       on nodes that a.) deployed ok and b.) have ssh access
+       for nodes belonging to specified experiment.
+       Returns error status text if an error occured.
+       Requires working ssh access to a8 nodes.
+    "
     exit 1
 fi
 
