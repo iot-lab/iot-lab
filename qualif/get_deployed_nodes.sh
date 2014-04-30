@@ -9,5 +9,6 @@ parse_json="$(dirname "$0")/parse_json.py"
 experiment-cli get -i $exp_id -p \
 | $parse_json "
 	[sys.stdout.write(node + '\n')
-	for node in x['deploymentresults']['0']]" \
+	for node in x['deploymentresults']['0']]
+	if '0' in x['deploymentresults'] else ''" \
 | grep -v -e None -e format
