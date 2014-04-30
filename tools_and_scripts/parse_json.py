@@ -27,7 +27,7 @@ def extract_json(json_str):
     try:
         answer_dict = json.loads(json_str)
     except ValueError:
-        print >> sys.stderr, 'Could not load JSON object from input.'
+        sys.stderr.write('Could not load JSON object from input.\n')
         sys.exit(1)
     return answer_dict
 
@@ -80,9 +80,9 @@ def _main(argv):  # pragma: no cover
 
     try:
         value = format_func(json_dict)
-        print value
+        print(value)
     except Exception as err:  # pylint:disable=I0011,W0703
-        print >> sys.stderr, "Parsing error: {err!r}".format(err=err)
+        sys.stderr.write("Parsing error: {err!r}\n".format(err=err))
         sys.exit(1)
 
 
