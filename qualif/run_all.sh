@@ -48,7 +48,7 @@ run_test() {
 	wait_for_exp_state $exp_id "Running" || return 0
 	./get_experiment_status.sh $exp_id
 	printf "+ dumping gateway logs...\r"
-	./get_failed_gateway_logs.sh $exp_id > $dir_$faillog_pfx$exp_id
+	./get_failed_gateway_logs.sh $exp_id > $dir_$faillog_pfx$exp_id || true
 	printf "+ running node-specific setup...\r"
 	${node_type}_setup
 	printf "+ waiting for experiment $i to end...\r"
