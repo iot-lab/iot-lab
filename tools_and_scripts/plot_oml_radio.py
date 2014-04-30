@@ -1,18 +1,16 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-""" oml_plot.py
+""" plot_oml_radio.py
 
-plot oml filename [-tpvcah] -i <filename> or --input=<filename>
+plot oml filename [-tbeaplh] -i <filename> or --input=<filename>
 
 for time verification --time or -t
 for begin sample --begin=<sample_beg> or -b <sample_beg>
 for end sample --end=<sample_end> or -e <sample_end>
 for label title plot --label=<title> or -l <title>
-for plot consumption --power or -p
-for plot voltage --voltage or -v
-for plot current --current or -c
-for all plot --all or -a
+for plot in one window --all or -a
+for plot in separate windows --plot or -p
 for help use --help or -h
 """
 
@@ -23,7 +21,7 @@ import getopt
 import numpy as np
 import matplotlib.pyplot as plt
 
-FIELDS = {'t_s': 3, 't_us': 4, 'power': 5, 'voltage': 6, 'current': 7}
+FIELDS = {'type': 1, 't_s': 3, 't_us': 4, 'channel': 5, 'rssi':6}
 
 
 def oml_load(filename):
@@ -37,7 +35,7 @@ def oml_load(filename):
     Returns:
     -------
     data : numpy array
-    [oml_timestamp 1 count timestamp_s timestamp_us power voltage current]
+    [oml_timestamp 2 count timestamp_s timestamp_us channel rssi]
     """
     try:
         data = np.loadtxt(filename, skiprows=10)  # pylint:disable=I0011,E1101
@@ -45,9 +43,63 @@ def oml_load(filename):
         print "Error opening oml file:\n{}".format(err)
         usage()
         sys.exit(2)
+    # Type oml file verification
+    for typ in data[:, FIELDS['type']]:
+        if typ != 2 :
+            print "Error non radio type oml file"
+            usage()
+            sys.exit(2)
 
     return data
 
+
+def oml_channels_set(data):
+    """ lists radio channels used in data
+
+    Parameters:
+    ------------
+    data: numpy array
+      [oml_timestamp 1 count timestamp_s timestamp_us power voltage current]
+    
+    Returns:
+    --------
+    channels_set : a set of int channel 
+    """
+
+    channels_set = set([])
+    for radio_meas in data:
+        channel = str(radio_meas[FIELDS['channel']])
+        if channel not in channels_set:
+            channels_set.add(channel)
+
+    return channels_set
+        
+
+def oml_separate_plot(data, title):
+    """ Plot iot-lab oml all data
+
+    Parameters:
+    ------------
+    data: numpy array
+      [oml_timestamp 1 count timestamp_s timestamp_us power voltage current]
+    title: string
+       title of the plot
+    """
+    timestamps = data[:, FIELDS['t_s']] + data[:, FIELDS['t_us']] / 1e6
+    channels_set = oml_channels_set(data)
+    nbplots = len(channels_set)
+
+    for channel in channels_set:
+        plt.figure()
+        plt.grid()
+        channel = int(float(channel))
+        plt.title(title + " Channel " + str(channel))
+        data_channel = data[data[:, FIELDS['channel']] == channel]
+        time_channel = data_channel[:, FIELDS['t_s']] + data_channel[:, FIELDS['t_us']] / 1e6
+        plt.plot(time_channel, data_channel[:, FIELDS['rssi']])
+        plt.ylabel('RSSI (dB)')
+    
+    return
 
 def oml_all_plot(data, title):
     """ Plot iot-lab oml all data
@@ -59,25 +111,25 @@ def oml_all_plot(data, title):
     title: string
        title of the plot
     """
-
+    
     timestamps = data[:, FIELDS['t_s']] + data[:, FIELDS['t_us']] / 1e6
+    channels_set = oml_channels_set(data)
+    nbplots = len(channels_set)
+  
+    if nbplots > 0 :
+        plt.figure()
+        i = 0
+        for channel in channels_set:
+            i = i + 1
+            ax = plt.subplot(nbplots, 1, i)
+            ax.grid() 
+            channel = int(float(channel))
+            plt.title(title + " Channel " + str(channel))
+            data_channel = data[data[:, FIELDS['channel']] == channel]
+            time_channel = data_channel[:, FIELDS['t_s']] + data_channel[:, FIELDS['t_us']] / 1e6
+            ax.plot(time_channel, data_channel[:, FIELDS['rssi']])
+            plt.ylabel('RSSI (dB)')
 
-    plt.figure()
-    plt.subplot(311)
-    plt.grid()
-    plt.title(title)
-    plt.plot(timestamps, data[:, FIELDS['power']])
-    plt.ylabel('Power (W)')
-    plt.subplot(312)
-    plt.grid()
-    plt.title("node2")
-    plt.plot(timestamps, data[:, FIELDS['voltage']])
-    plt.ylabel('Voltage (V)')
-    plt.subplot(313)
-    plt.grid()
-    plt.plot(timestamps, data[:, FIELDS['current']])
-    plt.ylabel('Current (A)')
-    plt.xlabel('Sample Time (sec)')
     return
 
 
@@ -134,7 +186,6 @@ def oml_clock(data):
     print 'Clock min  (ms)=', np.min(clock)
     return
 
-
 def usage():
     """Usage command print
     """
@@ -148,16 +199,15 @@ def main(argv):
     options = []
     filename = ""
     try:
-        opts, _ = getopt.getopt(argv, "i:htpcvab:e:l:",
-                                ["input=", "help", "time", "power", "current",
-                                 "voltage", "all", "begin=", "end=", "label="])
+        opts, _ = getopt.getopt(argv, "i:htapb:e:l:",
+                                ["input=", "help", "time", "all", "plot", "begin=", "end=", "label="])
     except getopt.GetoptError:
         usage()
         sys.exit(2)
 
     s_beg = 0
     s_end = -1
-    title = "Node"
+    title = ""
     for opt, arg in opts:
         if opt in ("-h", "--help"):
             usage()
@@ -165,21 +215,17 @@ def main(argv):
         elif opt in ("-i", "--input"):
             filename = arg
         elif opt in ("-l", "--label"):
-            title = arg
+            title = arg 
+        elif opt in ("-t", "--time"):
+            options.append("-t")
         elif opt in ("-b", "--begin"):
             s_beg = int(arg)
         elif opt in ("-e", "--end"):
             s_end = int(arg)
-        elif opt in ("-t", "--time"):
-            options.append("-t")
-        elif opt in ("-p", "--power"):
-            options.append("-p")
-        elif opt in ("-c", "--current"):
-            options.append("-c")
-        elif opt in ("-v", "--voltage"):
-            options.append('-v')
         elif opt in ("-a", "--all"):
             options.append("-a")
+        elif opt in ("-p", "--plot"):
+            options.append("-p")
 
     if len(filename) == 0:
         usage()
@@ -187,23 +233,15 @@ def main(argv):
 
     # Load file
     data = oml_load(filename)[s_beg:s_end, :]
-    # Plot power consumption
-    if "-p" in options:
-        oml_plot(data, title +
-                 " power consumption", "Power (W)", 'power')
-    # Plot voltage
-    if "-v" in options:
-        oml_plot(data, title + " voltage", "Voltage (V)", 'voltage')
-    # Plot voltage
-    if "-c" in options:
-        oml_plot(data, title + " current", "Current (A)", 'current')
-    # All Plot
+    # Plot in a single window
     if "-a" in options:
-        oml_all_plot(data, title)
-    # All Plot
+        oml_all_plot(data, title) 
+    # Plot in several windows
+    if "-p" in options:
+        oml_separate_plot(data, title)
+    # Clock verification
     if "-t" in options:
         oml_clock(data)
-
     plt.show()
 
 
