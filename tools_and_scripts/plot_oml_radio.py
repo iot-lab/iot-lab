@@ -97,7 +97,7 @@ def oml_separate_plot(data, title):
         data_channel = data[data[:, FIELDS['channel']] == channel]
         time_channel = data_channel[:, FIELDS['t_s']] + data_channel[:, FIELDS['t_us']] / 1e6
         plt.plot(time_channel, data_channel[:, FIELDS['rssi']])
-        plt.ylabel('RSSI (dB)')
+        plt.ylabel('RSSI (dBm)')
     
     return
 
@@ -128,7 +128,7 @@ def oml_all_plot(data, title):
             data_channel = data[data[:, FIELDS['channel']] == channel]
             time_channel = data_channel[:, FIELDS['t_s']] + data_channel[:, FIELDS['t_us']] / 1e6
             ax.plot(time_channel, data_channel[:, FIELDS['rssi']])
-            plt.ylabel('RSSI (dB)')
+            plt.ylabel('RSSI (dBm)')
 
     return
 
