@@ -43,6 +43,10 @@ def oml_load(filename):
         print "Error opening oml file:\n{}".format(err)
         usage()
         sys.exit(2)
+    except ValueError as err:
+        print "Error reading oml file:\n{}".format(err)
+        usage()
+        sys.exit(3)
     # Type oml file verification
     for typ in data[:, FIELDS['type']]:
         if typ != 2 :
