@@ -144,7 +144,8 @@ def usage():
     print __doc__
 
 
-def main(argv):
+# R0912:too-many-branches
+def main(argv):  # pylint:disable=R0912
     """ Main command
     """
     options = []

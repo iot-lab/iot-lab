@@ -80,7 +80,7 @@ def _main(argv):  # pragma: no cover
 
     try:
         value = format_func(json_dict)
-        print(value)
+        print value
     except Exception as err:  # pylint:disable=I0011,W0703
         sys.stderr.write("Parsing error: {err!r}\n".format(err=err))
         sys.exit(1)

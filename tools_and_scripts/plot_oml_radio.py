@@ -21,7 +21,7 @@ import getopt
 import numpy as np
 import matplotlib.pyplot as plt
 
-FIELDS = {'type': 1, 't_s': 3, 't_us': 4, 'channel': 5, 'rssi':6}
+FIELDS = {'type': 1, 't_s': 3, 't_us': 4, 'channel': 5, 'rssi': 6}
 
 
 def oml_load(filename):
@@ -47,7 +47,7 @@ def oml_load(filename):
         sys.exit(3)
     # Type oml file verification
     for typ in data[:, FIELDS['type']]:
-        if typ != 2 :
+        if typ != 2:
             print "Error non radio type oml file"
             usage()
             sys.exit(2)
@@ -62,10 +62,10 @@ def oml_channels_set(data):
     ------------
     data: numpy array
       [oml_timestamp 1 count timestamp_s timestamp_us power voltage current]
-    
+
     Returns:
     --------
-    channels_set : a set of int channel 
+    channels_set : a set of int channel
     """
 
     channels_set = set([])
@@ -75,7 +75,7 @@ def oml_channels_set(data):
             channels_set.add(channel)
 
     return channels_set
-        
+
 
 def oml_separate_plot(data, title):
     """ Plot iot-lab oml all data
@@ -87,9 +87,7 @@ def oml_separate_plot(data, title):
     title: string
        title of the plot
     """
-    timestamps = data[:, FIELDS['t_s']] + data[:, FIELDS['t_us']] / 1e6
     channels_set = oml_channels_set(data)
-    nbplots = len(channels_set)
 
     for channel in channels_set:
         plt.figure()
@@ -97,11 +95,13 @@ def oml_separate_plot(data, title):
         channel = int(float(channel))
         plt.title(title + " Channel " + str(channel))
         data_channel = data[data[:, FIELDS['channel']] == channel]
-        time_channel = data_channel[:, FIELDS['t_s']] + data_channel[:, FIELDS['t_us']] / 1e6
+        time_channel = (data_channel[:, FIELDS['t_s']] +
+                        data_channel[:, FIELDS['t_us']] / 1e6)
         plt.plot(time_channel, data_channel[:, FIELDS['rssi']])
         plt.ylabel('RSSI (dBm)')
-    
+
     return
+
 
 def oml_all_plot(data, title):
     """ Plot iot-lab oml all data
@@ -113,23 +113,23 @@ def oml_all_plot(data, title):
     title: string
        title of the plot
     """
-    
-    timestamps = data[:, FIELDS['t_s']] + data[:, FIELDS['t_us']] / 1e6
+
     channels_set = oml_channels_set(data)
     nbplots = len(channels_set)
-  
-    if nbplots > 0 :
+
+    if nbplots > 0:
         plt.figure()
         i = 0
         for channel in channels_set:
             i = i + 1
-            ax = plt.subplot(nbplots, 1, i)
-            ax.grid() 
+            channel_plot = plt.subplot(nbplots, 1, i)
+            channel_plot.grid()
             channel = int(float(channel))
             plt.title(title + " Channel " + str(channel))
             data_channel = data[data[:, FIELDS['channel']] == channel]
-            time_channel = data_channel[:, FIELDS['t_s']] + data_channel[:, FIELDS['t_us']] / 1e6
-            ax.plot(time_channel, data_channel[:, FIELDS['rssi']])
+            time_channel = (data_channel[:, FIELDS['t_s']] +
+                            data_channel[:, FIELDS['t_us']] / 1e6)
+            channel_plot.plot(time_channel, data_channel[:, FIELDS['rssi']])
             plt.ylabel('RSSI (dBm)')
 
     return
@@ -188,6 +188,7 @@ def oml_clock(data):
     print 'Clock min  (ms)=', np.min(clock)
     return
 
+
 def usage():
     """Usage command print
     """
@@ -195,14 +196,16 @@ def usage():
     print __doc__
 
 
-def main(argv):
+# R0912:too-many-branches
+def main(argv):  # pylint:disable=R0912
     """ Main command
     """
     options = []
     filename = ""
     try:
         opts, _ = getopt.getopt(argv, "i:htapb:e:l:",
-                                ["input=", "help", "time", "all", "plot", "begin=", "end=", "label="])
+                                ["input=", "help", "time", "all", "plot",
+                                 "begin=", "end=", "label="])
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -217,7 +220,7 @@ def main(argv):
         elif opt in ("-i", "--input"):
             filename = arg
         elif opt in ("-l", "--label"):
-            title = arg 
+            title = arg
         elif opt in ("-t", "--time"):
             options.append("-t")
         elif opt in ("-b", "--begin"):
@@ -237,7 +240,7 @@ def main(argv):
     data = oml_load(filename)[s_beg:s_end, :]
     # Plot in a single window
     if "-a" in options:
-        oml_all_plot(data, title) 
+        oml_all_plot(data, title)
     # Plot in several windows
     if "-p" in options:
         oml_separate_plot(data, title)
