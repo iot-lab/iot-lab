@@ -43,8 +43,10 @@ def oml_load(filename):
         data = np.loadtxt(filename, skiprows=10)  # pylint:disable=I0011,E1101
     except IOError as err:
         print "Error opening oml file:\n{}".format(err)
-        usage()
         sys.exit(2)
+    except ValueError as err:
+        print "Error reading oml file:\n{}".format(err)
+        sys.exit(3)
 
     return data
 
