@@ -66,7 +66,8 @@ def oml_load(filename):
 
     """
     try:
-        data = np.loadtxt(filename, skiprows=10)  # pylint:disable=I0011,E1101
+        data = np.genfromtxt(filename, skip_header=10,
+                             invalid_raise=False)  # pylint:disable=I0011,E1101
     except IOError as err:
         print "Error opening oml file:\n{0}".format(err)
         sys.exit(2)
