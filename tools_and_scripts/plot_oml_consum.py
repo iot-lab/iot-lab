@@ -51,14 +51,16 @@ def oml_load(filename):
     SystemExit: 2
 
     >>> oml_load(StringIO('\\n' * 10 + 'invalid_content'))
-    Traceback (most recent call last):
-    SystemExit: 3
+    array(nan)
 
     # Invalid file content.
     # Raises IOError on python2.6 and StopIteration in python2.7
     >>> oml_load(StringIO('1 2 3'))  # doctest:+ELLIPSIS
     Traceback (most recent call last):
     SystemExit: ...
+
+
+    >>> sys.stderr = sys.__stderr__
     """
     try:
         data = np.genfromtxt(filename, skip_header=10,

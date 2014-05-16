@@ -51,7 +51,7 @@ def oml_load(filename):
 
     >>> oml_load(StringIO('\\n' * 10 + 'invalid_content'))
     Traceback (most recent call last):
-    SystemExit: 3
+    SystemExit: 4
 
     # Not enough lines to skiprows
     # Raises IOError on python2.6 and StopIteration in python2.7
@@ -62,23 +62,31 @@ def oml_load(filename):
     # invalid oml 'type' file
     >>> oml_load(StringIO('\\n' * 10 + '0 1\\n' + '1 1\\n'))
     Traceback (most recent call last):
-    SystemExit: 4
+    SystemExit: 5
+
+    >>> sys.stderr = sys.__stderr__
 
     """
     try:
         data = np.genfromtxt(filename, skip_header=10,
                              invalid_raise=False)  # pylint:disable=I0011,E1101
     except IOError as err:
-        print "Error opening oml file:\n{0}".format(err)
+        sys.stderr.write("Error opening oml file:\n{0}\n".format(err))
         sys.exit(2)
     except (ValueError, StopIteration) as err:
-        print "Error reading oml file:\n{0}".format(err)
+        sys.stderr.write("Error reading oml file:\n{0}\n".format(err))
         sys.exit(3)
+
+    # Empty 'parsing' makes type verification fail
+    if np.all(np.isnan(data)):
+        sys.stderr.write("Error non oml file\n")
+        sys.exit(4)
+
     # Type oml file verification
     for typ in data[:, FIELDS['type']]:
         if typ != 2:
             print "Error non radio type oml file"
-            sys.exit(4)
+            sys.exit(5)
 
     return data
 
