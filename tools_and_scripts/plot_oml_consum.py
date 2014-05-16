@@ -38,14 +38,35 @@ def oml_load(filename):
     -------
     data : numpy array
     [oml_timestamp 1 count timestamp_s timestamp_us power voltage current]
+
+
+    >>> from StringIO import StringIO
+    >>> oml_load(StringIO('\\n' * 10 + '1 2 3\\n'))
+    array([ 1.,  2.,  3.])
+
+    >>> sys.stderr = sys.stdout  # hide stderr output
+
+    >>> oml_load('/invalid/file/path')
+    Traceback (most recent call last):
+    SystemExit: 2
+
+    >>> oml_load(StringIO('\\n' * 10 + 'invalid_content'))
+    Traceback (most recent call last):
+    SystemExit: 3
+
+    # Invalid file content.
+    # Raises IOError on python2.6 and StopIteration in python2.7
+    >>> oml_load(StringIO('1 2 3'))  # doctest:+ELLIPSIS
+    Traceback (most recent call last):
+    SystemExit: ...
     """
     try:
         data = np.loadtxt(filename, skiprows=10)  # pylint:disable=I0011,E1101
     except IOError as err:
-        print "Error opening oml file:\n{}".format(err)
+        sys.stderr.write("Error opening oml file:\n{0}\n".format(err))
         sys.exit(2)
-    except ValueError as err:
-        print "Error reading oml file:\n{}".format(err)
+    except (ValueError, StopIteration) as err:
+        sys.stderr.write("Error reading oml file:\n{0}\n".format(err))
         sys.exit(3)
 
     return data

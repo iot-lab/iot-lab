@@ -36,21 +36,48 @@ def oml_load(filename):
     -------
     data : numpy array
     [oml_timestamp 2 count timestamp_s timestamp_us channel rssi]
+
+
+    >>> from StringIO import StringIO
+    >>> oml_load(StringIO('\\n' * 10 + '0 2\\n' + '1 2\\n'))
+    array([[ 0.,  2.],
+           [ 1.,  2.]])
+
+    # error cases
+    >>> sys.stderr = sys.stdout  # hide stderr output
+    >>> oml_load('/invalid/file/path')
+    Traceback (most recent call last):
+    SystemExit: 2
+
+    >>> oml_load(StringIO('\\n' * 10 + 'invalid_content'))
+    Traceback (most recent call last):
+    SystemExit: 3
+
+    # Not enough lines to skiprows
+    # Raises IOError on python2.6 and StopIteration in python2.7
+    >>> oml_load(StringIO('1 2 3'))  # doctest:+ELLIPSIS
+    Traceback (most recent call last):
+    SystemExit: ...
+
+    # invalid oml 'type' file
+    >>> oml_load(StringIO('\\n' * 10 + '0 1\\n' + '1 1\\n'))
+    Traceback (most recent call last):
+    SystemExit: 4
+
     """
     try:
         data = np.loadtxt(filename, skiprows=10)  # pylint:disable=I0011,E1101
     except IOError as err:
-        print "Error opening oml file:\n{}".format(err)
+        print "Error opening oml file:\n{0}".format(err)
         sys.exit(2)
-    except ValueError as err:
-        print "Error reading oml file:\n{}".format(err)
+    except (ValueError, StopIteration) as err:
+        print "Error reading oml file:\n{0}".format(err)
         sys.exit(3)
     # Type oml file verification
     for typ in data[:, FIELDS['type']]:
         if typ != 2:
             print "Error non radio type oml file"
-            usage()
-            sys.exit(2)
+            sys.exit(4)
 
     return data
 
