@@ -15,6 +15,7 @@ for help use --help or -h
 """
 
 # disabling pylint errors 'E1101' no-member, false positive from pylint
+# pylint:disable=I0011,E1101
 
 import sys
 import getopt
@@ -68,8 +69,7 @@ def oml_load(filename):
 
     """
     try:
-        data = np.genfromtxt(filename, skip_header=10,
-                             invalid_raise=False)  # pylint:disable=I0011,E1101
+        data = np.genfromtxt(filename, skip_header=10, invalid_raise=False)
     except IOError as err:
         sys.stderr.write("Error opening oml file:\n{0}\n".format(err))
         sys.exit(2)

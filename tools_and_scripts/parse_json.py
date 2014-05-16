@@ -64,7 +64,7 @@ def get_formatter(args):
         extract = 'x'
 
     lambda_str = '(lambda x: {})'.format(extract)
-    format_func = eval(lambda_str)
+    format_func = eval(lambda_str)  # pylint: disable=W0123
     return format_func
 
 
