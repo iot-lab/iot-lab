@@ -40,6 +40,22 @@ def dump(nodes_dict):
 		x, y, z = nodes_dict[id]	
 		print id, x, y, z
 
+
+def dump3ds(namevar, nodes_dict):
+	print namevar, " = # (",
+	first = True
+	for id in nodes_dict:
+		x, y, z = nodes_dict[id]
+		if first == True :
+			first = False
+		else:
+			print ",",
+		line = "#(\"" + namevar + "-" + str(id) + "\", " \
+		+ str(x) + ", " + str(y) + ", " + str(z) + ")" 
+		print line,
+	print ")"
+
+
 def test():
 	m3 = list_nodes("m3")
 	a8 = list_nodes("a8")
