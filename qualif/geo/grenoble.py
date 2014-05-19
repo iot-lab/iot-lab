@@ -41,11 +41,13 @@ def dump(nodes_dict):
 		print id, x, y, z
 
 
-def dump3ds(namevar, nodes_dict):
+def dump3ds(namevar, nodes_dict, ofx, ofy):
 	print namevar, " = # (",
 	first = True
 	for id in nodes_dict:
 		x, y, z = nodes_dict[id]
+		x = x + ofx
+		y = y + ofy
 		if first == True :
 			first = False
 		else:
