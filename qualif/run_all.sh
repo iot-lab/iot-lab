@@ -17,7 +17,7 @@ main() {
 
 run_test() {
 	printf "experiment: "
-	exp_id=$(submit | get_json "id") # submit defined in sourced exp_*.sh
+	exp_id=$(submit | get_exp_id) # submit defined in sourced exp_*.sh
 	[ ! $exp_id ] && echo "failed to start" && return 0
 	printf "$exp_id, "
 	./wait_for_exp_state.sh $exp_id "Running" || return 0
@@ -39,8 +39,8 @@ check_create_logs_dir() {
 	fi
 }
 
-get_json() {
-	grep '"'$1'":' | awk '{print $2}'
+get_exp_id() {
+	./parse_json.py 'x["id"]'
 }
 
 init() {
