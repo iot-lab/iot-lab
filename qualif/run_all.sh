@@ -5,72 +5,30 @@ nb_runs=${nb_runs:-100}
 site=${site:-devgrenoble}
 faillog_pfx=faillogs/faillog.
 
-run_all_m3() {
-	duration=${duration:-1}
-	run_all submit_exp_m3
-}
-
-run_all_a8() {
-	duration=${duration:-10}
-	run_all submit_exp_a8
-}
-
 main() {
 	echo "nb_runs=$nb_runs, duration=$duration, site=$site"
 	echo "failure logs go in $faillog_pfx<exp_id>"
 	echo "==== starting  @ $(date +'%F %T') ===="
 	for i in $(seq $nb_runs); do
-		run_test $1
+		run_test
 	done
 	echo "==== completed @ $(date +'%F %T') ===="
 }
 
-submit_exp_m3() {
-	node_list=$(get_valid_nodes $node_type)
-	#firmware=./firmware/serial_echo.elf
-	firmware=./firmware/serial_flood.elf
-	#profile=profile_test_ftdi2
-	experiment-cli submit -d $duration   \
-	-l $site,$node_type,$node_list,$firmware,$profile
-}
-
-submit_exp_a8() {
-	node_list=$(get_valid_nodes $node_type)
-	experiment-cli submit -d $duration   \
-	-l $site,$node_type,$node_list
-}
-
 run_test() {
 	printf "experiment: "
-	exp_id=$($1 | get_json "id")
+	exp_id=$(submit | get_json "id") # submit defined in sourced exp_*.sh
 	[ ! $exp_id ] && echo "failed to start" && return 0
 	printf "$exp_id, "
 	./wait_for_exp_state.sh $exp_id "Running" || return 0
 	./get_experiment_status.sh $exp_id
 	printf "+ dumping gateway logs...\r"
 	./get_failed_gateway_logs.sh $exp_id > $dir_$faillog_pfx$exp_id || true
-	printf "+ running node-specific setup...\r"
-	${node_type}_setup
+	printf "+ running specific setup...\r"
+	setup # defined in sourced exp_*.sh
 	printf "+ waiting for experiment $i to end...\r"
 	./wait_for_exp_state.sh $exp_id "Terminated" || return 0
 	printf "%*c\r" 50
-}
-
-m3_setup() {
-	true
-}
-
-a8_setup() {
-	log_file=$dir_$faillog_pfx$exp_id
-	failed_ssh=/tmp/failed.ssh.$exp_id
-	printf "+ waiting for ssh access...       \r"
-	./wait_for_ssh_access.sh $exp_id > $failed_ssh || (
-		echo "! failed ssh to ok nodes: $(cat $failed_ssh | wc -l)"
-		cat $failed_ssh | sed 's/$/: ssh access failed/' >> $log_file
-	)
-	printf "+ performing a8 open nodes init...\r"
-	./setup_a8_nodes.sh $exp_id $failed_ssh >> $log_file
-	\rm -f $failed_ssh
 }
 
 check_create_logs_dir() {
@@ -81,23 +39,14 @@ check_create_logs_dir() {
 	fi
 }
 
-get_valid_nodes() {
-	site=$site ./get_valid_nodes.sh $1
-}
-
 get_json() {
 	grep '"'$1'":' | awk '{print $2}'
 }
 
-setup() {
+init() {
 	dir_="$(pwd)/"
 	cd "$(dirname "$0")"
 	check_create_logs_dir
-}
-
-run_all() {
-	setup
-	main $1
 }
 
 case $1 in
@@ -105,8 +54,9 @@ case $1 in
 		echo "usage: $(basename "$0") m3|a8"
 		;;
 	m3|a8)
-		node_type=$1
-		run_all_$1
+		source "exp_$1".sh
+		init
+		main
 		;;
 	*)
 		echo "unsupported option: $1" && exit 1
