@@ -146,7 +146,7 @@ class NodeConnection(asyncore.dispatcher):  # pylint:disable=I0011,R0904
             if line[-1] == '\n':
                 # Handle Unicode.
                 self.line_handler(
-                    self.node_id, line[:-1].decode('utf-8', errors='replace'))
+                    self.node_id, line[:-1].decode('utf-8', 'replace'))
             else:
                 self.read_buff = line  # last incomplete line
 
