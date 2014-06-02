@@ -37,7 +37,8 @@ class AutomatedIoTLABTests(unittest.TestCase):  # pylint:disable=I0011,R0904
     exp_id = None
 
     @classmethod
-    def setUpClass(cls):
+    def setUpClass(cls):  # pylint:disable=I0011,C0103
+        """ unittest.TestCase setUpClass """
         cls.request = rest.Api()
 
         cls.exp_id = iotlabcli.helpers.check_experiments_running(
