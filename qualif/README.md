@@ -24,8 +24,8 @@ TEST
 
 3°) Test the tests :
 
-	site=$site nb_runs=1 ./run_all m3
-	site=$site nb_runs=1 ./run_all a8
+	site=$site nb_runs=1 ./run_all.sh m3
+	site=$site nb_runs=1 ./run_all.sh a8
 
 4°) Optionally, edit ``run_all.sh`` and set default value for site
 

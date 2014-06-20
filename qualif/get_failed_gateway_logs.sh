@@ -24,7 +24,7 @@ do
 	source /etc/profile;
 	cat /var/log/gateway-server/gateway-server.log \
 	| grep -e ERROR -B 2 -A 3 | head -n 6 \
-	| egrep "Flash firmware failed on (gwt|m3)"
+	| egrep -e "Flash firmware failed on (gwt|m3)" -e "Open A8 tty not visible"
 	ftdi-devices-list -t 4232 | grep -q ControlNode || echo FTDI: No Control Node
 	ftdi-devices-list -t 2232 | grep -q Description || echo FTDI: No Open Node
     ' > /tmp/$$.$node || echo $node > /tmp/$$.failed.$node &
@@ -32,7 +32,7 @@ do
 done
 wait
 nodes=$(touch /tmp/$$.failed; cat /tmp/$$.failed*; \rm /tmp/$$.failed*)
-[ $[--max_retries] = 0 ] && echo "failed to get logs for:" && echo "$nodes" && false
+[ $[--max_retries] = 0 ] && echo "failed to get logs for:" && echo "$nodes" && echo "-----------" && break
 done
 
 for node in $NODES_LIST
