@@ -32,7 +32,7 @@ do
 done
 wait
 nodes=$(touch /tmp/$$.failed; cat /tmp/$$.failed*; \rm /tmp/$$.failed*)
-[ $[--max_retries] = 0 ] && echo "failed to get logs for:" && echo "$nodes" && echo "-----------" && break
+[ $[--max_retries] = 0 ] && sed 's/$/: failed to fetch gw logs/' <<< "$nodes" && break
 done
 
 for node in $NODES_LIST
