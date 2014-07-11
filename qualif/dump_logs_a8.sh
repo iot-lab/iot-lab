@@ -1,12 +1,13 @@
 #!/bin/bash
 
-logsdir=${1:-faillogs}
+logsdir=${*:-faillogs}
 
 STEP() {
 	txt=$1
 	cmd=$2
 
-	res=`cat $logsdir/* | eval $cmd \
+	input=`sed 's: :/* :g' <<< "$logsdir "`
+	res=`cat $input | eval $cmd \
 		| sort -t '-' -k 3 -k 2 -n | uniq -c`
 	txt="$txt: "`wc -l <<< "$res"`
 	sep=${txt//?/=}
@@ -26,5 +27,5 @@ STEP "Failures details" \
 	'awk "/::/ {\$2=\$3=\$4=\$5=\$6=\"\"; print; next} {print}"'
 
 # example usage with post-processing:
-# ./dump_logs_a8.sh | grep FTDI | awk -F '[ .-]+' '{print $4}' | xargs echo
-# ./dump_logs_a8.sh | grep ssh  | awk -F '[ .-]+' '{print $5}' | xargs echo
+# ./dump_logs_a8.sh | grep FTDI | awk -F '[ .-]+' '{print $4}' | sort -nu | xargs echo
+# ./dump_logs_a8.sh | grep ssh  | awk -F '[ .-]+' '{print $5}' | sort -nu | xargs echo
