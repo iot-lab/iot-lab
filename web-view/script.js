@@ -165,7 +165,7 @@ function initUpdateState() {
 	updateUserState();
 	setInterval(updateOwnedState, 60000);
 	setInterval(updateSystemState, 60000);
-	setInterval(updateUserState, 2000);
+	setInterval(updateUserState, 100);
 }
 
 function updateOwnedState() {
