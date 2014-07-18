@@ -1,0 +1,24 @@
+/*
+ * these styles are applied to sensors
+ * based on json returned by get_user_state
+ */
+.green {
+	background-color: green;
+}
+.splash {
+	background-color: blue;
+	opacity: 0.4;
+	margin-left: -6px;
+	margin-top: -6px;
+	width: 20px;
+	height: 20px;
+	border: 1px dashed pink;
+}
+.circle {
+	margin-left: -3px;
+	margin-top: -3px;
+	width: 12px;
+	height: 12px;
+	border: 2px solid orange;
+	border-radius: 7px;
+}

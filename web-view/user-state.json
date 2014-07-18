@@ -1,0 +1,11 @@
+state = {
+	263: { style: "green", text: "green #1" },
+	264: { style: "green", text: "green #2" },
+	265: { style: "green", text: "green #3" },
+	267: { style: "circle", text: "circle!" },
+	253: { style: "splash", text: "splash" },
+	254: { style: "splash", text: "splash" },
+	257: { style: "splash", text: "splash" },
+	12:  { style: "splash", text: "splash" },
+	367: { style: "splash", text: "splash" },
+}

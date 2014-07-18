@@ -1,0 +1,102 @@
+.sensor {
+	position: absolute;
+	border: 1px solid black;
+	border-radius: .2em;
+	width: .5em;
+	height: .5em;
+}
+.tooltip {
+	position: absolute;
+	background-color: pink;
+	border: 1px solid orange;
+	border-radius: .2em;
+}
+
+/* buttons and menu items */
+.button {
+	position: absolute;
+	background-color: #EEE;
+	border: 1px solid black;
+	border-radius: .2em;
+	font-family: monospace;
+	cursor: pointer;
+	text-align: center;
+	padding: 1px;
+	padding-bottom: 2px;
+}
+.rotated-text {
+	-webkit-transform: rotate(90deg);
+	-moz-transform:rotate(90deg);
+}
+.list-item {
+	border: 1px solid transparent;
+	margin: 2px;
+}
+.list-item:hover {
+	border-radius: .4em;
+	border: 1px solid black;
+	background-color: #FDF;
+}
+.button input {
+	text-align: center;
+	font-family: monospace;
+}
+.blinder {
+	position: absolute;
+	margin: 0; padding: 0;
+	top: 0;	left: 0;
+	width: 100%; height: 100%;
+	background-color: transparent;
+}
+
+/* optional. auto-hide toolbar */
+/*
+.toolbox .button {
+	visibility: hidden;
+}
+.toolbox:hover .button {
+	visibility: visible;
+}
+.toolbox {
+	position: absolute;
+	top: 0; left: 0; right: 0;
+	margin: 0; padding: 0;
+	height: 30px;
+}
+*/
+
+/* nodes states (system states) */
+.owned {
+	background-color: #DEC;
+}
+.dead {
+	background-color: #DDE;
+	border-color: #CCD;
+}
+.reserved {
+	background-color: #AAA;
+}
+
+/* region-based mouse-selection styles */
+.selector {
+	position: absolute;
+	border: 1px dashed #89B;
+	background: #BCE;
+	background-color: #BEC;
+	border-color: #8B9;
+	opacity: .4;
+	}
+.selectable {
+	}
+.active {  
+	background-color: #CEB;
+	border-color: #9B8;
+	}
+.selection-counter {
+	position: absolute;
+	top: 10; left: 140;
+	padding: 2px; padding-bottom: 1px;
+	border: 1px dashed #9B8;
+	background-color: #BEC;
+	font-family: monospace;
+}
