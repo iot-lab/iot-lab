@@ -210,8 +210,10 @@ function setSensorsUserState(state) {
 			e.update(state[i]);
 			delete(state[i]);
 		}
-		else
+		else {
 			e.parentNode.removeChild(e);
+			delete(curr[i]);
+		}
 	}
 	for (var i in state) {
 		var e = createSensorGui(i);
