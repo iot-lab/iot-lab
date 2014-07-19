@@ -169,14 +169,15 @@ function initUpdateState() {
 }
 
 function updateOwnedState() {
-	callServer("get_owned_nodes?site=grenoble",
+	callServer("get_owned_nodes?site=" + sensors.site,
 	function(state) {
 		setSensorsState(state);
 	});
 }
 
 function updateSystemState() {
-	callServer("get_system_state?site=grenoble&archi=m3",
+	callServer("get_system_state?site=" + sensors.site
+			+ "&archi=" + sensors.archi,
 	function(sys) {
 		state = {};
 		parseNodesList(sys.Busy, "reserved", state);
@@ -321,8 +322,8 @@ function pollOwnedState(nbPolls) {
 
 function callEntryPoint(entry, spec, params, callback) {
 	var p = {
-		site: "grenoble",
-		archi: "m3",
+		site: sensors.site,
+		archi: sensors.archi,
 		nodes: spec.replace(/ /g, "+")
 	};
 	for (var x in params) //p[x] = encodeURIComponent(params[x]);

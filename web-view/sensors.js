@@ -1,5 +1,8 @@
 var sensors = {
 
+	site: "grenoble",
+	archi: "m3",
+
 	get: function(i) {
 		var xy = this.xy[i];
 		return {
