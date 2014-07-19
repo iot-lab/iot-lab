@@ -186,11 +186,11 @@ function updateSystemState() {
 		for (var i in sensors.gui) {
 			if (!state[i])
 				state[i] = "dead";
+			if (state[i] == "reserved" &&
+				sensors.gui[i].className.match(/owned/))
+				state[i] = "owned"
 			if (state[i].match(/reserved|dead/))
 				sensors.gui[i].setSelected(false);
-			// owned status set by prior call to getOwnedState()...
-			if (sensors.gui[i].className.match(/owned/))
-				delete(state[i]);
 		}
 		setSensorsState(state);
 	});
