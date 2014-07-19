@@ -13,7 +13,7 @@ class Reqs:
 
   def get_owned_nodes(self, site):
 	res, err = call("experiment-cli get -l --state Running")
-	if err: return ["", err]
+	if err: return err
 
 	state = {}
 	for experiment in res["items"]:
@@ -23,14 +23,14 @@ class Reqs:
 		for n in nodes:
 			node_id = n.split('-')[1].split('.')[0]
 			state[node_id] = "owned"
-	return ["text/plain", JSONEncoder().encode(state)]
+	return state
 
   def get_system_state(self, site, archi):
 	res, err = call("experiment-cli info -li --site " + site)
-	if err: return ["", err]
+	if err: return err
 
 	state = res["items"][0][site][archi]
-	return ["text/plain", JSONEncoder().encode(state)]
+	return state
 
   def save_node_set(self, name, nodes):
 	name = unquote(name)
@@ -40,32 +40,23 @@ class Reqs:
 	data[name] = nodes
 	open(file_name, "w").write(
 		JSONEncoder(indent=4,sort_keys=1).encode(data))
-	return ["text/plain", len(data)]
-
-  def get_firmwares_list(self):
-	res = [ "firmware 1", "firmware 2" ]
-	return ["text/plain", JSONEncoder().encode(res)]
+	return {"name": name}
 
   def start_nodes(self, nodes, site, archi):
-	res = {}
-	return ["text/plain", JSONEncoder().encode(res)]
+	return {}
 
   def stop_nodes(self, nodes, site, archi):
-	res = {}
-	return ["text/plain", JSONEncoder().encode(res)]
+	return {}
 
   def reset_nodes(self, nodes, site, archi):
-	res = {}
-	return ["text/plain", JSONEncoder().encode(res)]
+	return {}
 
   def update_nodes(self, firmware, nodes, site, archi):
 	firmware = unquote(firmware)
-	res = {}
-	return ["text/plain", JSONEncoder().encode(res)]
+	return {}
 
   def grab_nodes(self, nodes, site, archi, duration):
-	res = {}
-	return ["text/plain", JSONEncoder().encode(res)]
+	return {}
 
 
 class Handler(Reqs, SimpleHTTPRequestHandler):
@@ -74,13 +65,13 @@ class Handler(Reqs, SimpleHTTPRequestHandler):
 	path, args = self.parse_req()
 	if not hasattr(self, path):
 		return SimpleHTTPRequestHandler.do_GET(self)
-	typ, res = eval("self." + path, {"self":self}, {})(**args)
-	if not typ:
+	res = eval("self." + path, {"self":self}, {})(**args)
+	if type(res) == str:
 		return self.error(res)
 	self.send_response(200)
-	self.send_header("Content-type", typ)
+	self.send_header("Content-type", "text/plain")
 	self.end_headers()
-	self.wfile.write(res)
+	self.wfile.write(JSONEncoder().encode(res))
 
   def do_POST(self):
 	#print self.rfile.read()
