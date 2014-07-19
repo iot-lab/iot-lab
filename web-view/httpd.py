@@ -56,7 +56,10 @@ class Reqs:
 	return {}
 
   def grab_nodes(self, nodes, site, archi, duration):
-	return {}
+	res, err = call("experiment-cli submit -d " + duration
+			+ " -l" + ",".join([site, archi, nodes]))
+	if err: return err
+	return res
 
 
 class Handler(Reqs, SimpleHTTPRequestHandler):
