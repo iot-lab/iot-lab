@@ -12,9 +12,7 @@ from urllib import unquote
 class Reqs:
 
   def get_owned_nodes(self, site):
-	res, err = call("experiment-cli get -l --state Running")
-	if err: return err
-
+	res = call("experiment-cli get -l --state Running")
 	state = {}
 	for experiment in res["items"]:
 		nodes = experiment["resources"]
@@ -26,9 +24,7 @@ class Reqs:
 	return state
 
   def get_system_state(self, site, archi):
-	res, err = call("experiment-cli info -li --site " + site)
-	if err: return err
-
+	res = call("experiment-cli info -li --site " + site)
 	state = res["items"][0][site][archi]
 	return state
 
@@ -56,9 +52,8 @@ class Reqs:
 	return {}
 
   def grab_nodes(self, nodes, site, archi, duration):
-	res, err = call("experiment-cli submit -d " + duration
+	res = call("experiment-cli submit -d " + duration
 			+ " -l" + ",".join([site, archi, nodes]))
-	if err: return err
 	return res
 
 
@@ -68,9 +63,8 @@ class Handler(Reqs, SimpleHTTPRequestHandler):
 	path, args = self.parse_req()
 	if not hasattr(self, path):
 		return SimpleHTTPRequestHandler.do_GET(self)
+
 	res = eval("self." + path, {"self":self}, {})(**args)
-	if type(res) == str:
-		return self.error(res)
 	self.send_response(200)
 	self.send_header("Content-type", "text/plain")
 	self.end_headers()
@@ -104,11 +98,11 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
  
 def call(cmd):
 	try:
-		return JSONDecoder().decode(check_output(cmd.split(" "))), 0
+		return JSONDecoder().decode(check_output(cmd.split(" ")))
 	except ValueError:
-		return 0, "invalid json returned by experiment-cli"
+		raise Exception("invalid json returned by experiment-cli")
 	except Exception:
-		return 0, "error calling experiment-cli"
+		raise Exception("error calling experiment-cli")
 	
 def main():
 	server = ThreadedHTTPServer(('localhost', 8000), Handler)
