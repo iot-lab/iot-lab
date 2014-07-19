@@ -33,8 +33,14 @@ class Reqs:
 	return ["text/plain", JSONEncoder().encode(state)]
 
   def save_node_set(self, name, nodes):
-	set_name = unquote(name)
-	return ["text/plain", set_name]
+	name = unquote(name)
+	nodes = unquote(nodes)
+	file_name = "nodes-sets.json"
+	data = JSONDecoder().decode(file(file_name).read())
+	data[name] = nodes
+	open(file_name, "w").write(
+		JSONEncoder(indent=4,sort_keys=1).encode(data))
+	return ["text/plain", len(data)]
 
   def get_firmwares_list(self):
 	res = [ "firmware 1", "firmware 2" ]

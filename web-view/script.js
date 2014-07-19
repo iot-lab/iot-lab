@@ -341,7 +341,7 @@ function saveSensorsSet(spec) {
 		title: "Nodes Set Name:",
 		onval: function(value) {
 			var set = getSensorsSelection().join(" ");
-			callServer("save_nodes_set"
+			callServer("save_node_set"
 				+ "?name=" + value
 				+ "&nodes=" + set,
 				function() {});
