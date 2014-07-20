@@ -326,8 +326,8 @@ function callEntryPoint(entry, spec, params, callback) {
 		archi: sensors.archi,
 		nodes: spec.replace(/ /g, "+")
 	};
-	for (var x in params) //p[x] = encodeURIComponent(params[x]);
-		p[x] = params[x];
+	for (var x in params)
+		p[x] = encodeURIComponent(params[x]);
 	params = "";
 	for (var x in p)
 		params += x + "=" + p[x] + "&";
@@ -342,7 +342,7 @@ function saveSensorsSet(spec) {
 		onval: function(value) {
 			var set = getSensorsSelection().join(" ");
 			callServer("save_node_set"
-				+ "?name=" + value
+				+ "?name=" + encodeURIComponent(value)
 				+ "&nodes=" + set,
 				function() {});
 		}
