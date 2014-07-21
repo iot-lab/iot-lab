@@ -75,7 +75,7 @@ function createTooltip(x, y, text) {
 	return d;
 }
 
-function animateBoldBorder(elt) {
+function animateBoldBorder(elt, timeout) {
 	var s = elt.style;
 	s.borderWidth = "2px";
 	s.borderColor = "black";
@@ -84,7 +84,7 @@ function animateBoldBorder(elt) {
 		s.borderWidth = "";
 		s.borderColor = "";
 		s.marginTop = s.marginLeft = "";
-	}, 2000);
+	}, timeout || 2000);
 }
 
 function createButtons() {
@@ -154,7 +154,6 @@ function initUpdateState() {
 	updateOwnedState();
 	updateSystemState();
 	updateUserState();
-	setInterval(updateOwnedState, 60000);
 	setInterval(updateSystemState, 60000);
 	setInterval(updateUserState, 100);
 }
@@ -164,7 +163,7 @@ function updateOwnedState() {
 			+ "&archi=" + sensors.archi,
 	function(state) {
 		for (var i in state) {
-			sensors.gui[i].expId = state[i];
+			sensors.gui[i].owned = state[i];
 			state[i] = "owned";
 		}
 		setSensorsState(state);
@@ -182,13 +181,12 @@ function updateSystemState() {
 		for (var i in sensors.gui) {
 			if (!state[i])
 				state[i] = "dead";
-			if (state[i] == "reserved" &&
-				sensors.gui[i].className.match(/owned/))
+			if (state[i] == "reserved" && sensors.gui[i].owned)
 				state[i] = "owned"
 			if (state[i].match(/reserved|dead/))
 				sensors.gui[i].setSelected(false);
 			if (state[i] != "owned")
-				sensors.gui[i].expId = undefined;
+				sensors.gui[i].owned = false;
 		}
 		setSensorsState(state);
 	});
@@ -305,34 +303,75 @@ function updateSensors() {
 }
 
 function grabSensors() {
-	deselectOwned();
-	if (!getSensorsSelection().length)
+	var sel = deselectOwned();
+	if (!sel.length)
 		return;
 	modalInput({
 		x: 1000, y: 100, w: 3,
 		title: "Duration:",
 		onval: function(duration) {
+			startOwningBlinker(sel);
 			callEntryPoint("grab_nodes",
-				{ duration: duration });
-			pollOwnedState(10);
+				{ duration: duration },
+			function(res) {
+				var expId = res["id"];
+				sel.forEach(function (id) {
+					sensors.gui[id].owned = expId;
+				});
+				initOwningPoller(expId);
+			});
 		}
 	});
 }
 
-function pollOwnedState(nbPolls) {
+function startOwningBlinker(sel) {
+	sel.forEach(function (id) {
+		var sensor = sensors.gui[id];
+		sensor.owned = true;
+		sensor.owningBlinker = setInterval(function() {
+			animateBoldBorder(sensor, 250);
+		}, 500);
+	});
+}
+
+function initOwningPoller(expId) {
 	var timer = setInterval(function() {
-		updateOwnedState();
-		if (! --nbPolls)
-			clearInterval(timer);
-	}, 1000);
+		callServer("get_exp_status?exp_id=" + expId,
+		function (state) {
+			if (updateDeploymentStatus(state))
+				clearInterval(timer);
+		});
+	}, 300);
+}
+
+function updateDeploymentStatus(expInfo) {
+	var dr = expInfo["deploymentresults"];
+	if (!dr) return false;
+
+	var state = {};
+	for (var st in dr) {
+		dr[st].forEach(function(nodeName) {
+			var id = nodeName
+				.replace(/\..*/, '')
+				.replace(/.*-/, '');
+			var sensor = sensors.gui[id];
+			state[id] = st ? "owned" : "failed";
+			if (!st) sensor.owned = false;
+			clearInterval(sensor.owningBlinker);
+		});
+	}
+	setSensorsState(state);
+	return dr;
 }
 
 function deselectOwned() {
 	deselectSensors(function(s) { return s.className.match("owned") });
+	return getSensorsSelection();
 }
 
 function deselectNotOwned() {
 	deselectSensors(function(s) { return ! s.className.match("owned") });
+	return getSensorsSelection();
 }
 
 function deselectSensors(func) {
@@ -343,7 +382,7 @@ function deselectSensors(func) {
 	}
 }
 
-function callEntryPoint(entry, params) {
+function callEntryPoint(entry, params, callback) {
 	params = params || {};
 	params.site = sensors.site;
 	params.archi = sensors.archi;
@@ -353,7 +392,7 @@ function callEntryPoint(entry, params) {
 		callServer(entry + "?" + params
 			+ "&nodes=" + it[exp].join("+")
 			+ "&exp_id=" + exp
-		, function() {});
+		, callback || function() {});
 	}
 }
 
@@ -369,7 +408,7 @@ function getSelectionExpIterator() {
 	var sel = getSensorsSelection();
 	for (var exp, s, i=0; i < sel.length; i++) {
 		s = sel[i];
-		exp = sensors.gui[s].expId;
+		exp = sensors.gui[s].owned;
 		if (!it[exp])
 			it[exp] = [s];
 		else

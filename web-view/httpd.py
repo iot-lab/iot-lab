@@ -62,6 +62,8 @@ class Reqs:
 	return call("experiment-cli submit -d " + duration
 			+ " -l " + ",".join([site, archi, nodes]))
 
+  def get_exp_status(self, exp_id):
+	return call("experiment-cli get -p -i " + exp_id)
 
 class Handler(Reqs, SimpleHTTPRequestHandler):
 
