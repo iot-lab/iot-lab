@@ -20,7 +20,7 @@ nodes=$NODES_LIST
 while [ "$nodes" ]; do
 for node in $nodes
 do
-    ssh $node 2>/dev/null '
+    ssh $node 2>/dev/null -o ConnectTimeout=5 '
 	source /etc/profile;
 	cat /var/log/gateway-server/gateway-server.log \
 	| grep -e ERROR -B 2 -A 3 | head -n 6 \
