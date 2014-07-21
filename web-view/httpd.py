@@ -11,7 +11,7 @@ from urllib import unquote
 
 class Reqs:
 
-  def get_owned_nodes(self, site):
+  def get_owned_nodes(self, site, archi):
 	res = call("experiment-cli get -l --state Running")
 	state = {}
 	for experiment in res["items"]:
@@ -20,7 +20,10 @@ class Reqs:
 			continue
 		for n in nodes:
 			node_id = n.split('-')[1].split('.')[0]
-			state[node_id] = "owned"
+			node_archi = n.split('-')[0]
+			if not node_archi == archi:
+				continue
+			state[node_id] = experiment["id"]
 	return state
 
   def get_system_state(self, site, archi):
@@ -38,23 +41,26 @@ class Reqs:
 		JSONEncoder(indent=4,sort_keys=1).encode(data))
 	return {"name": name}
 
-  def start_nodes(self, nodes, site, archi):
-	return {}
+  def start_nodes(self, nodes, site, archi, exp_id):
+	return call("node-cli --start -i " + exp_id
+			+ " -l " + ",".join([site, archi, nodes]))
 
-  def stop_nodes(self, nodes, site, archi):
-	return {}
+  def stop_nodes(self, nodes, site, archi, exp_id):
+	return call("node-cli --stop -i " + exp_id
+			+ " -l " + ",".join([site, archi, nodes]))
 
-  def reset_nodes(self, nodes, site, archi):
-	return {}
+  def reset_nodes(self, nodes, site, archi, exp_id):
+	return call("node-cli --reset -i " + exp_id
+			+ " -l " + ",".join([site, archi, nodes]))
 
-  def update_nodes(self, firmware, nodes, site, archi):
+  def update_nodes(self, firmware, nodes, site, archi, exp_id):
 	firmware = unquote(firmware)
-	return {}
+	return call("node-cli --update " + firmware + " -i " + exp_id
+			+ " -l " + ",".join([site, archi, nodes]))
 
-  def grab_nodes(self, nodes, site, archi, duration):
-	res = call("experiment-cli submit -d " + duration
-			+ " -l" + ",".join([site, archi, nodes]))
-	return res
+  def grab_nodes(self, nodes, site, archi, duration, exp_id="unused"):
+	return call("experiment-cli submit -d " + duration
+			+ " -l " + ",".join([site, archi, nodes]))
 
 
 class Handler(Reqs, SimpleHTTPRequestHandler):

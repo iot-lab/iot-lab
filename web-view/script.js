@@ -96,15 +96,11 @@ function createButtons() {
 		v11: 22, v12: 44, v21: 382, v22: 404 };
 	var actions = {
 		start: 800, stop: 850, reset: 900, update: 950, grab: 1010,
-		save: 600 };
-	var actions_nospec = {
-		load: 560, clear: 640, owned: 687 };
+		load: 560, save: 600, clear: 640, owned: 687 };
 	for (var key in lines)
 		createLineButton(lines[key], 10, key);
 	for (var key in actions)
 		createActionButton(actions[key], 10, key);
-	for (var key in actions_nospec)
-		createActionButton(actions_nospec[key], 10, key, "nospec");
 }
 
 function createLineButton(x, y, lineName) {
@@ -128,15 +124,10 @@ var action_buttons = {
 	owned: selectOwnedSensors,
 };
 
-function createActionButton(x, y, actionName, okNoSpec) {
+function createActionButton(x, y, actionName) {
 	var b = createButton(x, y, actionName);
 	b.action = action_buttons[actionName];
-	b.onclick = function() {
-		var spec = getSensorsSelection().join(" ");
-		if (!spec) return;
-		this.action(spec);
-	}
-	if (okNoSpec) b.onclick = b.action;
+	b.onclick = b.action;
 	document.toolbox.appendChild(b);
 }
 
@@ -169,8 +160,13 @@ function initUpdateState() {
 }
 
 function updateOwnedState() {
-	callServer("get_owned_nodes?site=" + sensors.site,
+	callServer("get_owned_nodes?site=" + sensors.site
+			+ "&archi=" + sensors.archi,
 	function(state) {
+		for (var i in state) {
+			sensors.gui[i].expId = state[i];
+			state[i] = "owned";
+		}
 		setSensorsState(state);
 	});
 }
@@ -191,6 +187,8 @@ function updateSystemState() {
 				state[i] = "owned"
 			if (state[i].match(/reserved|dead/))
 				sensors.gui[i].setSelected(false);
+			if (state[i] != "owned")
+				sensors.gui[i].expId = undefined;
 		}
 		setSensorsState(state);
 	});
@@ -270,23 +268,29 @@ function mockCallServer(path, callback) {
 	callback(state);
 }
 
-function startSensors(spec) {
-	callEntryPoint("start_nodes", spec);
+function startSensors() {
+	deselectNotOwned();
+	callEntryPoint("start_nodes");
 }
 
-function stopSensors(spec) {
-	callEntryPoint("stop_nodes", spec);
+function stopSensors() {
+	deselectNotOwned();
+	callEntryPoint("stop_nodes");
 }
 
-function resetSensors(spec) {
-	callEntryPoint("reset_nodes", spec);
+function resetSensors() {
+	deselectNotOwned();
+	callEntryPoint("reset_nodes");
 }
 
 function nocache() {
 	return "?"+new Date().getMilliseconds();
 }
 
-function updateSensors(spec) {
+function updateSensors() {
+	deselectNotOwned();
+	if (!getSensorsSelection().length)
+		return;
 	callServer("firmwares.json" + nocache(), function (data) {
 	modalListSelection({
 		x: 950, y: 100,
@@ -294,19 +298,22 @@ function updateSensors(spec) {
 		items: Object.keys(data),
 		onsel: function(item) {
 			callEntryPoint("update_nodes",
-				spec, { firmware: data[item] });
+				{ firmware: data[item] });
 		}
 	});
 	});
 }
 
-function grabSensors(spec) {
+function grabSensors() {
+	deselectOwned();
+	if (!getSensorsSelection().length)
+		return;
 	modalInput({
 		x: 1000, y: 100, w: 3,
 		title: "Duration:",
 		onval: function(duration) {
 			callEntryPoint("grab_nodes",
-				spec, { duration: duration });
+				{ duration: duration });
 			pollOwnedState(10);
 		}
 	});
@@ -320,19 +327,55 @@ function pollOwnedState(nbPolls) {
 	}, 1000);
 }
 
-function callEntryPoint(entry, spec, params, callback) {
-	var p = {
-		site: sensors.site,
-		archi: sensors.archi,
-		nodes: spec.replace(/ /g, "+")
-	};
+function deselectOwned() {
+	deselectSensors(function(s) { return s.className.match("owned") });
+}
+
+function deselectNotOwned() {
+	deselectSensors(function(s) { return ! s.className.match("owned") });
+}
+
+function deselectSensors(func) {
+	for (var i in sensors.gui) {
+		var s = sensors.gui[i];
+		if (s.selected && func(s))
+			s.onclick();
+	}
+}
+
+function callEntryPoint(entry, params) {
+	params = params || {};
+	params.site = sensors.site;
+	params.archi = sensors.archi;
+	params = makeParamsString(params);
+	var it = getSelectionExpIterator();
+	for (var exp in it) {
+		callServer(entry + "?" + params
+			+ "&nodes=" + it[exp].join("+")
+			+ "&exp_id=" + exp
+		, function() {});
+	}
+}
+
+function makeParamsString(params) {
+	var list = [];
 	for (var x in params)
-		p[x] = encodeURIComponent(params[x]);
-	params = "";
-	for (var x in p)
-		params += x + "=" + p[x] + "&";
-	params = params.replace(/\&$/, '');
-	callServer(entry + "?" + params, callback || function() {});
+		list.push(x + "=" + encodeURIComponent(params[x]))
+	return list.join("&");
+}
+
+function getSelectionExpIterator() {
+	var it = {};
+	var sel = getSensorsSelection();
+	for (var exp, s, i=0; i < sel.length; i++) {
+		s = sel[i];
+		exp = sensors.gui[s].expId;
+		if (!it[exp])
+			it[exp] = [s];
+		else
+			it[exp].push(s);
+	}
+	return it;
 }
 
 function saveSensorsSet(spec) {
