@@ -68,9 +68,13 @@ class Handler(Reqs, SimpleHTTPRequestHandler):
   def do_GET(self):
 	path, args = self.parse_req()
 	if not hasattr(self, path):
-		return SimpleHTTPRequestHandler.do_GET(self)
-
-	res = eval("self." + path, {"self":self}, {})(**args)
+		SimpleHTTPRequestHandler.do_GET(self)
+		return
+	try:
+		res = eval("self." + path, {"self":self}, {})(**args)
+	except Exception, e:
+		self.error(e.message)
+		return
 	self.send_response(200)
 	self.send_header("Content-type", "text/plain")
 	self.end_headers()
