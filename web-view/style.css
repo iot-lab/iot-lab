@@ -77,6 +77,10 @@
 .reserved {
 	background-color: #AAA;
 }
+.failed {
+	background-color: #A2A;
+	border-color: orange;
+}
 
 /* region-based mouse-selection styles */
 .selector {
