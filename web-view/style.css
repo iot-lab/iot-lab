@@ -1,6 +1,6 @@
 .sensor {
 	position: absolute;
-	border: 1px solid black;
+	border: 1px solid #AAA;
 	border-radius: .2em;
 	width: .5em;
 	height: .5em;
@@ -68,6 +68,7 @@
 /* nodes states (system states) */
 .owned {
 	background-color: #DEC;
+	border-color: black;
 }
 .dead {
 	background-color: #DDE;
