@@ -57,6 +57,8 @@ function getTooltipText(elt) {
 	var state = elt.className.match(/dead|reserved/);
 	if (state)
 		text += "<br>" + state[0];
+	if (elt.owned)
+		text += "<br>exp: " + elt.owned;
 	return text;
 }
 
@@ -267,26 +269,68 @@ function mockCallServer(path, callback) {
 }
 
 function startSensors() {
-	deselectNotOwned();
-	callEntryPoint("start_nodes");
+	var sel = deselectNotOwned();
+	startBlinker(sel);
+	callEntryPoint("start_nodes", {}, stopBlinkerShowResult);
 }
 
 function stopSensors() {
-	deselectNotOwned();
-	callEntryPoint("stop_nodes");
+	var sel = deselectNotOwned();
+	startBlinker(sel);
+	callEntryPoint("stop_nodes", {}, stopBlinkerShowResult);
 }
 
 function resetSensors() {
-	deselectNotOwned();
-	callEntryPoint("reset_nodes");
+	var sel = deselectNotOwned();
+	startBlinker(sel);
+	callEntryPoint("reset_nodes", {}, stopBlinkerShowResult);
 }
 
 function nocache() {
 	return "?"+new Date().getMilliseconds();
 }
 
+function startBlinker(sel) {
+	sel.forEach(function (id) {
+		var sensor = sensors.gui[id];
+		sensor.blinker = setInterval(function() {
+			animateBoldBorder(sensor, 250);
+		}, 500);
+	});
+}
+
+function stopBlinkerShowResult(result) {
+	var res = resultAsDict(result);
+	for (var id in res) {
+		var sensor = sensors.gui[id];
+		if (!res[id]) {
+			setSensorsState({id: "failed"});
+			setInterval(function() {
+				clearInterval(sensor.blinker);
+			}, 1500);
+		}
+		else {
+			clearInterval(sensor.blinker);
+		}
+	}
+}
+
+function idFromName(nodeName) {
+	return nodeName.replace(/\..*/, '').replace(/.*-/, '');
+}
+
+function resultAsDict(result) {
+	var res = {};
+	for (var st in result) {
+		result[st].forEach(function(nodeName) {
+			res[idFromName(nodeName)] = parseInt(st);
+		});
+	}
+	return res;
+}
+
 function updateSensors() {
-	deselectNotOwned();
+	var sel = deselectNotOwned();
 	if (!getSensorsSelection().length)
 		return;
 	callServer("firmwares.json" + nocache(), function (data) {
@@ -295,8 +339,10 @@ function updateSensors() {
 		title: "Firmwares",
 		items: Object.keys(data),
 		onsel: function(item) {
+			startBlinker(sel);
 			callEntryPoint("update_nodes",
-				{ firmware: data[item] });
+				{ firmware: data[item] },
+				stopBlinkerShowResult);
 		}
 	});
 	});
@@ -310,7 +356,10 @@ function grabSensors() {
 		x: 1000, y: 100, w: 3,
 		title: "Duration:",
 		onval: function(duration) {
-			startOwningBlinker(sel);
+			startBlinker(sel);
+			sel.forEach(function (id) {
+				sensors.gui[id].owned = "in progress";
+			});
 			callEntryPoint("grab_nodes",
 				{ duration: duration },
 			function(res) {
@@ -321,16 +370,6 @@ function grabSensors() {
 				initOwningPoller(expId);
 			});
 		}
-	});
-}
-
-function startOwningBlinker(sel) {
-	sel.forEach(function (id) {
-		var sensor = sensors.gui[id];
-		sensor.owned = true;
-		sensor.owningBlinker = setInterval(function() {
-			animateBoldBorder(sensor, 250);
-		}, 500);
 	});
 }
 
@@ -351,13 +390,11 @@ function updateDeploymentStatus(expInfo) {
 	var state = {};
 	for (var st in dr) {
 		dr[st].forEach(function(nodeName) {
-			var id = nodeName
-				.replace(/\..*/, '')
-				.replace(/.*-/, '');
+			var id = idFromName(nodeName)
 			var sensor = sensors.gui[id];
 			state[id] = st ? "owned" : "failed";
 			if (!st) sensor.owned = false;
-			clearInterval(sensor.owningBlinker);
+			clearInterval(sensor.blinker);
 		});
 	}
 	setSensorsState(state);
