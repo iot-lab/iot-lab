@@ -290,29 +290,31 @@ function nocache() {
 	return "?"+new Date().getMilliseconds();
 }
 
-function startBlinker(sel) {
+function startBlinker(sel, delay) {
+	delay = delay || 250;
 	sel.forEach(function (id) {
 		var sensor = sensors.gui[id];
 		sensor.blinker = setInterval(function() {
-			animateBoldBorder(sensor, 250);
-		}, 500);
+			animateBoldBorder(sensor, delay);
+		}, delay*2);
 	});
 }
 
 function stopBlinkerShowResult(result) {
 	var res = resultAsDict(result);
+	var failed = {};
 	for (var id in res) {
 		var sensor = sensors.gui[id];
-		if (!res[id]) {
-			setSensorsState({id: "failed"});
-			setInterval(function() {
-				clearInterval(sensor.blinker);
-			}, 1500);
-		}
-		else {
-			clearInterval(sensor.blinker);
-		}
+		clearInterval(sensor.blinker);
+		if (res[id])
+			failed[id] = "failed";
 	}
+	setSensorsState(failed);
+	startBlinker(Object.keys(failed), 100);
+	setTimeout(function() {
+		for (id in failed)
+			clearInterval(sensors.gui[id].blinker);
+	}, 2000);
 }
 
 function idFromName(nodeName) {
