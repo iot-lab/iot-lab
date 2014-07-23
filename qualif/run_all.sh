@@ -51,9 +51,10 @@ init() {
 
 case $1 in
 	""|-h|--help)
-		echo "usage: $(basename "$0") m3|a8"
+		options=`egrep '# help$' $0 | sed 's/).*//'`
+		echo "usage: $(basename "$0") $options"
 		;;
-	m3|a8)
+	m3|a8) # help
 		source "exp_$1".sh
 		init
 		main
