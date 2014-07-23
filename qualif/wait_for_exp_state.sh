@@ -6,7 +6,7 @@ target_state=$2
 usage() {
 	echo "usage: `basename "$0"` <exp_id> <target_state> (or -h)"
 	echo
-	echo "state: Running|Terminated|Launching|Waiting|Error"
+	echo "state: `egrep '# help$' $0 | sed 's/).*//'`"
 }
 
 main() {
@@ -53,7 +53,7 @@ init() {
 	"")
 		usage && return 1
 		;;
-	Running|Terminated|Launching|Waiting|Error)
+	Running|Terminated|Launching|Waiting|Error) # help
 		;;
 	*)
 		error "invalid target_state: $target_state" && return 1
