@@ -25,6 +25,14 @@ node_type() {
 	cut -d : -f 1 <<< "${!arch}"
 }
 
+is_number() {
+	[[ $1 =~ ^[0-9]+$ ]] || false
+}
+
+fatal() {
+	echo "$@" >&2 ; exit 1
+}
+
 usage() {
 	echo "usage: `basename $0` <node id> [<node is> ...]"
 	echo
@@ -33,13 +41,10 @@ usage() {
 	echo "       site=$site, arch=$arch"
 }
 
-case $1 in
-	"" | -h | --help)
-		usage && exit 0
-		;;
-esac
+case $1 in "" | -h | --help) usage && exit 0 ;; esac
 
-[ ! `node_type` ] && echo "invalid arch: $arch" && exit 1
+[ ! `node_type` ] && fatal "invalid arch: $arch"
+for id in $*; do is_number $id || fatal "invalid node id: $id"; done
 
 ssh $site".iot-lab.info" "
 	./serial_aggregator.py 2>&1 <<< '`targets_json "$@"`' &
