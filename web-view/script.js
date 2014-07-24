@@ -176,19 +176,22 @@ function updateSystemState() {
 	callServer("get_system_state?site=" + sensors.site
 			+ "&archi=" + sensors.archi,
 	function(sys) {
-		state = {};
+		var state = {};
 		parseNodesList(sys.Busy, "reserved", state);
 		parseNodesList(sys.Alive, "available", state);
 		parseNodesList(sys.Suspected, "dead", state);
 		for (var i in sensors.gui) {
+			var sensor = sensors.gui[i];
 			if (!state[i])
 				state[i] = "dead";
-			if (state[i] == "reserved" && sensors.gui[i].owned)
+			if (state[i] == "reserved" && sensor.owned)
 				state[i] = "owned"
 			if (state[i].match(/reserved|dead/))
-				sensors.gui[i].setSelected(false);
-			if (state[i] != "owned")
-				sensors.gui[i].owned = false;
+				sensor.setSelected(false);
+			if (state[i] == "available" && sensor.owning)
+				delete(state [i]);
+			if (state[i] == "available" && sensor.owned)
+				sensor.owned = false;
 		}
 		setSensorsState(state);
 	});
@@ -360,6 +363,7 @@ function grabSensors() {
 		onval: function(duration) {
 			startBlinker(sel);
 			sel.forEach(function (id) {
+				sensors.gui[id].owning = true;
 				sensors.gui[id].owned = "in progress";
 			});
 			callEntryPoint("grab_nodes",
@@ -396,6 +400,7 @@ function updateDeploymentStatus(expInfo) {
 			var sensor = sensors.gui[id];
 			state[id] = st ? "owned" : "failed";
 			if (!st) sensor.owned = false;
+			sensor.owning = false;
 			clearInterval(sensor.blinker);
 		});
 	}
