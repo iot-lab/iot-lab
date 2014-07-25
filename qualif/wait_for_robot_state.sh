@@ -2,9 +2,10 @@
 
 exp_id=$1
 target_state=$2
+previous_state=$3
 
 usage() {
-	echo "usage: `basename "$0"` <exp_id> <target_state> (or -h)"
+	echo "usage: `basename "$0"` <exp_id> <target_state> [<previous state>] (or -h)"
 	echo
 	echo "state: `egrep '# help$' $0 | sed 's/).*//'`"
 }
@@ -20,7 +21,7 @@ main() {
 		$target_state)
 			return 0
 			;;
-		'')
+		$previous_state|'')
 			;;
 		*)
 			error "unexpected state ($state vs. $target_state)"
@@ -53,6 +54,16 @@ check_utils() {
 	experiment-cli -h > /dev/null
 }
 
+check_state() {
+	case $1 in
+	DOCKED|IN_DOCK|OUT_DOCK|IN_MOTION|STOP) # help
+		;;
+	*)
+		return 1
+		;;
+	esac
+}
+
 shopt -s extglob
 init() {
 	case $exp_id in
@@ -65,16 +76,12 @@ init() {
 		error "invalid exp_id: $exp_id" && return 1
 		;;
 	esac
-	case $target_state in
-	"")
-		usage && return 1
-		;;
-	DOCKED|IN_DOCK|OUT_DOCKED|IN_MOTION|STOP) # help
-		;;
-	*)
-		error "invalid target_state: $target_state" && return 1
-		;;
-	esac
+	if ! check_state $target_state; then
+		error "invalid target_state: $target_state" && exit 1
+	fi
+	if [ "$previous_state" ] && ! check_state $previous_state; then
+		error "invalid previous_state: $previous_state" && exit 1
+	fi
 }
 
 init

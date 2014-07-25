@@ -27,8 +27,8 @@ run_test() {
 	./wait_for_exp_state.sh $exp_id "Terminated" || return 0
 	printf "+ waiting for robot to dock...\r"
 	#mock_docking &
-    ./wait_for_robot_state.sh $exp_id "IN_DOCK"
-	./wait_for_robot_state.sh $exp_id "DOCKED"
+	./wait_for_robot_state.sh $exp_id "IN_DOCK"
+	./wait_for_robot_state.sh $exp_id "DOCKED" "IN_DOCK"
 	rest_time=$((duration * 2))
 	for t in `seq $rest_time | tac`; do
 		printf "+ time left till battery recharged: %2d min\r" $t
