@@ -26,7 +26,8 @@ run_test() {
 	printf "+ waiting for experiment $i to end...\r"
 	./wait_for_exp_state.sh $exp_id "Terminated" || return 0
 	printf "+ waiting for robot to dock...\r"
-	mock_docking &
+	#mock_docking &
+    ./wait_for_robot_state.sh $exp_id "IN_DOCK"
 	./wait_for_robot_state.sh $exp_id "DOCKED"
 	rest_time=$((duration * 2))
 	for t in `seq $rest_time | tac`; do

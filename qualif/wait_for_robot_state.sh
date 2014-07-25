@@ -39,7 +39,7 @@ get_robot_fqdn() {
 get_robot_state() {
 	ssh turtlebot@$robot_fqdn '
 		tail /var/log/iotlab-ros/turtlebot_debug.log \
-		| grep Robot_state: 
+		| grep Robot_state: | tail -1 
 	' | sed "s/.*: '\|'$//g"
 }
 
@@ -69,7 +69,7 @@ init() {
 	"")
 		usage && return 1
 		;;
-	DOCKED|IN_MOTION|STOP) # help
+	DOCKED|IN_DOCK|OUT_DOCKED|IN_MOTION|STOP) # help
 		;;
 	*)
 		error "invalid target_state: $target_state" && return 1
