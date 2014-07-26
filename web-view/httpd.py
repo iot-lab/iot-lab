@@ -15,14 +15,10 @@ class Reqs:
 	res = call("experiment-cli get -l --state Running")
 	state = {}
 	for experiment in res["items"]:
-		nodes = experiment["resources"]
-		if nodes[0].find("." + site + ".") == -1:
-			continue
-		for n in nodes:
-			node_id = n.split('-')[1].split('.')[0]
-			node_archi = n.split('-')[0]
-			if not node_archi == archi:
+		for fqdn in experiment["resources"]:
+			if (not site in fqdn) or (not archi in fqdn):
 				continue
+			node_id = fqdn.split('-')[1].split('.')[0]
 			state[node_id] = experiment["id"]
 	return state
 
