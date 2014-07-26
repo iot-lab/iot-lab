@@ -25,7 +25,7 @@ splash_consumer() {
 ticker_producer() {
 	while [ -p $fifo ]; do
 		echo >> $fifo
-		sleep 1
+		sleep $ticker_delay
 	done
 }
 
@@ -37,7 +37,8 @@ mock_producer() {
 }
 
 usage() {
-	echo "usage: `basename $0` [--mock|-m] [-s|--size <queue size>]"
+	echo "usage: `basename $0` [--mock|-m] [-s|--size <queue size>]"\
+					      "[-d|--delay <delay>]"
 	echo
 	echo "       feeds user-state.json with splash events based on node ids"
 	echo "       that come on stdin - or uses random nodes ids with --mock."
@@ -52,6 +53,7 @@ parse_args() {
 		-h|--help) usage && exit 0 ;;
 		-m|--mock) producer=mock_producer ;;
 		-s|--size) queue_size=$2 && shift ;;
+		-d|--delay) ticker_delay=$2 && shift ;;
 		""|--stdin) ;;
 		*) echo "unknown option: $1" >&2 && exit 1 ;;
 		esac
@@ -59,7 +61,8 @@ parse_args() {
 	done
 }
 
-queue_size=${queue_size:-5}
 producer=${producer:-cat}
+queue_size=${queue_size:-5}
+ticker_delay=${ticker_delay:-1}
 parse_args "$@"
 main
