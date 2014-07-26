@@ -14,8 +14,8 @@ init() {
 }
 
 splash_consumer() {
-	while true; do
-		data=`{ cat <<< "$data"; head -1 $fifo; } | tail -$queue_size`
+	while [ -p $fifo ] && read line < $fifo; do
+		data=`echo -e "$data\n$line " | tail -$queue_size`
 		state=`awk <<< "$data" '
 		$1 != "" { print $1 ": { style: \"splash\" }," }'`
 		echo "{ $state }" > user-state.json
@@ -23,7 +23,7 @@ splash_consumer() {
 }
 
 ticker_producer() {
-	while true; do
+	while [ -p $fifo ]; do
 		echo >> $fifo
 		sleep 1
 	done
