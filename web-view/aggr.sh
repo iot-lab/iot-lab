@@ -3,9 +3,6 @@
 site=${site:-grenoble}
 arch=${arch:-m3}
 
-m3="m3:at86rf231"
-wsn1="wsn430:cc1101"
-wsn2="wsn430:cc2420"
 
 usage() {
 	echo "usage: `basename $0` <node id> [<node is> ...]"
@@ -18,8 +15,7 @@ usage() {
 main() {
 	case $1 in "" | -h | --help) usage && exit 0 ;; esac
 
-	[ ! `node_type` ] && fatal "invalid arch: $arch"
-	for id in $*; do is_number $id || fatal "invalid node id: $id"; done
+	sanity_check "$@"
 
 	ssh $site".iot-lab.info" "
 		./serial_aggregator.py 2>&1 <<< '`targets_json "$@"`' &
@@ -29,21 +25,12 @@ main() {
 }
 
 targets_json() {
-	echo '{ "items": [ '
-	target $1
-	shift
-	for n in $*; do echo ","; target $n; done
-	echo "]}"
-}
-
-target() {
-	node_id=$1
-	echo '{ "archi": "'${!arch}'", "site": "'$site'",
-		"network_address": "'`node_type`'-'$node_id'" }'
-}
-
-node_type() {
-	cut -d : -f 1 <<< "${!arch}"
+	for node_id in $*; do
+		nodes_spec="$nodes_spec"'
+		{ "archi": "'${!arch}'", "site": "'$site'",
+		  "network_address": "'$node_type-$node_id'" },'
+	done
+	echo '{ "items": [ '${nodes_spec%,}' ] }'
 }
 
 is_number() {
@@ -53,5 +40,18 @@ is_number() {
 fatal() {
 	echo "$@" >&2 ; exit 1
 }
+
+sanity_check() {
+	while [ "$1" ]; do
+		is_number $1 || fatal "invalid node id: $1"
+		shift
+	done
+	[ "$node_type" ] || fatal "invalid arch: $arch"
+}
+
+m3="m3:at86rf231"
+wsn1="wsn430:cc1101"
+wsn2="wsn430:cc2420"
+node_type=`cut -d : -f 1 <<< "${!arch}"`
 
 main "$@"
