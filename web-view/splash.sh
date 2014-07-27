@@ -5,10 +5,11 @@ usage() {
 	echo "usage: `basename $0` [-s|--queue-size <queue size>]"\
 				  "[-t|--event-timeout <timeout>]"
 	echo "
-	Feeds user-state.json with 'splash events' based on the node IDs
-	that are coming on stdin.  Events are kept in a queue, aged, and
-	in time get discarded from the queue.  Parameters <queue size>
-	and <timeout> control the process.
+	Feeds user-state.json with 'splash events' as received on stdin.
+
+	Events come in one per line, format is: <node id> [style [style...]].
+	Events land in a queue, are kept for some time, and eventually go away.
+	Parameters <queue size> and <timeout> control the aging process.
 	"
 }
 
@@ -22,7 +23,10 @@ main() {
 		[[ $? > 0 && $? < 128 ]] && break
 		queue=`echo -e "$queue\n$event " | tail -$queue_size`
 		state=`awk <<< "$queue" '
-		$1 != "" { print $1 ": { style: \"splash\" }," }'`
+		$1 == "" { next }
+		{	node_id = $1; $1 = ""; style = $0 ? $0 : "splash";
+			print node_id ": { style: \"" style "\" },"
+		}'`
 		echo "{ $state }" > user-state.json
 	done
 }
