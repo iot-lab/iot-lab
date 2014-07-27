@@ -1,68 +1,42 @@
 #!/bin/bash
 
+
+usage() {
+	echo "usage: `basename $0` [-s|--queue-size <queue size>]"\
+				  "[-t|--event-timeout <timeout>]"
+	echo "
+	Feeds user-state.json with 'splash events' based on the node IDs
+	that are coming on stdin.  Events are kept in a queue, aged, and
+	in time get discarded from the queue.  Parameters <queue size>
+	and <timeout> control the process.
+	"
+}
+
 main() {
-	init
-	splash_consumer &
-	ticker_producer &
-	$producer | tee -a $fifo
-}
+	queue_size=${queue_size:-5}
+	event_timeout=${event_timeout:-0.2}
+	parse_args "$@"
 
-init() {
-	fifo=/tmp/splash
-	trap 'rm $fifo' EXIT
-	mkfifo $fifo
-}
-
-splash_consumer() {
-	while [ -p $fifo ] && read line < $fifo; do
-		data=`echo -e "$data\n$line " | tail -$queue_size`
-		state=`awk <<< "$data" '
+	while true; do
+		read -t $event_timeout event
+		[[ $? > 0 && $? < 128 ]] && break
+		queue=`echo -e "$queue\n$event " | tail -$queue_size`
+		state=`awk <<< "$queue" '
 		$1 != "" { print $1 ": { style: \"splash\" }," }'`
 		echo "{ $state }" > user-state.json
 	done
-}
-
-ticker_producer() {
-	while [ -p $fifo ]; do
-		echo >> $fifo
-		sleep $ticker_delay
-	done
-}
-
-mock_producer() {
-	while true; do
-		echo $(( 70 + (RANDOM * 220 >> 15) ))
-		sleep $(( RANDOM * 2 >> 15 )).$(( 1 + (RANDOM * 9 >> 15) ))
-	done
-}
-
-usage() {
-	echo "usage: `basename $0` [--mock|-m] [-s|--size <queue size>]"\
-					      "[-d|--delay <delay>]"
-	echo
-	echo "       feeds user-state.json with splash events based on node ids"
-	echo "       that come on stdin - or uses random nodes ids with --mock."
-	echo
-	echo "       events are aged every second and progressively pushed out,"
-	echo "       the queue contains at most the last $queue_size events."
 }
 
 parse_args() {
 	while [ "$1" ]; do
 		case $1 in
 		-h|--help) usage && exit 0 ;;
-		-m|--mock) producer=mock_producer ;;
-		-s|--size) queue_size=$2 && shift ;;
-		-d|--delay) ticker_delay=$2 && shift ;;
-		""|--stdin) ;;
+		-s|--queue-size) queue_size=$2 && shift ;;
+		-t|--event-timeout) event_timout=$2 && shift ;;
 		*) echo "unknown option: $1" >&2 && exit 1 ;;
 		esac
 		shift
 	done
 }
 
-producer=${producer:-cat}
-queue_size=${queue_size:-5}
-ticker_delay=${ticker_delay:-1}
-parse_args "$@"
-main
+main "$@"
