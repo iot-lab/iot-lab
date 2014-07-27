@@ -8,7 +8,7 @@ main() {
 }
 
 init() {
-	fifo=/tmp/tiles.$$
+	fifo=/tmp/splash
 	trap 'rm $fifo' EXIT
 	mkfifo $fifo
 }
