@@ -319,9 +319,10 @@ function stopBlinkerShowResult(result) {
 		var sensor = sensors.gui[id];
 		clearInterval(sensor.blinker);
 		if (sensor.failed = res[id])
-			failed[id] = "owned failed";
+			failed[id] = true;
+		res[id] = sensor.failed ? "owned failed" : "owned";
 	}
-	setSensorsState(failed);
+	setSensorsState(res);
 	startBlinker(Object.keys(failed), 100);
 	setTimeout(function() {
 		for (id in failed)
@@ -405,19 +406,10 @@ function updateDeploymentStatus(expInfo) {
 	var dr = expInfo["deploymentresults"];
 	if (!dr) return false;
 
-	var state = {};
-	for (var st in dr) {
-		dr[st].forEach(function(nodeName) {
-			var id = idFromName(nodeName)
-			var sensor = sensors.gui[id];
-			sensor.failed = parseInt(st);
-			state[id] = sensor.failed ? "owned failed" : "owned";
-			sensor.owning = false;
-			clearInterval(sensor.blinker);
-		});
-	}
-	setSensorsState(state);
-	return dr;
+	stopBlinkerShowResult(dr);
+	for (var id in resultAsDict(dr))
+		sensors.gui[id].owning = false;
+	return true;
 }
 
 function deselectOwned() {
