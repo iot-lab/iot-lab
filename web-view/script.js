@@ -399,6 +399,9 @@ function initOwningPoller(expId) {
 }
 
 function updateDeploymentStatus(expInfo) {
+	if (expInfo.state == "Error")
+		expInfo.deploymentresults = { 1: expInfo.nodes };
+
 	var dr = expInfo["deploymentresults"];
 	if (!dr) return false;
 
@@ -407,7 +410,7 @@ function updateDeploymentStatus(expInfo) {
 		dr[st].forEach(function(nodeName) {
 			var id = idFromName(nodeName)
 			var sensor = sensors.gui[id];
-			sensor.failed = !st;
+			sensor.failed = parseInt(st);
 			state[id] = sensor.failed ? "owned failed" : "owned";
 			sensor.owning = false;
 			clearInterval(sensor.blinker);
