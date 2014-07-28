@@ -255,11 +255,18 @@ function setSensorsState(state) {
 function callServer(path, callback) {
 	var req = new XMLHttpRequest();
 	req.onreadystatechange = function() {
-		if (this.readyState == 4) {
+		if (this.readyState != 4)
+			return;
+		try {
 			eval("this.json=" + this.responseText);
-			callback(this.json);
 		}
+		catch (e) {
+			console.log(this);
+			return;
+		}
+		callback(this.json);
 	}
+	req.path = path;
 	req.open('GET', path, true);
 	req.send(null);
 }
