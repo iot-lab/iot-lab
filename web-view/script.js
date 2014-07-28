@@ -418,12 +418,12 @@ function updateDeploymentStatus(expInfo) {
 }
 
 function deselectOwned() {
-	deselectSensors(function(s) { return s.className.match("owned") });
+	deselectSensors(function(s) { return s.owned });
 	return getSensorsSelection();
 }
 
 function deselectNotOwned() {
-	deselectSensors(function(s) { return ! s.className.match("owned") });
+	deselectSensors(function(s) { return ! s.owned });
 	return getSensorsSelection();
 }
 
@@ -505,7 +505,7 @@ function clearSelectedSensors() {
 function selectOwnedSensors() {
 	var sel = [];
 	for (var i in sensors.gui) {
-		if (sensors.gui[i].className.match("owned"))
+		if (sensors.gui[i].owned)
 			sel.push(i);
 	}
 	setSensorsSelection(sel);	
