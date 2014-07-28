@@ -54,7 +54,7 @@ function setSensorHoverHandler(s) {
 
 function getTooltipText(elt) {
 	var text  = elt.name + (elt.text ? "<br/>" + elt.text : "");
-	var state = elt.className.match(/dead|reserved/);
+	var state = elt.className.match(/dead|reserved|failed/);
 	if (state)
 		text += "<br>" + state[0];
 	if (elt.owned)
@@ -192,6 +192,8 @@ function updateSystemState() {
 				delete(state [i]);
 			if (state[i] == "available" && sensor.owned)
 				sensor.owned = false;
+			if (sensor.failed)
+				delete(state[i]);
 		}
 		setSensorsState(state);
 	});
@@ -309,8 +311,8 @@ function stopBlinkerShowResult(result) {
 	for (var id in res) {
 		var sensor = sensors.gui[id];
 		clearInterval(sensor.blinker);
-		if (res[id])
-			failed[id] = "failed";
+		if (sensor.failed = res[id])
+			failed[id] = "owned failed";
 	}
 	setSensorsState(failed);
 	startBlinker(Object.keys(failed), 100);
@@ -398,8 +400,8 @@ function updateDeploymentStatus(expInfo) {
 		dr[st].forEach(function(nodeName) {
 			var id = idFromName(nodeName)
 			var sensor = sensors.gui[id];
-			state[id] = st ? "owned" : "failed";
-			if (!st) sensor.owned = false;
+			sensor.failed = !st;
+			state[id] = sensor.failed ? "owned failed" : "owned";
 			sensor.owning = false;
 			clearInterval(sensor.blinker);
 		});
