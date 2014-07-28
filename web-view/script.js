@@ -92,6 +92,12 @@ function animateBoldBorder(elt, timeout) {
 function createButtons() {
 	document.toolbox = document.createElement("div");
 	document.toolbox.className = "toolbox";
+	document.toolbox.onmouseover = function(ev) {
+		document.dragOn = false;
+	}
+	document.toolbox.onmouseout = function(ev) {
+		document.dragOn = true;
+	}
 	document.body.appendChild(document.toolbox);
 	var lines = {
 		h1:  63, h2: 422, h3:   78, h5:  437, h4: 452,
