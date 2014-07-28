@@ -389,11 +389,11 @@ function grabSensors() {
 }
 
 function initOwningPoller(expId) {
-	var timer = setInterval(function() {
+	setTimeout(function() {
 		callServer("get_exp_status?exp_id=" + expId,
 		function (state) {
-			if (updateDeploymentStatus(state))
-				clearInterval(timer);
+			if (!updateDeploymentStatus(state))
+				initOwningPoller(expId);
 		});
 	}, 300);
 }
