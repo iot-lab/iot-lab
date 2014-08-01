@@ -7,7 +7,8 @@ usage() {
 	echo "
 	Feeds user-state.json with 'splash events' as received on stdin.
 
-	Events come in one per line, format is: <node id> [style [style...]].
+	Events must come in one per line, as: <node id> [style [style...]]
+	Default style is 'splash' when node id is specified alone as input.
 	Events land in a queue, are kept for some time, and eventually go away.
 	Parameters <queue size> and <timeout> control the aging process.
 	"
