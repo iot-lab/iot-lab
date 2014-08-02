@@ -32,7 +32,7 @@ def feed_queue(f, event_timeout):
 	if not line: return False
 	event = parse_line(line)
 	queue.append(event)
-	print event.node_id
+	#print event.node_id
 	return True
 
 def trim_queue(max_age, queue_size):
