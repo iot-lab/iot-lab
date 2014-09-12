@@ -3,7 +3,7 @@
 exp_id=$1
 if [ ! "$exp_id" ]
 then
-    echo "Usage: $0 <experiment_id> [nodes with no ssh access]"
+    echo "Usage: $0 <experiment_id> [file listing no-ssh-access nodes] [log file]"
     echo "
        Flashes a8-m3 nodes and spawns a8-gw serial flooder
        on nodes that a.) deployed ok and b.) have ssh access
@@ -28,9 +28,11 @@ if [ "$no_ssh" ]; then
 fi
 
 NODES_ARRAY=($NODES_LIST)
-scp ./firmware/serial_flood.a8.elf ${NODES_ARRAY[0]}: > /dev/null
+printf "+ %-70s\r" "copying firmware to ${NODES_ARRAY[0]}"
+scp ./firmware/serial_flood.a8.elf ${NODES_ARRAY[0]}: &> /dev/null
 for node in $NODES_LIST
 do 
+    printf "+ %-70s\r" "running setup on $node"
     ssh $node 2>/dev/null '
 	source /etc/profile
 	ftdi-devices-list -t 2232 | grep -q Description \
@@ -40,15 +42,17 @@ do
 	serial_flooder() {
 		while true; do cat /dev/mtd2 > /dev/null ; sleep 5; done
 	}
-	serial_flooder &
+	serial_flooder </dev/null &>/dev/null &
     ' > /tmp/$$.$node &
     [ $[ i = (i+1) % 10 ] = 0 ] && sleep 1
 done
+printf "+ %-70s\r" "waiting for setup to finish"
 wait
 
+logfile=${3:-/dev/stderr}
 for node in $NODES_LIST
 do
 	out=$(cat /tmp/$$.$node | tr '\n' ' ')
-	[ "$out" ] && echo "$node: $out"
+	[ "$out" ] && echo "$node: $out" >> $logfile
 	\rm /tmp/$$.$node
 done

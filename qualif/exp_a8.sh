@@ -18,6 +18,6 @@ setup() {
 		cat $failed_ssh | sed 's/$/: ssh access failed/' >> $log_file
 	)
 	printf "+ performing a8 open nodes init...\r"
-	./setup_a8_nodes.sh $exp_id $failed_ssh >> $log_file
+	./setup_a8_nodes.sh $exp_id $failed_ssh $log_file
 	\rm -f $failed_ssh
 }
