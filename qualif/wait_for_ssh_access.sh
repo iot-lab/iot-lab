@@ -10,7 +10,7 @@ NODES_LIST=$(experiment-cli get -i $exp_id -p | ./parse_json.py "
 	' '.join([str('node-'+node)
 	for node in x['deploymentresults']['0']])")
 
-max_retries=15
+max_time=$(date -d "now + 5 min" +%s)
 nodes=$NODES_LIST
 while [ "$nodes" ]; do
 	for node in $nodes
@@ -21,7 +21,7 @@ while [ "$nodes" ]; do
 	done
 	wait
 	nodes=$(touch /tmp/$$.failed; cat /tmp/$$.failed*; \rm /tmp/$$.failed*)
-	if [ $[--max_retries] = 0 ]; then
+	if [[ $(date +%s) > $max_time ]]; then
 		echo "$nodes" | sort -t - -n -k3
 		exit 2
 	fi
