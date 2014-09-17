@@ -38,7 +38,7 @@ get_robot_fqdn() {
 }
 
 get_robot_state() {
-	ssh turtlebot@$robot_fqdn '
+	ssh turtlebot@$robot_fqdn -p 2222 '
 		tail /var/log/iotlab-ros/turtlebot_debug.log \
 		| grep Robot_state: | tail -1 
 	' | sed "s/.*: '\|'$//g"
