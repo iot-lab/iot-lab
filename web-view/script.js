@@ -4,6 +4,7 @@ function init() {
 	createButtons();
 	initRegionSelector();
 	initUpdateState();
+	robots_init();
 }
 
 function createSensors() {
@@ -231,6 +232,7 @@ function setSensorsUserState(state) {
 		e.update = function(state) {
 			this.className = "sensor " + state.style;
 			this.text = state.text;
+			eval(state.call);
 		};
 		e.update(state[i]);
 		document.body.appendChild(e);
