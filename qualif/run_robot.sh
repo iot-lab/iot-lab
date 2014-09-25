@@ -3,6 +3,9 @@ set -e
 
 nb_runs=${nb_runs:-100}
 site=${site:-devgrenoble}
+robot_id=${robot_id:-381}
+circuit=
+duration=${duration:-5}
 
 main() {
 	echo "nb_runs=$nb_runs, duration=$duration, site=$site"
@@ -15,18 +18,15 @@ main() {
 
 run_test() {
 	printf "experiment: "
-	exp_id=$(submit | get_exp_id) # submit defined in sourced exp_*.sh
+	exp_id=$(submit | get_exp_id)
 	[ ! $exp_id ] && echo "failed to start" && return 0
 	printf "$exp_id, "
 	./wait_for_exp_state.sh $exp_id "Running" || return 0
 	#./get_experiment_status.sh $exp_id
 	echo "started"
-	printf "+ running specific setup...\r"
-	setup # defined in sourced exp_*.sh
 	printf "+ waiting for experiment $i to end...\r"
 	./wait_for_exp_state.sh $exp_id "Terminated" || return 0
 	printf "+ waiting for robot to dock...\r"
-	#mock_docking &
 	./wait_for_robot_state.sh $exp_id "IN_DOCK"
 	./wait_for_robot_state.sh $exp_id "DOCKED" "IN_DOCK"
 	rest_time=$((duration * 2))
@@ -37,20 +37,17 @@ run_test() {
 	printf "%*c\r" 50
 }
 
-mock_docking() {
-	sleep 5
-	ssh turtlebot@m3-381.devgrenoble.iot-lab.info "
-		echo \"Robot_state: 'DOCKED'\" \
-			>> /var/log/iotlab-ros/turtlebot_debug.log
-	"
-}
-
 get_exp_id() {
 	./parse_json.py 'x["id"]'
 }
 
-init() {
-	true
+submit() {
+	node_type=m3
+	node_list=$robot_id
+	firmware=
+	profile=Robot_gre_$circuit
+	experiment-cli submit -d $duration   \
+	-l $site,$node_type,$node_list,$firmware,$profile
 }
 
 case $1 in
@@ -59,8 +56,7 @@ case $1 in
 		echo "usage: $(basename "$0") $options"
 		;;
 	c1|c2|c3) # help
-		source "exp_robot_$1".sh
-		init
+		circuit=$1
 		main
 		;;
 	*)
