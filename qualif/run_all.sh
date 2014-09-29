@@ -5,6 +5,8 @@ nb_runs=${nb_runs:-100}
 site=${site:-devgrenoble}
 faillog_pfx=faillogs/faillog.
 
+source source.me
+
 main() {
 	echo "nb_runs=$nb_runs, duration=$duration, site=$site"
 	echo "failure logs go in $faillog_pfx<exp_id>"
