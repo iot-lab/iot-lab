@@ -3,7 +3,7 @@ set -e
 
 nb_runs=${nb_runs:-100}
 site=${site:-devgrenoble}
-faillog_pfx=faillogs/faillog.
+faillog_pfx=faillogs.$site/faillog.
 
 source source.me
 
