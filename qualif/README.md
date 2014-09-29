@@ -27,6 +27,10 @@ TEST
 	site=$site nb_runs=1 ./run_all.sh m3
 	site=$site nb_runs=1 ./run_all.sh a8
 
+Note: if your $site is managed by the production platform, comment-out
+      the definition of variable IOTLAB_API_URL in source.me
+
+
 4°) Optionally, edit ``run_all.sh`` and set default value for site
 
 	``site=${site:-devgrenoble}`` => set to your $site
