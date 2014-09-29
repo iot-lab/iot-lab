@@ -13,7 +13,7 @@ NODES_LIST=$(experiment-cli get -i $exp_id -p | ./parse_json.py "
 tmpfiles=/tmp/$$.failed
 trap "rm -f $tmpfiles.*" EXIT
 
-max_time=$(date -d "now + 10 min" +%s)
+max_time=$(date -d "now + 5 min" +%s)
 nodes=$NODES_LIST
 while [ "$nodes" ]; do
 	for node in $nodes

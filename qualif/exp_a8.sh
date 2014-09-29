@@ -1,6 +1,6 @@
 # sourced by run_all.sh
 
-duration=${duration:-15}
+duration=${duration:-7}
 
 submit() {
 	node_type=a8
