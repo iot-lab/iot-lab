@@ -21,3 +21,6 @@ setup() {
 	./setup_a8_nodes.sh $exp_id $failed_ssh $log_file
 	\rm -f $failed_ssh
 }
+
+cleanup() {
+}

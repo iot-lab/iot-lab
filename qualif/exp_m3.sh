@@ -11,7 +11,3 @@ submit() {
 	experiment-cli submit -d $duration   \
 	-l $site,$node_type,$node_list,$firmware,$profile
 }
-
-setup() {
-	true
-}

@@ -19,7 +19,7 @@ main() {
 
 run_test() {
 	printf "experiment: "
-	exp_id=$(submit | get_exp_id) # submit defined in sourced exp_*.sh
+	exp_id=$(submit | get_exp_id)
 	[ ! $exp_id ] && echo "failed to start" && return 0
 	printf "$exp_id, "
 	./wait_for_exp_state.sh $exp_id "Running" || return 0
@@ -27,9 +27,11 @@ run_test() {
 	printf "+ dumping gateway logs...\r"
 	./get_failed_gateway_logs.sh $exp_id > $dir_$faillog_pfx$exp_id || true
 	printf "+ running specific setup...\r"
-	setup # defined in sourced exp_*.sh
+	setup
 	printf "+ waiting for experiment $i to end...\r"
 	./wait_for_exp_state.sh $exp_id "Terminated" || return 0
+	printf "+ performing cleanup ...\r"
+	cleanup
 	printf "%*c\r" 50
 }
 
@@ -50,6 +52,12 @@ init() {
 	cd "$(dirname "$0")"
 	check_create_logs_dir
 }
+
+# the following functions are overriden in sourced exp_*.sh
+
+submit() { :; }
+setup() { :; }
+cleanup() { :; }
 
 case $1 in
 	""|-h|--help)
