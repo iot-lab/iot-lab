@@ -23,4 +23,15 @@ setup() {
 }
 
 cleanup() {
+	log_file=$dir_$faillog_pfx$exp_id
+	cat $log_file \
+	| grep "ssh access failed" | cut -d : -f 1 | sed 's/^node-//' | \
+	while read node_fqdn; do
+		printf "+ removing failed ssh node $node_fqdn ..."
+		ssh root@fit1-dev -p 2222 ssh srvoar \
+		oarnodesetting -s Dead -h $node_fqdn \
+			</dev/null &>/dev/null \
+		&& printf "\r" || echo "ERR"
+	done
+	printf "%*c\r" 70
 }
