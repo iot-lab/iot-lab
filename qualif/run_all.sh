@@ -19,8 +19,7 @@ main() {
 
 run_test() {
 	printf "experiment: "
-	exp_id=$(submit | get_exp_id)
-	[ ! $exp_id ] && echo "failed to start" && return 0
+	exp_id=$(submit | get_exp_id) || return 0
 	printf "$exp_id, "
 	./wait_for_exp_state.sh $exp_id "Running" || return 0
 	./get_experiment_status.sh $exp_id
