@@ -28,7 +28,7 @@ run_test() {
 	printf "+ running specific setup...\r"
 	setup
 	printf "+ waiting for experiment $i to end...\r"
-	./wait_for_exp_state.sh $exp_id "Terminated" || return 0
+	./wait_for_exp_state.sh $exp_id "Terminated" || true
 	printf "+ performing cleanup ...\r"
 	cleanup
 	printf "%*c\r" 50
