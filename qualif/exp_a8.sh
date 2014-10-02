@@ -28,7 +28,7 @@ cleanup() {
 	| grep "ssh access failed" | cut -d : -f 1 | sed 's/^node-//' | \
 	while read node_fqdn; do
 		printf "+ removing failed ssh node $node_fqdn ..."
-		ssh root@fit1-dev -p 2222 ssh srvoar \
+		ssh fit-master ssh srvoar \
 		oarnodesetting -s Dead -h $node_fqdn \
 			</dev/null &>/dev/null \
 		&& printf "\r" || echo "ERR"
