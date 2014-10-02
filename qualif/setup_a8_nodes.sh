@@ -36,8 +36,8 @@ do
     ssh $node 2>/dev/null '
 	source /etc/profile
 	ftdi-devices-list -t 2232 | grep -q Description \
-		|| echo FTDI: No Open Node
-	flash_a8.sh /home/root/serial_flood.a8.elf > /dev/null \
+		|| echo FTDI: No A8-M3 Node
+	flash_a8_m3 /home/root/serial_flood.a8.elf > /dev/null \
 		|| echo Flash Firmware failed on m3
 	serial_flooder() {
 		while true; do cat /dev/mtd2 > /dev/null ; sleep 5; done
