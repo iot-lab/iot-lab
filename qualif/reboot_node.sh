@@ -2,8 +2,12 @@
 
 [ ! "$*" ] && echo "usage: $0 <node_name> [<node_name> ...]" && exit 1
 
+# use: ssh fit-gre / cd poe_switch_dev         for dev-gre (dev)
+# use: ssh fit-gre / cd poe_switch             for fit-gre (prod)
+# use: ssh dev-roc / cd poe_switch_roc_new     for dev-roc (dev)
+
 ssh fit-gre '
-	cd poe_switch
+	cd poe_switch_dev
 	for node in '$*'; do
 		res=`host $node` || { unknown="$unknown $node"; continue; }
 		parts=($res)
