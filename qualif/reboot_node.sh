@@ -1,13 +1,22 @@
 #!/bin/bash
 
-[ ! "$*" ] && echo "usage: $0 <node_name> [<node_name> ...]" && exit 1
+usage() { echo "usage: $0 <site> <node_name> [<node_name> ...]" ; }
 
-# use: ssh fit-gre / cd poe_switch_dev         for dev-gre (dev)
-# use: ssh fit-gre / cd poe_switch             for fit-gre (prod)
-# use: ssh dev-roc / cd poe_switch_roc_new     for dev-roc (dev)
+case $1 in
+	gre)    host=fit-gre; dir=poe_switch ;;
+	devgre) host=fit-gre; dir=poe_switch_dev ;;
+	roc)    host=dev-roc; dir=poe_switch_roc_new ;;
+	""|-h|--help)
+		usage
+		echo -e "\tsites: " `egrep "host=.*;;$" $0 | sed 's/).*//'`
+		exit 0 ;;
+	*)
+		echo "invalid site: $1" ; exit 1 ;;
+esac
+shift && [ ! "$1" ] && usage && exit 1
 
-ssh fit-gre '
-	cd poe_switch_dev
+ssh -n $host '
+	cd '$dir'
 	for node in '$*'; do
 		res=`host $node` || { unknown="$unknown $node"; continue; }
 		parts=($res)
