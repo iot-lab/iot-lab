@@ -8,6 +8,14 @@ from fabric.api import task, parallel
 from fabric.utils import abort, puts
 from fabric import operations
 
+
+#
+# TODO:
+#     Copy the user ssh public key to the node
+#     Should the user be limited to run from srvssh in some way?
+#     Only scp one time per site the file to flash using ~/A8/ directory
+#
+
 version = (int(n) for n in env.version.split('.'))
 assert (1, 5, 0) >= version, \
     ("Fabric should support ssh 'gateway'. Should be at least version '1.5'" +
