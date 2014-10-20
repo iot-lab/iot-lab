@@ -41,6 +41,6 @@ Host *.lille.iot-lab.info
 Host a8-*.rocquencourt.* node-a8-*.rocquencourt.* m3-*.rocquencourt.*
   ProxyCommand ssh dev-roc -W %h:%p
 
-Host *.iot-lab.info
+Host *.*.iot-lab.info
   User root
   StrictHostKeyChecking no
