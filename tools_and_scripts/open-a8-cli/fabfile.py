@@ -1,10 +1,13 @@
 """ Fabric methods to help running commands on A8 nodes """
+import os
 import iotlabcli
 import iotlabcli.experiment
 import iotlabcli.parser.common
 from fabric.api import env, run, execute
 from fabric.api import task, parallel
 from fabric.utils import abort, puts
+from fabric import operations
+
 version = (int(n) for n in env.version.split('.'))
 assert (1, 5, 0) >= version, \
     ("Fabric should support ssh 'gateway'. Should be at least version '1.5'" +
@@ -23,6 +26,9 @@ env.ssh_config_path = './ssh_config'
 
 env.reject_unknown_hosts = False
 env.disable_known_hosts = True
+env.abort_on_prompts = True
+
+env.colorize_errors = True
 
 env.pool_size = 10
 
@@ -55,6 +61,13 @@ def socat():
     run("nohup socat -d TCP4-LISTEN:20000,reuseaddr,fork " +
         " open:/dev/ttyA8_M3,b500000,echo=0,raw </dev/null >/tmp/socat_log &",
         pty=False)
+
+@task
+@parallel
+def update(firmware):
+    remote_firmware = '/tmp/' + os.path.basename(firmware)
+    operations.put('./' + firmware, '/tmp/')
+    run("flash_a8_m3 %s 2>/dev/null" % remote_firmware)
 
 @task
 @parallel
