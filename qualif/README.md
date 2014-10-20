@@ -13,7 +13,6 @@ TEST
 
 	Host a8-* m3-* node-a8-*
     	   User root
-    	   HostName %h
     	   ProxyCommand ssh fit-$site -W %h:%p
     	   StrictHostKeyChecking no
 
