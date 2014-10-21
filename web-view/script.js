@@ -246,8 +246,8 @@ function parseNodesList(str, val, state) {
 	var l = str.split("+");
 	for (var i=0; i < l.length; i++) {
 		var range = l[i].split("-");
-		var start = range[0];
-		var stop  = range[1] || start;
+		var start = parseInt(range[0]);
+		var stop  = parseInt(range[1]) || start;
 		for (var j=start; j <= stop; j++)
 			state[j] = val;
 	}
