@@ -64,11 +64,8 @@ def exp(exp_id=None):
 
 @task
 @parallel
-def socat():
-    run("killall -q socat; sleep 1")
-    run("nohup socat -d TCP4-LISTEN:20000,reuseaddr,fork " +
-        " open:/dev/ttyA8_M3,b500000,echo=0,raw </dev/null >/tmp/socat_log &",
-        pty=False)
+def serial():
+    run("/etc/init.d/serial_redirection restart", pty=False)
 
 @task
 @parallel
