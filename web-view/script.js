@@ -100,25 +100,11 @@ function createButtons() {
 		document.dragOn = true;
 	}
 	document.body.appendChild(document.toolbox);
-	var lines = {
-		h1:  63, h2: 422, h3:   78, h5:  437, h4: 452,
-		v11: 22, v12: 44, v21: 382, v22: 404 };
 	var actions = {
-		start: 800, stop: 850, reset: 900, update: 950, grab: 1010,
-		load: 560, save: 600, clear: 640, owned: 687 };
-	for (var key in lines)
-		createLineButton(lines[key], 10, key);
+		start: 300, stop: 350, reset: 400, update: 450, grab: 510,
+		load: 60, save: 100, clear: 140, owned: 187 };
 	for (var key in actions)
 		createActionButton(actions[key], 10, key);
-}
-
-function createLineButton(x, y, lineName) {
-	var b = createButton(x, y, ">");
-	b.className += lineName.match(/^v/) ? " rotated-text" : "";
-	b.onclick = function(ev) {
-		toggleLine(lineName, ev.ctrlKey);
-	};
-	document.toolbox.appendChild(b);
 }
 
 var action_buttons = {
@@ -147,16 +133,6 @@ function createButton(x, y, text) {
 	b.style.top = y + "px";
 	b.innerHTML = text;
 	return b;
-}
-
-function toggleLine(lineName, reset) {
-	var l = sensors.lines[lineName];
-	var start = l[0], stop = l[1], step = l[2];
-	var value = sensors.gui[start].selected;
-	for (var i=start; i != stop + step; i += step) {
-		if (reset) sensors.gui[i].selected = value;
-		sensors.gui[i].onclick();
-	}
 }
 
 function initUpdateState() {
@@ -358,7 +334,7 @@ function updateSensors() {
 		return;
 	callServer("firmwares.json" + nocache(), function (data) {
 	modalListSelection({
-		x: 950, y: 100,
+		x: 450, y: 60,
 		title: "Firmwares",
 		items: Object.keys(data),
 		onsel: function(item) {
@@ -376,7 +352,7 @@ function grabSensors() {
 	if (!sel.length)
 		return;
 	modalInput({
-		x: 1000, y: 100, w: 3,
+		x: 500, y: 60, w: 3,
 		title: "Duration:",
 		onval: function(duration) {
 			startBlinker(sel);
@@ -475,7 +451,7 @@ function getSelectionExpIterator() {
 
 function saveSensorsSet(spec) {
 	modalInput({
-		x: 520, y: 100, w: 10,
+		x: 60, y: 60, w: 10,
 		title: "Nodes Set Name:",
 		onval: function(value) {
 			var set = getSensorsSelection().join(" ");
@@ -490,7 +466,7 @@ function saveSensorsSet(spec) {
 function loadSensorsSet() {
 	callServer("nodes-sets.json" + nocache(), function (data) {
 	modalListSelection({
-		x: 560, y: 60,
+		x: 60, y: 60,
 		title: "Nodes Sets",
 		items: Object.keys(data),
 		onsel: function(item) {
