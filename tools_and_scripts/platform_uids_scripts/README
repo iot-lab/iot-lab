@@ -1,0 +1,17 @@
+
+
+Scripts
+=======
+
+get_iotlab_uid.py
+-----------------
+
+Returns the uids for currently running experiment or nodes given in parameter
+(also tries to connect to A8 nodes)
+
+
+check_uid_jsons.py
+------------------
+
+Uses the given jsons uids files and compare them with the
+'experiment-cli info' results

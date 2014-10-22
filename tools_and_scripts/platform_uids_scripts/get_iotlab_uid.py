@@ -47,7 +47,7 @@ def handle_uid(identifier, line):
 
     signal.alarm(10)  # watchdog, stop after 10 seconds without messages
 
-    uid = re.sub('.* ', '', line)
+    uid = re.sub('.* ', '', line).lower()
 
     NODES_UID[url] = uid
     sys.stderr.write("%s : %s\n" % (uid, url))
