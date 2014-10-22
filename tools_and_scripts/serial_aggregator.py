@@ -292,7 +292,7 @@ def main():
     try:
         signal.signal(signal.SIGINT, (lambda signal, frame: 0))
         signal.pause()
-        print "Closing connections"
+        LOGGER.info("Closing connections")
     finally:
         aggregator.stop()
 
