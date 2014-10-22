@@ -46,13 +46,34 @@ import socket
 import logging
 import threading
 import sys
+import argparse
+import os
+
+import iotlabcli
+from iotlabcli import experiment
+from iotlabcli.parser import common as common_parser
+from iotlabcli.parser import node as node_parser
 
 PORT = 20000
 
 NODES_ARCHIS = ("wsn430:cc2420", "wsn430:cc1101", "m3:at86rf231")
+HOSTNAME = os.uname()[1]
+# HOSTNAME = 'grenoble'
 
-logging.basicConfig(format="%(created)f;%(message)s")
-LOGGER = logging.getLogger()
+# Use loggers for all outputs to have the same config
+_FORMAT = logging.Formatter("%(created)f;%(message)s")
+# error logger
+LOGGER = logging.getLogger('serial_aggregator')
+_LOGGER = logging.StreamHandler(stream=sys.stderr)
+_LOGGER.setFormatter(_FORMAT)
+LOGGER.setLevel(logging.INFO)
+LOGGER.addHandler(_LOGGER)
+# debug logger for lines
+LINE_LOGGER = logging.getLogger('serial_aggregator_line')
+_LINE_LOGGER = logging.StreamHandler(stream=sys.stdout)
+_LINE_LOGGER.setFormatter(_FORMAT)
+LINE_LOGGER.setLevel(logging.INFO)
+LINE_LOGGER.addHandler(_LINE_LOGGER)
 
 
 # http://stackoverflow.com/questions/1092531/event-system-in-python
@@ -103,14 +124,18 @@ class NodeConnection(asyncore.dispatcher):  # pylint:disable=I0011,R0904
     Handle the connection to one node serial link.
     Data is managed with asyncore. So to work asyncore.loop() should be run.
 
-    Received lines are printed with LOGGER.debug and line_handler if given.
+    :param print_lines: should lines be printed to stdout
+    :param line_handler: additional function to call on received lines.
+        `line_handler(identifier, line)`
 
     """
-    def __init__(self, hostname, line_handler=None):
+    def __init__(self, hostname, print_lines=False, line_handler=None):
         asyncore.dispatcher.__init__(self)
         self.node_id = hostname.split('.')[0]  # node identifier for the user
 
-        self.line_handler = Event([self._print_line])
+        self.line_handler = Event()
+        if print_lines:
+            self.line_handler += self._print_line
         if line_handler:
             self.line_handler += line_handler
         self.read_buff = ''      # received data buffer
@@ -153,7 +178,7 @@ class NodeConnection(asyncore.dispatcher):  # pylint:disable=I0011,R0904
     @staticmethod
     def _print_line(identifier, line):
         """ Print one line prefixed by id in format: """
-        LOGGER.debug("%s;%s", identifier, line)
+        LINE_LOGGER.info("%s;%s", identifier, line)
 
 
 class NodeAggregator(dict):
@@ -165,13 +190,13 @@ class NodeAggregator(dict):
 
     After init, it can be manipulated like a dict.
     """
-    def __init__(self, nodes_list):
+    def __init__(self, nodes_list, *args, **kwargs):
         super(NodeAggregator, self).__init__()
         self.thread = threading.Thread(target=asyncore.loop,
                                        kwargs={'timeout': 1, 'use_poll': True})
         # create all the Nodes
         for node_url in nodes_list:
-            node = NodeConnection(node_url)
+            node = NodeConnection(node_url, args, kwargs)
             self[node.node_id] = node
 
     def start(self):
@@ -192,33 +217,48 @@ class NodeAggregator(dict):
             node.send(message)
 
 
-def extract_nodes(ressources_json, server_hostname):
+def extract_nodes(resources):
     """ Extract the nodes with an serial link accessible from this server """
-    nodes = [node['network_address'] for node in ressources_json['items'] if
-             node['archi'] in NODES_ARCHIS and node['site'] == server_hostname]
+    nodes = [node['network_address'] for node in resources['items'] if
+             node['archi'] in NODES_ARCHIS and node['site'] == HOSTNAME]
     return nodes
 
 
-def extract_json(json_str):
-    """ Extract the json from the given json string
+def opts_parser():
+    """ Argument parser object """
+    parser = argparse.ArgumentParser()
+    common_parser.add_auth_arguments(parser)
 
-    >>> extract_json('{}')
-    {}
-    >>> extract_json('{"a":1, "2": [3]}')
-    {u'a': 1, u'2': [3]}
+    nodes_group = parser.add_argument_group(
+        description="By default, select currently running experiment nodes",
+        title="Nodes selection")
 
-    >>> extract_json('invalid str')
-    Traceback (most recent call last):
-    ...
-    SystemExit: 1
-    """
-    import json
-    try:
-        json_dict = json.loads(json_str)
-    except ValueError:
-        print 'Could not load JSON object from stdin.'
-        exit(1)
-    return json_dict
+    nodes_group.add_argument('-i', '--id', dest='experiment_id', type=int,
+                             help='experiment id submission')
+
+    nodes_group.add_argument(
+        '-l', '--list', type=node_parser.nodes_list_from_str,
+        dest='nodes_list', help='nodes list, may be given multiple times')
+    return parser
+
+
+def get_nodes(api, exp_id=None, nodes_list=None):
+    """ Get nodes list from experiment and/or nodes_list.
+    Or currently running experiment if none provided """
+
+    nodes = []
+    if exp_id is None and nodes_list is None:
+        # Try to get current experiment
+        exp_id = iotlabcli.get_current_experiment(api)
+
+    if exp_id is not None:
+        res = experiment.get_experiment(api, exp_id, 'resources')
+        nodes.extend(extract_nodes(res))
+
+    if nodes_list is None:
+        nodes.extend([n for n in nodes_list if HOSTNAME in n])
+
+    return nodes
 
 
 def main():
@@ -226,19 +266,21 @@ def main():
     aggregate serial links of all nodes
     """
     import signal
-    import os
+    parser = opts_parser()
+    opts = parser.parse_args()
 
-    json_dict = extract_json(sys.stdin.read())
+    try:
+        username, password = iotlabcli.get_user_credentials(
+            opts.username, opts.password)
+        api = iotlabcli.Api(username, password)
+        nodes_list = get_nodes(api, opts.experiment_id, opts.nodes_list)
+    except RuntimeError as err:
+        sys.stderr.write("%s\n" % err)
+        exit(1)
 
-    nodes_list = extract_nodes(json_dict, os.uname()[1])
-
-    aggregator = NodeAggregator(nodes_list)
-
-    LOGGER.setLevel(logging.DEBUG)
-
+    aggregator = NodeAggregator(nodes_list, print_lines=True)
     aggregator.start()
     try:
-
         signal.signal(signal.SIGINT, (lambda signal, frame: 0))
         signal.pause()
         print "Closing connections"
