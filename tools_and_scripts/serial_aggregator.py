@@ -18,13 +18,11 @@ Usage
 
 On each server your experiment is run on:
 
-    $ experiment-cli get -r -i <exp_id> | ./serial_aggregator.py
+    $ ./serial_aggregator.py [opts]
     1395240359.286712;node46; Type Enter to stop printing this help
     1395240359.286853;node46;
     1395240359.292523;node9;
     1395240359.292675;node9;Senslab Simple Demo program
-
-Message sending is supported in the script but not from command line.
 
 
 Warning
@@ -64,13 +62,13 @@ HOSTNAME = os.uname()[1]
 _FORMAT = logging.Formatter("%(created)f;%(message)s")
 # error logger
 LOGGER = logging.getLogger('serial_aggregator')
-_LOGGER = logging.StreamHandler(stream=sys.stderr)
+_LOGGER = logging.StreamHandler()
 _LOGGER.setFormatter(_FORMAT)
 LOGGER.setLevel(logging.INFO)
 LOGGER.addHandler(_LOGGER)
 # debug logger for lines
 LINE_LOGGER = logging.getLogger('serial_aggregator_line')
-_LINE_LOGGER = logging.StreamHandler(stream=sys.stdout)
+_LINE_LOGGER = logging.StreamHandler()
 _LINE_LOGGER.setFormatter(_FORMAT)
 LINE_LOGGER.setLevel(logging.INFO)
 LINE_LOGGER.addHandler(_LINE_LOGGER)
@@ -135,9 +133,9 @@ class NodeConnection(asyncore.dispatcher):  # pylint:disable=I0011,R0904
 
         self.line_handler = Event()
         if print_lines:
-            self.line_handler += self._print_line
+            self.line_handler.append(self._print_line)
         if line_handler:
-            self.line_handler += line_handler
+            self.line_handler.append(line_handler)
         self.read_buff = ''      # received data buffer
 
     def start(self):
@@ -196,7 +194,7 @@ class NodeAggregator(dict):
                                        kwargs={'timeout': 1, 'use_poll': True})
         # create all the Nodes
         for node_url in nodes_list:
-            node = NodeConnection(node_url, args, kwargs)
+            node = NodeConnection(node_url, *args, **kwargs)
             self[node.node_id] = node
 
     def start(self):
@@ -217,10 +215,15 @@ class NodeAggregator(dict):
             node.send(message)
 
 
-def extract_nodes(resources):
+def extract_nodes(resources, with_a8=False):
     """ Extract the nodes with an serial link accessible from this server """
-    nodes = [node['network_address'] for node in resources['items'] if
-             node['archi'] in NODES_ARCHIS and node['site'] == HOSTNAME]
+    sites_nodes = [n for n in resources['items'] if n['site'] == HOSTNAME]
+    nodes = [n['network_address'] for n in sites_nodes if
+             n['archi'] in NODES_ARCHIS]
+
+    if with_a8:
+        nodes += ['node-' + n['network_address'] for n in sites_nodes if
+                  n['archi'] == 'a8:at86rf231']
     return nodes
 
 
@@ -239,10 +242,15 @@ def opts_parser():
     nodes_group.add_argument(
         '-l', '--list', type=node_parser.nodes_list_from_str,
         dest='nodes_list', help='nodes list, may be given multiple times')
+
+    nodes_group.add_argument(
+        '--with-a8', action='store_true',
+        help=('redirect open-a8 serial port. ' +
+              '`serial_redirection` must be run on the node'))
     return parser
 
 
-def get_nodes(api, exp_id=None, nodes_list=None):
+def get_nodes(api, exp_id=None, nodes_list=None, with_a8=False):
     """ Get nodes list from experiment and/or nodes_list.
     Or currently running experiment if none provided """
 
@@ -253,9 +261,9 @@ def get_nodes(api, exp_id=None, nodes_list=None):
 
     if exp_id is not None:
         res = experiment.get_experiment(api, exp_id, 'resources')
-        nodes.extend(extract_nodes(res))
+        nodes.extend(extract_nodes(res, with_a8))
 
-    if nodes_list is None:
+    if nodes_list is not None:
         nodes.extend([n for n in nodes_list if HOSTNAME in n])
 
     return nodes
@@ -273,7 +281,8 @@ def main():
         username, password = iotlabcli.get_user_credentials(
             opts.username, opts.password)
         api = iotlabcli.Api(username, password)
-        nodes_list = get_nodes(api, opts.experiment_id, opts.nodes_list)
+        nodes_list = get_nodes(
+            api, opts.experiment_id, opts.nodes_list, with_a8=opts.with_a8)
     except RuntimeError as err:
         sys.stderr.write("%s\n" % err)
         exit(1)
