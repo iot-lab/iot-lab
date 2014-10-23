@@ -1,11 +1,11 @@
 Host dev-gre
 	Hostname fit3-dev.inrialpes.fr
 
-Host dev-roc
-	Hostname rocquencourt.iot-lab.info
-
 Host dev-stras
 	Hostname fit-test.u-strasbg.fr
+
+Host dev-master
+	Hostname fit1-dev.inrialpes.fr
 
 Host fit-gre
 	Hostname grenoble.iot-lab.info
@@ -13,15 +13,21 @@ Host fit-gre
 Host fit-lille
 	Hostname lille.iot-lab.info
 
+Host fit-roc
+	Hostname rocquencourt.iot-lab.info
+
 Host fit-stras
 	Hostname strasbourg.iot-lab.info
 
 Host fit-master
-	Hostname fit1-dev.inrialpes.fr
+	Hostname fit-master.inrialpes.fr
 
 Host fit-* dev-*
 	Port 2222
 	User root
+
+Host robot-gre
+  ProxyCommand ssh fit-gre -W m3-381:2222
 
 Host *.grenoble.iot-lab.info
   ProxyCommand ssh fit-gre -W %h:%p
@@ -38,9 +44,9 @@ Host *.devstras.iot-lab.info
 Host *.lille.iot-lab.info
   ProxyCommand ssh fit-lille -W %h:%p
 
-Host a8-*.rocquencourt.* node-a8-*.rocquencourt.* m3-*.rocquencourt.*
-  ProxyCommand ssh dev-roc -W %h:%p
+Host *.rocquencourt.iot-lab.info
+  ProxyCommand ssh fit-roc -W %h:%p
 
-Host *.*.iot-lab.info
+Host *.*.iot-lab.info robot-*
   User root
   StrictHostKeyChecking no
