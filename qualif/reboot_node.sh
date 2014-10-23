@@ -5,7 +5,7 @@ usage() { echo "usage: $0 <site> <node_name> [<node_name> ...]" ; }
 case $1 in
 	gre)    host=fit-gre; dir=poe_switch_gre ;;
 	devgre) host=fit-gre; dir=poe_switch_dev ;;
-	roc)    host=dev-roc; dir=poe_switch_roc_new ;;
+	roc)    host=fit-roc; dir=poe_switch_roc_new ;;
 	stras)  host=fit-stras; dir=poe_switch_stras ;;
 	lille)  host=fit-lille; dir=poe_switch_lil ;;
 	""|-h|--help)
