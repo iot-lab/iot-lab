@@ -5,6 +5,7 @@ function init() {
 	initRegionSelector();
 	initUpdateState();
 	robots_init();
+	webcam_init();
 }
 
 function createSensors() {
