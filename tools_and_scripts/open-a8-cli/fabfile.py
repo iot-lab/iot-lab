@@ -4,20 +4,12 @@ import iotlabcli
 import iotlabcli.experiment
 import iotlabcli.parser.common
 from fabric.api import env, run, execute
-from fabric.api import task, parallel
-from fabric.utils import abort, puts
+from fabric.api import task, parallel, roles, runs_once
+from fabric.utils import abort
 from fabric import operations
 
-
-#
-# TODO:
-#     Copy the user ssh public key to the node
-#     Should the user be limited to run from srvssh in some way?
-#     Only scp one time per site the file to flash using ~/A8/ directory
-#
-
-version = (int(n) for n in env.version.split('.'))
-assert (1, 5, 0) >= version, \
+_VERSION = (int(n) for n in env.version.split('.'))
+assert (1, 5, 0) >= _VERSION, \
     ("Fabric should support ssh 'gateway'. Should be at least version '1.5'" +
      ": %r" % env.version)
 # Debug paramiko
@@ -37,8 +29,8 @@ env.disable_known_hosts = True
 env.abort_on_prompts = True
 
 env.colorize_errors = True
-
 env.pool_size = 10
+
 
 def get_exp_a8_nodes(api, exp_id=None):
     """ Get the list of a8 nodes from given experiment """
@@ -54,29 +46,63 @@ def get_exp_a8_nodes(api, exp_id=None):
 
 @task
 def exp(exp_id=None):
-    """ Extract nodes from experiment and set ennv.hosts """
+    """ Extract nodes from experiment and set env.roledefs accordingly:
+    Following roles are set:
+     * nodes: all the a8 nodes of the experiment
+     * frontends: each sites where there are a8 nodes
+
+    """
     username, password = iotlabcli.get_user_credentials()
     api = iotlabcli.Api(username, password)
     exp_id = iotlabcli.get_current_experiment(api, exp_id)
 
     nodes = get_exp_a8_nodes(api, exp_id)
-    env.hosts = nodes
+    env.roledefs['nodes'] = nodes
+
+    sites = list(set([url.split('.', 1)[1] for url in nodes]))
+    env.roledefs['frontends'] = sites
+
+
+# # # # # # # # # # # # # # # # # # # #
+# Redirect the open node serial port
+# # # # # # # # # # # # # # # # # # # #
+
 
 @task
 @parallel
-def serial():
+@roles('nodes')
+def redirect():
+    """ Start Open A8 node m3 serial port redirection """
     run("/etc/init.d/serial_redirection restart", pty=False)
 
+
+# # # # # # # # # # # # # # # # # # # # # # # # # #
+# Update firmware on the Open A8-M3
+#
+#  * Upload firmware to frontends ~/A8 directory
+#  * Run the flash command on each node
+#
+# # # # # # # # # # # # # # # # # # # # # # # # # #
+
+
 @task
-@parallel
+@runs_once
 def update(firmware):
-    remote_firmware = '/tmp/' + os.path.basename(firmware)
-    operations.put('./' + firmware, '/tmp/')
-    run("flash_a8_m3 %s 2>/dev/null" % remote_firmware)
+    """ Update the firmware on all experiment nodes """
+    execute(upload_firmware, firmware)
+    execute(flash, firmware)
 
-@task
+
 @parallel
-def hello():
-    """ Simple hello world example """
-    run('printf "Hello world!"')
+@roles('frontends')
+def upload_firmware(firmware, ):
+    """ Upload the firmware to the frontends A8 shared directory """
+    operations.put(firmware, '~/A8')
 
+
+@parallel
+@roles('nodes')
+def flash(firmware):
+    """ Flash the nodes """
+    remote_firmware = '~/A8/' + os.path.basename(firmware)
+    run("flash_a8_m3 %s 2>/dev/null" % remote_firmware)
