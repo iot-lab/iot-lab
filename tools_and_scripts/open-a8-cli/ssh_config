@@ -2,7 +2,7 @@ Host node-a8-*
   User root
   StrictHostKeyChecking no
 
-# Add all sites here
+# Add all sites with a8 nodes here
 Host *.grenoble*
   ProxyCommand ssh grenoble.iot-lab.info -W %h:%p
 Host *.lille*
