@@ -18,8 +18,6 @@ assert (1, 5, 0) >= _VERSION, \
 # Debug paramiko
 
 
-
-
 env.use_ssh_config = True
 env.ssh_config_path = './ssh_config'
 
@@ -71,9 +69,10 @@ def exp_task(func):
     @runs_once
     @task(name=func.__name__)
     def wrapper(*args, **kwargs):
+        """ wrapper that calls 'exp' before actual task """
         execute(exp, exp_id=None)
         func(*args, **kwargs)
-    wrapper.__doc__ =  func.__doc__
+    wrapper.__doc__ = func.__doc__
 
     return wrapper
 
@@ -88,9 +87,11 @@ def redirect():
     """ Start Open A8 node m3 serial port redirection """
     execute(restart_redirect)
 
+
 @parallel
 @roles('nodes')
 def restart_redirect():
+    """ Redirect the serial port to port 20000 """
     run("/etc/init.d/serial_redirection restart", pty=False)
 
 
@@ -123,3 +124,21 @@ def flash_firmware(firmware):
     """ Flash the nodes """
     remote_firmware = '~/A8/' + os.path.basename(firmware)
     run("flash_a8_m3 %s 2>/dev/null" % remote_firmware)
+
+
+# # # # # # # # # # #
+# Reset Open A8-M3
+# # # # # # # # # # #
+
+
+@exp_task
+def reset():
+    """ Reset Open A8 node m3 """
+    execute(restart_redirect)
+
+
+@parallel
+@roles('nodes')
+def reset_node():
+    """ Reset the node """
+    run("reset_a8_m3 2>/dev/null")

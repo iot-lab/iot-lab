@@ -25,6 +25,7 @@ Usage
 
         exp       Extract nodes from `exp_id` experiment and set them as commands targets
         redirect  Start Open A8 node m3 serial port redirection
+        reset     Reset Open A8 node m3
         update    Update the firmware on all experiment nodes
 
 By default, the script will run the tasks on the currently running experiment nodes.
@@ -41,5 +42,5 @@ Specifying the experiment
 You can also specify on which experiment nodes to run the tasks by calling
 `exp:<exp_id>` before the tasks names.
 
-    $ fab exp:<exp_id> redirect
+    $ fab exp:<exp_id> redirect reset
 
