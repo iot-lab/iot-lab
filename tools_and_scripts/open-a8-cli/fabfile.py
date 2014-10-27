@@ -18,7 +18,6 @@ assert (1, 5, 0) >= _VERSION, \
 # Debug paramiko
 
 
-env.user = 'harter'
 
 
 env.use_ssh_config = True
@@ -32,7 +31,7 @@ env.colorize_errors = True
 env.pool_size = 10
 
 
-def get_exp_a8_nodes(api, exp_id=None):
+def _get_exp_a8_nodes(api, exp_id=None):
     """ Get the list of a8 nodes from given experiment """
     experiment = iotlabcli.experiment.get_experiment(api, exp_id)
     _working_nodes = experiment["deploymentresults"]["0"]
@@ -44,9 +43,10 @@ def get_exp_a8_nodes(api, exp_id=None):
     return nodes
 
 
+@runs_once
 @task
 def exp(exp_id=None):
-    """ Extract nodes from experiment and set env.roledefs accordingly:
+    """ Extract nodes from `exp_id` experiment and set them as commands targets
     Following roles are set:
      * nodes: all the a8 nodes of the experiment
      * frontends: each sites where there are a8 nodes
@@ -56,11 +56,26 @@ def exp(exp_id=None):
     api = iotlabcli.Api(username, password)
     exp_id = iotlabcli.get_current_experiment(api, exp_id)
 
-    nodes = get_exp_a8_nodes(api, exp_id)
+    env.user = username
+
+    nodes = _get_exp_a8_nodes(api, exp_id)
     env.roledefs['nodes'] = nodes
 
     sites = list(set([url.split('.', 1)[1] for url in nodes]))
     env.roledefs['frontends'] = sites
+
+
+def exp_task(func):
+    """ Declare a task that will only be called after calling 'exp' task.
+    If exp task was already called, a new call won't be done."""
+    @runs_once
+    @task(name=func.__name__)
+    def wrapper(*args, **kwargs):
+        execute(exp, exp_id=None)
+        func(*args, **kwargs)
+    wrapper.__doc__ =  func.__doc__
+
+    return wrapper
 
 
 # # # # # # # # # # # # # # # # # # # #
@@ -68,11 +83,14 @@ def exp(exp_id=None):
 # # # # # # # # # # # # # # # # # # # #
 
 
-@task
-@parallel
-@roles('nodes')
+@exp_task
 def redirect():
     """ Start Open A8 node m3 serial port redirection """
+    execute(restart_redirect)
+
+@parallel
+@roles('nodes')
+def restart_redirect():
     run("/etc/init.d/serial_redirection restart", pty=False)
 
 
@@ -85,24 +103,23 @@ def redirect():
 # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 
-@task
-@runs_once
+@exp_task
 def update(firmware):
     """ Update the firmware on all experiment nodes """
     execute(upload_firmware, firmware)
-    execute(flash, firmware)
+    execute(flash_firmware, firmware)
 
 
 @parallel
 @roles('frontends')
-def upload_firmware(firmware, ):
+def upload_firmware(firmware):
     """ Upload the firmware to the frontends A8 shared directory """
     operations.put(firmware, '~/A8')
 
 
 @parallel
 @roles('nodes')
-def flash(firmware):
+def flash_firmware(firmware):
     """ Flash the nodes """
     remote_firmware = '~/A8/' + os.path.basename(firmware)
     run("flash_a8_m3 %s 2>/dev/null" % remote_firmware)
