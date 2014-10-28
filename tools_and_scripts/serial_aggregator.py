@@ -58,19 +58,18 @@ PORT = 20000
 
 NODES_ARCHIS = ("wsn430:cc2420", "wsn430:cc1101", "m3:at86rf231")
 HOSTNAME = os.uname()[1]
-# HOSTNAME = 'grenoble'
 
 # Use loggers for all outputs to have the same config
 _FORMAT = logging.Formatter("%(created)f;%(message)s")
 # error logger
 LOGGER = logging.getLogger('serial_aggregator')
-_LOGGER = logging.StreamHandler()
+_LOGGER = logging.StreamHandler(sys.stderr)
 _LOGGER.setFormatter(_FORMAT)
 LOGGER.setLevel(logging.INFO)
 LOGGER.addHandler(_LOGGER)
 # debug logger for lines
 LINE_LOGGER = logging.getLogger('serial_aggregator_line')
-_LINE_LOGGER = logging.StreamHandler()
+_LINE_LOGGER = logging.StreamHandler(sys.stdout)
 _LINE_LOGGER.setFormatter(_FORMAT)
 LINE_LOGGER.setLevel(logging.INFO)
 LINE_LOGGER.addHandler(_LINE_LOGGER)
