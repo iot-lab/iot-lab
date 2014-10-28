@@ -38,6 +38,8 @@ The script will get the serial links current site nodes.
 For multi-sites experiments, you should run the script on each site server.
 """
 
+# use readline for 'raw_input'
+import readline  # pylint:disable=unused-import
 
 import asyncore
 import socket
@@ -117,7 +119,7 @@ class Event(list):
         return "Event(%r)" % list.__repr__(self)
 
 
-class NodeConnection(asyncore.dispatcher):  # pylint:disable=I0011,R0904
+class NodeConnection(asyncore.dispatcher):  # pylint:disable=R0904
     """
     Handle the connection to one node serial link.
     Data is managed with asyncore. So to work asyncore.loop() should be run.
@@ -179,7 +181,7 @@ class NodeConnection(asyncore.dispatcher):  # pylint:disable=I0011,R0904
         LINE_LOGGER.info("%s;%s", identifier, line)
 
 
-class NodeAggregator(dict):
+class NodeAggregator(dict):  # pylint:disable=too-many-public-methods
     """
     Create a list of nodes Aggregator from 'nodes_list'
     Each node is stored in the entry with it's node_id
@@ -202,12 +204,32 @@ class NodeAggregator(dict):
         for node in self.itervalues():
             node.start()
         self.thread.start()
+        LOGGER.info("Aggregator started")
 
     def stop(self):
         """ Stop the nodes connection and stop asyncore.loop thread """
         for node in self.itervalues():
             node.close()
         self.thread.join()
+
+    def send_nodes(self, nodes_list, message):
+        """ Send the `message` to `nodes_list` nodes
+
+        If nodes_list is None, send to all nodes """
+        if nodes_list is None:
+            LOGGER.debug("Broadcast: %r", message)
+            self.broadcast(message)
+        else:
+            LOGGER.debug("Send: %r to %r", message, nodes_list)
+            for node in nodes_list:
+                self._send(node, message)
+
+    def _send(self, node_id, message):
+        """ Safe send message to node """
+        try:
+            self[node_id].send(message)
+        except KeyError:
+            LOGGER.warning("Node not managed: %s", node_id)
 
     def broadcast(self, message):
         """ Send a message to all the nodes serial links """
@@ -269,11 +291,88 @@ def get_nodes(api, exp_id=None, nodes_list=None, with_a8=False):
     return nodes
 
 
+def extract_nodes_and_message(line):
+    """
+    >>> extract_nodes_and_message('')
+    (None, '')
+
+    >>> extract_nodes_and_message(' ')
+    (None, ' ')
+
+    >>> extract_nodes_and_message('message')
+    (None, 'message')
+
+    >>> extract_nodes_and_message('-;message')
+    (None, 'message')
+
+    >>> extract_nodes_and_message('my_message_csv;message')
+    (None, 'my_message_csv;message')
+
+    >>> extract_nodes_and_message('M3,1;message')
+    (['m3-1'], 'message')
+
+    >>> extract_nodes_and_message('m3,1-3+5;message')
+    (['m3-1', 'm3-2', 'm3-3', 'm3-5'], 'message')
+
+    >>> extract_nodes_and_message('wsn430,3+5;message')
+    (['wsn430-3', 'wsn430-5'], 'message')
+
+    >>> extract_nodes_and_message('a8,1+2;message')
+    (['node-a8-1', 'node-a8-2'], 'message')
+
+    # use dash in node destination
+    >>> extract_nodes_and_message('m3-1;message')
+    (['m3-1'], 'message')
+
+    >>> extract_nodes_and_message('A8-1;message')
+    (['node-a8-1'], 'message')
+
+    >>> extract_nodes_and_message('node-a8-1;message')
+    (['node-a8-1'], 'message')
+
+    """
+    try:
+        nodes_str, message = line.split(';')
+        if '-' == nodes_str:
+            # -
+            return None, message
+
+        if ',' in nodes_str:
+            # m3,1-5+4
+            archi, list_str = nodes_str.split(',')
+        else:
+            # m3-1 , a8-2, node-a8-3, wsn430-4
+            # convert it as if it was with a comma
+            archi, list_str = nodes_str.rsplit('-', 1)
+            int(list_str)  # ValueError if not int
+
+        # normalize archi
+        archi = archi.lower()
+        archi = 'node-a8' if 'a8' == archi else archi
+
+        # get nodes list
+        nodes = common_parser.nodes_id_list(archi, list_str)
+
+        return nodes, message
+    except (IndexError, ValueError):
+        return None, line
+
+
+def read_input(aggregator):
+    """ Read input and sends the messages to the given nodes """
+    while True:
+        line = raw_input()
+        nodes, message = extract_nodes_and_message(line)
+
+        if (None, '') != (nodes, message):
+            aggregator.send_nodes(nodes, message + '\n')
+        # else: Only hitting 'enter' to get spacing
+
+
 def main():
     """ Reads nodes from ressource json in stdin and
     aggregate serial links of all nodes
     """
-    import signal
     parser = opts_parser()
     opts = parser.parse_args()
 
@@ -289,10 +388,11 @@ def main():
 
     aggregator = NodeAggregator(nodes_list, print_lines=True)
     aggregator.start()
+
     try:
-        signal.signal(signal.SIGINT, (lambda signal, frame: 0))
-        signal.pause()
-        LOGGER.info("Closing connections")
+        read_input(aggregator)
+    except KeyboardInterrupt:
+        LOGGER.info("Stopping")
     finally:
         aggregator.stop()
 

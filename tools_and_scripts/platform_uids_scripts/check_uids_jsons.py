@@ -1,10 +1,12 @@
 #! /usr/bin/env python
 # -*- coding:utf-8 -*-
 
+""" Check the given uids jsons files against platform stored ones """
+
 import json
 import sys
-import argparse
 import logging
+import argparse
 
 LOGGER = logging.getLogger('check_uids_jsons')
 LOGGER.setLevel(logging.DEBUG)
@@ -17,7 +19,6 @@ from iotlabcli.helpers import node_url_sort_key
 
 def opts_parser():
     """ Argument parser object """
-    import argparse
     parser = argparse.ArgumentParser()
     common_parser.add_auth_arguments(parser)
 
@@ -25,7 +26,10 @@ def opts_parser():
     return parser
 
 NODES_ARCHI = ('m3:at86rf231', 'a8:at86rf231')
+
+
 def oar_uids(api):
+    """ Extract nodes uids from oar infos """
     oar_uids_dict = {}
     resources = experiment.info_experiment(api)
     for node in resources['items']:
@@ -35,7 +39,9 @@ def oar_uids(api):
 
     return oar_uids_dict
 
+
 def nodes_read_uids(json_files_list):
+    """ Extract nodes uids from given json files list """
     nodes_uids_dict = {}
     for json_file_path in json_files_list:
         with open(json_file_path) as json_file:
@@ -46,6 +52,7 @@ def nodes_read_uids(json_files_list):
 
 
 def compare_nodes_uids(old, new):
+    """ Return a comparison dict of the two given ones """
     result_dict = {
         'ignored': None,
         'ok': [],
@@ -71,13 +78,16 @@ def compare_nodes_uids(old, new):
 
 
 def write_outputs(diff_dict, filename_prefix):
+    """ Write result files in files starting with `filename_prefix` """
     for status, nodes in diff_dict.iteritems():
         print "%s: %u" % (status, len(nodes))
-        with open("%s_%s.csv" % (filename_prefix, status), 'w') as _f:
+        with open("%s_%s.csv" % (filename_prefix, status), 'w') as out_f:
             for node in nodes:
-                _f.write("%s,%s\n" % (node[0], node[1]))
+                out_f.write("%s,%s\n" % (node[0], node[1]))
 
-def main(args):
+
+def main():
+    """ Check the oar uids using given jsons dicts """
 
     parser = opts_parser()
     opts = parser.parse_args()
@@ -97,6 +107,5 @@ def main(args):
     write_outputs(nodes_cmp, 'uid_cmp')
 
 
-
 if __name__ == '__main__':
-    main(sys.argv)
+    main()

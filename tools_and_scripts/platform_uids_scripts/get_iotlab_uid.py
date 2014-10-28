@@ -10,9 +10,9 @@ import signal
 
 import serial_aggregator
 import iotlabcli
-from iotlabcli import experiment
 from iotlabcli.parser import common as common_parser
 from iotlabcli.parser import node as node_parser
+
 
 def opts_parser():
     """ Argument parser object """
@@ -35,6 +35,8 @@ def opts_parser():
 
 
 NODES_UID = {}
+
+
 def handle_uid(identifier, line):
     """ Print one line prefixed by id in format: """
     url = re.sub('node-', '', identifier)  # remove node- from a8 nodes
@@ -52,6 +54,7 @@ def handle_uid(identifier, line):
     NODES_UID[url] = uid
     sys.stderr.write("%s : %s\n" % (uid, url))
 
+
 def main():
     """ Reads nodes from ressource json in stdin and
     aggregate serial links of all nodes
@@ -68,7 +71,6 @@ def main():
     except RuntimeError as err:
         sys.stderr.write("%s\n" % err)
         exit(1)
-
 
     aggregator = serial_aggregator.NodeAggregator(
         nodes_list, print_lines=False, line_handler=handle_uid)
