@@ -25,16 +25,12 @@ def opts_parser():
     parser.add_argument('uids_json_files', nargs='+', help='uids json files')
     return parser
 
-NODES_ARCHI = ('m3:at86rf231', 'a8:at86rf231')
-
 
 def oar_uids(api):
     """ Extract nodes uids from oar infos """
     oar_uids_dict = {}
     resources = experiment.info_experiment(api)
     for node in resources['items']:
-        if node['archi'] not in NODES_ARCHI:
-            continue
         oar_uids_dict[node['network_address']] = node['uid'].lower()
 
     return oar_uids_dict
