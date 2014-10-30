@@ -38,7 +38,7 @@ Running Experiments
 - you're done !
 
 In case an error happens during operation, the nodes in error
-flash quicker for 2 seconds and are show as "failed".
+flash quicker for 2 seconds and are shown as "failed".
 
 
 Showing What's Going On
