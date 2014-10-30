@@ -4,31 +4,16 @@ Web-View
 Provides control and customizable viewing capabilities for IoT-LAB.
 
 
-Overview
---------
+Prerequisites
+-------------
 
-The following files are "user data" and read by the system:
-- user-styles.css
-- user-state.json
-- nodes-sets.json
-- firmwares.json
-
-The following files are "core" and may be customized:
-- script.js
-- sensors.js
-- httpd.py
-
-File lib-drag-drop.js is a re-packed single-file version of a
-region-selection library courtesy of http://threedubmedia.com/
-
-File nodes-sets.json is updated when button "save" is used,
-providing for easy export of selected nodes.
+- you need cli-tools installed and working
+- you need sudo apt-get install python-simplejson
 
 
 Running Experiments
 -------------------
 
-- you need cli-tools installed and working
 - start the server: ``./httpd.py &``
 - browse to: http://localhost:8000/ 
 - wait a few seconds for the display to update
@@ -75,3 +60,28 @@ Saving / Loading Nodes Sets
 
 Node sets are saved in file ``nodes-sets.json``, which may be
 edited manually or by script.
+
+
+Internals Overview
+------------------
+
+The following files are "user data" and read by the system:
+- user-styles.css
+- user-state.json
+- nodes-sets.json
+- firmwares.json
+
+The following files are "core" and may be customized:
+- script.js
+- sensors.js
+- httpd.py
+
+File lib-drag-drop.js is a re-packed single-file version of a
+region-selection library courtesy of http://threedubmedia.com/
+
+File nodes-sets.json is updated when button "save" is used,
+providing for easy export of selected nodes.
+
+File user-state.json is polled by the web gui every 100ms; the intended
+use is that an externel process writes this file to display system state.
+
