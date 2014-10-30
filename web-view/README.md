@@ -21,6 +21,9 @@ The following files are "core" and may be customized:
 File lib-drag-drop.js is a re-packed single-file version of a
 region-selection library courtesy of http://threedubmedia.com/
 
+File nodes-sets.json is updated when button "save" is used,
+providing for easy export of selected nodes.
+
 
 Running Experiments
 -------------------
