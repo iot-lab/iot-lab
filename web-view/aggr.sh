@@ -47,6 +47,9 @@ sanity_check() {
 		shift
 	done
 	[ "$node_type" ] || fatal "invalid arch: $arch"
+	if ! ssh $site".iot-lab.info" "test -f ./serial_aggregator.py"; then
+		fatal "cannot find ./serial_aggregator.py on ssh frontend $site"
+	fi
 }
 
 m3="m3:at86rf231"
