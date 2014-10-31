@@ -103,7 +103,7 @@ function createButtons() {
 	document.body.appendChild(document.toolbox);
 	var actions = {
 		start: 300, stop: 350, reset: 400, update: 450, grab: 510,
-		load: 60, save: 100, clear: 140, owned: 187 };
+		load: 60, save: 100, clear: 140, owned: 187, target: 610 };
 	for (var key in actions)
 		createActionButton(actions[key], 10, key);
 }
@@ -118,6 +118,7 @@ var action_buttons = {
 	save: saveSensorsSet,
 	clear: clearSelectedSensors,
 	owned: selectOwnedSensors,
+	target: selectTargetSite,
 };
 
 function createActionButton(x, y, actionName) {
@@ -327,6 +328,22 @@ function resultAsDict(result) {
 		});
 	}
 	return res;
+}
+
+function selectTargetSite() {
+	callServer("sites.json" + nocache(), function (data) {
+	modalListSelection({
+		x: 610, y: 60,
+		title: "Target Sensors",
+		items: Object.keys(data),
+		onsel: function(item) {
+			callServer("set_target_sensors" +
+				"?file_name=" + encodeURIComponent(data[item]),
+				function () { location.reload() }
+			);
+		}
+	});
+	});
 }
 
 function updateSensors() {
