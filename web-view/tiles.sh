@@ -9,6 +9,7 @@ nodes=$(grep "\"$node_set_name\"" nodes-sets.json | sed 's/.*: "//; s/".*//')
 /AccPeak/		{ print node_id, "splash" }
 /MagPeak/		{ print node_id, "splash red" }
 /Radio .* data=Robot!/ 	{ print node_id, "circle" }
+/ping!/		 	{ print node_id, "splash red" }
 { fflush() }
 ' \
 | tee /dev/stderr | ./splash.py --queue-size 100 --max-age 2
