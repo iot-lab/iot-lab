@@ -31,7 +31,9 @@ def oar_uids(api):
     oar_uids_dict = {}
     resources = experiment.info_experiment(api)
     for node in resources['items']:
-        oar_uids_dict[node['network_address']] = node['uid'].lower()
+        # collect uid for non Absent nodes
+        uid = node['uid'].lower() if 'Absent' != node['state'] else None
+        oar_uids_dict[node['network_address']] = uid
 
     return oar_uids_dict
 
@@ -50,22 +52,32 @@ def nodes_read_uids(json_files_list):
 def compare_nodes_uids(old, new):
     """ Return a comparison dict of the two given ones """
     result_dict = {
-        'ignored': None,
+        'no_data': None,
         'ok': [],
-        'ko': [],
+        'outdated': [],
+        'node_absent': [],
     }
 
     not_tested = set(old.items())
 
+    # compare
     for node, uid in new.iteritems():
         logging.debug("%s old: %s - new %s", node, uid, old[node])
         if uid == old[node]:
             result_dict['ok'].append((node, uid))
         else:
-            result_dict['ko'].append((node, uid))
+            result_dict['outdated'].append((node, uid))
         not_tested.remove((node, old[node]))
 
-    result_dict['ignored'] = list(not_tested)
+    # remove absent nodes
+    for node, uid in list(not_tested):
+        if uid is None:
+            result_dict['node_absent'].append((node, uid))
+            not_tested.remove((node, uid))
+
+        print node
+
+    result_dict['no_data'] = list(not_tested)
 
     # sort values
     for nodes in result_dict.values():
