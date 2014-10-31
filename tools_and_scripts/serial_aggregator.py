@@ -190,6 +190,10 @@ class NodeAggregator(dict):  # pylint:disable=too-many-public-methods
     After init, it can be manipulated like a dict.
     """
     def __init__(self, nodes_list, *args, **kwargs):
+        if not nodes_list:
+            raise ValueError("NodeAggregator: Empty nodes list %r" %
+                             nodes_list)
+
         super(NodeAggregator, self).__init__()
         self.thread = threading.Thread(target=asyncore.loop,
                                        kwargs={'timeout': 1, 'use_poll': True})
@@ -385,7 +389,12 @@ def main():
         sys.stderr.write("%s\n" % err)
         exit(1)
 
-    aggregator = NodeAggregator(nodes_list, print_lines=True)
+    try:
+        aggregator = NodeAggregator(nodes_list, print_lines=True)
+    except ValueError as err:
+        sys.stderr.write("%r\n" % err)
+        exit(1)
+
     aggregator.start()
 
     try:
