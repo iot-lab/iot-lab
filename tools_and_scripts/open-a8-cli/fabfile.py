@@ -134,7 +134,7 @@ def flash_firmware(firmware):
 @exp_task
 def reset():
     """ Reset Open A8 node m3 """
-    execute(restart_redirect)
+    execute(reset_node)
 
 
 @parallel
