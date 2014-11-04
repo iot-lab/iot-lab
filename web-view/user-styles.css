@@ -2,9 +2,6 @@
  * these styles are applied to sensors
  * based on json returned by get_user_state
  */
-.green {
-	background-color: green;
-}
 .splash {
 	background-color: blue;
 	opacity: 0.4;
@@ -21,4 +18,13 @@
 	height: 12px;
 	border: 2px solid orange;
 	border-radius: 7px;
+}
+.green {
+	background-color: green;
+}
+.orange {
+	background-color: orange;
+}
+.red {
+	background-color: red;
 }

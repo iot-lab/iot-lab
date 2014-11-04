@@ -37,6 +37,10 @@ class Reqs:
 		JSONEncoder(indent=4,sort_keys=1).encode(data))
 	return {"name": name}
 
+  def set_target_sensors(self, file_name):
+	cmd = "ln -sf " + file_name + " sensors.js"
+	return check_output(cmd.split(" "));
+
   def start_nodes(self, nodes, site, archi, exp_id):
 	return call("node-cli --start -i " + exp_id
 			+ " -l " + ",".join([site, archi, nodes]))
