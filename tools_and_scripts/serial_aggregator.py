@@ -233,11 +233,13 @@ class NodeAggregator(dict):  # pylint:disable=too-many-public-methods
             self[node_id].send(message)
         except KeyError:
             LOGGER.warning("Node not managed: %s", node_id)
+        except socket.error:
+            LOGGER.warning("Send failed: %s", node_id)
 
     def broadcast(self, message):
         """ Send a message to all the nodes serial links """
-        for node in self.itervalues():
-            node.send(message)
+        for node in self.iterkeys():
+            self._send(node, message)
 
 
 def extract_nodes(resources, with_a8=False):
