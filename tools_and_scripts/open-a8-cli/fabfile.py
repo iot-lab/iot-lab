@@ -1,22 +1,23 @@
 """ Fabric methods to help running commands on A8 nodes """
 import os
 import iotlabcli
+import iotlabcli.helpers
 import iotlabcli.experiment
 import iotlabcli.parser.common
 from fabric.api import env, run, execute
 from fabric.api import task, parallel, roles, runs_once
-from fabric.utils import abort
+from fabric.utils import abort, puts
 from fabric import operations
 
 _VERSION = (int(n) for n in env.version.split('.'))
 assert (1, 5, 0) >= _VERSION, \
     ("Fabric should support ssh 'gateway'. Should be at least version '1.5'" +
      ": %r" % env.version)
-# Debug paramiko
-# import logging
-# logging.basicConfig(level=logging.DEBUG)
-# Debug paramiko
 
+# Debug paramiko
+import logging
+logging.basicConfig(level=logging.CRITICAL)
+# logging.basicConfig(level=logging.DEBUG)
 
 env.use_ssh_config = True
 env.ssh_config_path = './ssh_config'
@@ -24,6 +25,8 @@ env.ssh_config_path = './ssh_config'
 env.reject_unknown_hosts = False
 env.disable_known_hosts = True
 env.abort_on_prompts = True
+
+env.skip_bad_hosts = True
 
 env.colorize_errors = True
 env.pool_size = 10
@@ -71,10 +74,30 @@ def exp_task(func):
     def wrapper(*args, **kwargs):
         """ wrapper that calls 'exp' before actual task """
         execute(exp, exp_id=None)
-        func(*args, **kwargs)
+        ret = func(*args, **kwargs)
+        print_result(ret)
     wrapper.__doc__ = func.__doc__
 
     return wrapper
+
+
+def inv_dict(in_d):
+    """ Invert dict and store values in a list """
+    out_d = {}
+    for key, val in in_d.iteritems():
+        out_d.setdefault(str(val), []).append(key)
+
+    # sort values
+    for vals in out_d.itervalues():
+        vals.sort(key=iotlabcli.helpers.node_url_sort_key)
+    return out_d
+
+
+def print_result(execute_res):
+    """ Print task results classed by return value/error code """
+    import json
+    result_dict = inv_dict(execute_res)
+    puts(json.dumps(result_dict, indent=4))
 
 
 # # # # # # # # # # # # # # # # # # # #
@@ -85,14 +108,14 @@ def exp_task(func):
 @exp_task
 def redirect():
     """ Start Open A8 node m3 serial port redirection """
-    execute(restart_redirect)
+    return execute(restart_redirect)
 
 
 @parallel
 @roles('nodes')
 def restart_redirect():
     """ Redirect the serial port to port 20000 """
-    run("/etc/init.d/serial_redirection restart", pty=False)
+    return run("/etc/init.d/serial_redirection restart", pty=False).return_code
 
 
 # # # # # # # # # # # # # # # # # # # # # # # # # #
@@ -108,7 +131,7 @@ def restart_redirect():
 def update(firmware):
     """ Update the firmware on all experiment nodes """
     execute(upload_firmware, firmware)
-    execute(flash_firmware, firmware)
+    return execute(flash_firmware, firmware)
 
 
 @parallel
@@ -123,7 +146,7 @@ def upload_firmware(firmware):
 def flash_firmware(firmware):
     """ Flash the nodes """
     remote_firmware = '~/A8/' + os.path.basename(firmware)
-    run("flash_a8_m3 %s 2>/dev/null" % remote_firmware)
+    return run("flash_a8_m3 %s 2>/dev/null" % remote_firmware).return_code
 
 
 # # # # # # # # # # #
@@ -134,11 +157,11 @@ def flash_firmware(firmware):
 @exp_task
 def reset():
     """ Reset Open A8 node m3 """
-    execute(reset_node)
+    return execute(reset_node)
 
 
 @parallel
 @roles('nodes')
 def reset_node():
     """ Reset the node """
-    run("reset_a8_m3 2>/dev/null")
+    return run("reset_a8_m3 2>/dev/null").return_code
