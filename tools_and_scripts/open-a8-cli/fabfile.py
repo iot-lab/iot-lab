@@ -35,10 +35,10 @@ env.pool_size = 10
 def _get_exp_a8_nodes(api, exp_id=None):
     """ Get the list of a8 nodes from given experiment """
     experiment = iotlabcli.experiment.get_experiment(api, exp_id)
-    _working_nodes = experiment["deploymentresults"]["0"]
+    _ok_nodes = experiment["deploymentresults"]["0"]
 
     # select valid a8 nodes from 'site'
-    nodes = [str('node-' + n) for n in _working_nodes if n.startswith('a8')]
+    nodes = [str('root@node-' + n) for n in _ok_nodes if n.startswith('a8')]
     if not nodes:
         abort("No successfully deployed A8 nodes found for exp:%u" % exp_id)
     return nodes
