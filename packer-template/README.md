@@ -1,7 +1,7 @@
 Iot-LAB virtual machine (VM)
 ===========================
 
-Create a Xubuntu 14.04 x64 VM with following features :
+Create a **Xubuntu 14.04 x64** VM with following features :
   * package depedencies
   * user vagrant (login=vagrant/password=vagrant)
   * git clone Iot-LAB github (in ~/vagrant/iot-lab) 
@@ -27,12 +27,12 @@ Requirements
 Launching VM
 ------------
 
-Init Vagrant environment and download Iot-LAB box file on Vagrant cloud 
-(https://vagrantcloud.com/iotlab/boxes/trusty64)
 ```
 mkdir ~/vagrant && cd vagrant
 vagrant init iotlab/trusty64
 ```
+Note : iotlab/trusty64 is a public Vagrant box file on the cloud (https://vagrantcloud.com/iotlab/boxes/trusty64)
+
 * **Without Desktop**
  - Launch VM :
  
