@@ -1,7 +1,7 @@
 Iot-LAB virtual machine (VM)
 ===========================
 
-Create a Xubuntu 14.04 x64 VM with features :
+Create a Xubuntu 14.04 x64 VM with following features :
   * package depedencies
   * user vagrant (login=vagrant/password=vagrant)
   * git clone Iot-LAB github (in ~/vagrant/iot-lab) 
