@@ -11,23 +11,43 @@ Aggregate all the serial links of an experiment and print it to stdout.
 
 ### Usage ###
 
-    $ experiment-cli get -r -i <exp_id> | ./serial_aggregator.py
-    1395240359.286712;node46; Type Enter to stop printing this help
-    1395240359.286853;node46;
-    1395240359.292523;node9;
-    1395240359.292675;node9;Senslab Simple Demo program
-    1395240359.292820;node9;Type command
-    1395240359.293094;node9;    h:  print this help
-    1395240359.293241;node9;    t:  temperature measure
-    1395240359.293612;node9;    l:  luminosity measure
-    1395240359.293760;node9;    s:  send a radio packet
-    1395240359.294044;node9;
-    1395240359.294212;node9; Type Enter to stop printing this help
-    1395240359.294781;node37;
-    1395240359.294949;node37;Senslab Simple Demo program
-    1395240359.295098;node37;Type command
+    $ ./serial_aggregator.py [-i <exp_id>] [-l nodes_list]
+    1395240359.286712;node-46; Type Enter to stop printing this help
+    1395240359.286853;node-46;
+    1395240359.292523;node-9;
+    1395240359.292675;node-9;Senslab Simple Demo program
+    1395240359.292820;node-9;Type command
+    1395240359.293094;node-9;    h:  print this help
+    1395240359.293241;node-9;    t:  temperature measure
+    1395240359.293612;node-9;    l:  luminosity measure
+    1395240359.293760;node-9;    s:  send a radio packet
+    1395240359.294044;node-9;
+    1395240359.294212;node-9; Type Enter to stop printing this help
+    1395240359.294781;node-37;
+    1395240359.294949;node-37;Senslab Simple Demo program
+    1395240359.295098;node-37;Type command
     ...
 
+
+### Sending messages ###
+
+Standard input is parsed to allow sending messages to the nodes.
+
+Parsing is done using the function `extract_nodes_and_message(line)` see the
+docstring for all allowed values.
+
+Examples
+--------
+
+    ''    -> does not send anything to anyone, allows 'blanking' lines
+
+    ' '   -> sends   ' \n' to all nodes
+    'msg' -> sends 'msg\n' to all nodes
+
+    'm3,1-3+5;message'  -> sends 'message\n' to nodes 'm3-[1, 2, 3, 5]'
+    'm3-1;message'      -> sends 'message\n' to nodes 'm3-1'
+
+    'message;semicolon' -> sends 'message;semicolon' to all nodes
 
 
 CLI JSON Parser
@@ -45,10 +65,11 @@ Get all 'Alive' nodes from Grenoble site
     $ experiment-cli info -li | ./parse_json.py "[entry['$HOSTNAME']['wsn430']['Alive'] for entry in x['items'] if '$HOSTNAME' in entry.keys()][0]"
     1-7+9-47+49+51+53-67+70-72+74-99+101-102+126-129+131-134+136-166+168-169+171-183+185-191+194-201+204-215+217-222+224-227+229-235+237-251+253-255
 
+
 OML plotter
 -----------
 
-oml_plot.py
+`oml_plot.py`
 
 plot oml filename [-tpvcah] -i <filename> or --input=<filename>
 

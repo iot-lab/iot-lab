@@ -1,0 +1,36 @@
+
+
+Scripts
+=======
+
+get_iotlab_uid.py
+-----------------
+
+Returns the uids for currently running experiment or nodes given in parameter
+(also tries to connect to A8 nodes)
+
+
+check_uid_jsons.py
+------------------
+
+Uses the given jsons uids files and compare them with the
+'experiment-cli info' results
+
+
+
+USAGE
+-----
+
+
+grenoble $ python get_iotlab_uip.py [-i <exp_id>] | tee <exp_id>_uid_out.json
+strasbourg $ python get_iotlab_uip.py [-i <exp_id_2>] | tee <exp_id_2>_uid_out.json
+
+$ python check_uid_jsons.py *uid_out.json
+ignored: 1093
+ok: 20
+ko: 20
+$ ls uid_cmp*
+uid_cmp_ignored.csv  uid_cmp_ko.csv  uid_cmp_ok.csv
+
+
+
