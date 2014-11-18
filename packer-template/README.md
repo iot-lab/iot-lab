@@ -66,14 +66,30 @@ Note : iotlab/trusty64 is a public Vagrant box file on the cloud (https://vagran
 Building VM
 -----------
 
-Generate a Vagrant Iot-LAB box file
+- Generate a Vagrant Iot-LAB box file
+
    ```
    git clone https://github.com/iot-lab/iot-lab.git
    cd iot-lab/packer-template/ubuntu-14.04
    packer build ubuntu-14-04.json
    ls ubuntu-14-04-x64-virtualbox.box
+   mkdir ~/vagrant && cd vagrant
+   vagrant init
+   vagrant box add iotlab iotlab/packer-template/ubuntu-14.04/ubuntu-14-04-x64-virtualbox.box
+   vagrant box list
    ```
+- Edit Vagrantfile 
 
+  ```
+  config.vm.box = "iotlab"
+  ```
+- Launch VM 
+
+  ```
+  vagrant up
+  ```
+  
+  
 
 
 
