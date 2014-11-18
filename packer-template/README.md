@@ -3,23 +3,77 @@ Iot-LAB virtual machine (VM)
 
 Create a VM Xubuntu 14.04 with :
   * package depedencies
-  * git clone github
+  * user vagrant (login=vagrant/password=vagrant)
+  * git clone Iot-LAB github (in ~/vagrant/iot-lab) 
   * toolchains compilation (arm-gcc & msp430-gcc)
-  * CLI Tools
-  * Contiki tunslip binary 
-  * autologin (login=vagrant/password=vagrant)
+  * CLI Tools installation
+  * Contiki tunslip binary (in ~/vagrant/tunslip6)
+  * autologin
+  * login screen with keyboard layout en/fr CTRL+SHIFT
   * Virtualbox guest additions
 
 Requirements
 ------------
 
-Managing VM : 
+**Managing VM** : 
 
-  * Virtualbox : https://www.virtualbox.org/wiki/Downloads
-  * Vagrant : https://www.vagrantup.com/downloads.html
+  * Virtualbox : https://www.virtualbox.org/wiki/Downloads (testing with 4.3.18)
+  * Vagrant : https://www.vagrantup.com/downloads.html (testing with 1.6.5)
 
-Building VM :
+**Building VM** :
 
-  * https://www.packer.io/downloads.html
+  * https://www.packer.io/downloads.html (testing with 0.7.2)
+
+Launching VM
+------------
+
+Init Vagrant environment and download Iot-LAB box file on Vagrant cloud 
+(https://vagrantcloud.com/iotlab/boxes/trusty64)
+```
+mkdir ~/vagrant && cd vagrant
+vagrant init iotlab/trusty64
+```
+* **Without Desktop**
+ - Launch VM :
+ 
+   ```
+   vagrant up
+   ```
+ - Connect to the VM :
+ 
+   ```
+   vagrant ssh
+   ```
+ - Halt the VM :
+ 
+   ```
+   vagrant halt
+   ```
+* **With Desktop**
+ - Edit Vagrantfile in the directory vagrant and **uncomment**
+   ```
+    config.vm.provider "virtualbox" do |vb|
+        vb.gui = true
+    end
+   ```
+   
+ - Launch VM :
+ 
+   ```
+   vagrant up
+   ```
+
+Building VM
+-----------
+
+Generate a Vagrant Iot-LAB box file
+   ```
+   git clone https://github.com/iot-lab/iot-lab.git
+   cd iot-lab/packer-template/ubuntu-14.04
+   packer build ubuntu-14-04.json
+   ls ubuntu-14-04-x64-virtualbox.box
+   ```
+
+
 
 
