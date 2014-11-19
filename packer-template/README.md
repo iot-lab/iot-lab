@@ -28,7 +28,7 @@ Launching VM
 ------------
 
 ```
-mkdir ~/vagrant && cd vagrant
+mkdir ~/vagrant && cd ~/vagrant
 vagrant init iotlab/trusty64
 ```
 Note : iotlab/trusty64 is a public Vagrant box file on the cloud (https://vagrantcloud.com/iotlab/boxes/trusty64)
@@ -73,7 +73,7 @@ Building VM
    cd iot-lab/packer-template/ubuntu-14.04
    packer build ubuntu-14-04.json
    ls ubuntu-14-04-x64-virtualbox.box
-   mkdir ~/vagrant && cd vagrant
+   mkdir ~/vagrant && cd ~/vagrant
    vagrant init
    vagrant box add iotlab iotlab/packer-template/ubuntu-14.04/ubuntu-14-04-x64-virtualbox.box
    vagrant box list
