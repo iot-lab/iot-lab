@@ -12,7 +12,7 @@ cd /home/vagrant | git clone https://github.com/iot-lab/iot-lab.git
 echo "install Iot-LAB CLI Toools"
 CLI_TOOLS_VERSION="1.3.2"
 cd /home/vagrant | wget -qO - https://github.com/iot-lab/cli-tools/archive/v$CLI_TOOLS_VERSION.tar.gz | tar xz
-cd /home/vagrant/cli-tools-$CLI_TOOLS_VERSION && sudo python setup.py install
+cd /home/vagrant/cli-tools-$CLI_TOOLS_VERSION && python setup.py install
 rm -rf /home/vagrant/cli-tools-$CLI_TOOLS_VERSION
 
 echo "install tunslip6 Contiki tool"
