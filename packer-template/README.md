@@ -22,7 +22,7 @@ Requirements
 
 **Building VM** :
 
-  * https://www.packer.io/downloads.html (testing with 0.7.2)
+  * Packer : https://www.packer.io/downloads.html (testing with 0.7.2)
 
 Launching VM
 ------------
