@@ -401,7 +401,7 @@ def main():
 
     try:
         read_input(aggregator)
-    except KeyboardInterrupt:
+    except (KeyboardInterrupt, EOFError):
         LOGGER.info("Stopping")
     finally:
         aggregator.stop()
