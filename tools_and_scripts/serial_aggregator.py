@@ -270,12 +270,12 @@ def opts_parser():
 
     nodes_group.add_argument(
         '-l', '--list', type=node_parser.nodes_list_from_str,
-        dest='nodes_list', help='nodes list, may be given multiple times')
+        dest='nodes_list', help='nodes list in format: "site,archi,1-5+9"')
 
     nodes_group.add_argument(
         '--with-a8', action='store_true',
         help=('redirect open-a8 serial port. ' +
-              '`serial_redirection` must be run on the node'))
+              '`/etc/init.d/serial_redirection` must be running on the nodes'))
     return parser
 
 
