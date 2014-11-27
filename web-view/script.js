@@ -210,6 +210,7 @@ function setSensorsUserState(state) {
 		e.update = function(state) {
 			this.className = "sensor " + state.style;
 			this.text = state.text;
+			this.style.zIndex = -1;
 			eval(state.call);
 		};
 		e.update(state[i]);
