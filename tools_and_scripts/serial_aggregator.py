@@ -282,14 +282,23 @@ def get_nodes(api, exp_id=None, nodes_list=None, with_a8=False):
     Or currently running experiment if none provided """
 
     nodes = []
+    # Check that the experiment is running
+    if exp_id is not None:
+        state = experiment.get_experiment(api, exp_id, 'state')["state"]
+        if 'Running' != state:
+            raise RuntimeError("Experiment %u is not running: '%s'" %
+                               (exp_id, state))
+
+    # no nodes supplied, try to get current experiment
     if exp_id is None and nodes_list is None:
-        # Try to get current experiment
         exp_id = iotlabcli.get_current_experiment(api)
 
+    # add nodes from experiment
     if exp_id is not None:
         res = experiment.get_experiment(api, exp_id, 'resources')
         nodes.extend(extract_nodes(res, with_a8))
 
+    # add nodes from nodes_list
     if nodes_list is not None:
         nodes.extend([n for n in nodes_list if HOSTNAME in n])
 
@@ -382,19 +391,17 @@ def main():
     opts = parser.parse_args()
 
     try:
+        # parse arguments
         username, password = iotlabcli.get_user_credentials(
             opts.username, opts.password)
         api = iotlabcli.Api(username, password)
         nodes_list = get_nodes(
             api, opts.experiment_id, opts.nodes_list, with_a8=opts.with_a8)
-    except RuntimeError as err:
-        sys.stderr.write("%s\n" % err)
-        exit(1)
 
-    try:
+        # Create the aggregator
         aggregator = NodeAggregator(nodes_list, print_lines=True)
-    except ValueError as err:
-        sys.stderr.write("%r\n" % err)
+    except (ValueError, RuntimeError) as err:
+        sys.stderr.write("%s\n" % err)
         exit(1)
 
     aggregator.start()
