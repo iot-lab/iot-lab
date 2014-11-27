@@ -38,6 +38,8 @@ The script will get the serial links current site nodes.
 For multi-sites experiments, you should run the script on each site server.
 """
 
+__version__ = '1.0.0'
+
 # use readline for 'raw_input'
 import readline  # pylint:disable=unused-import
 
