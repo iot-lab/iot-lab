@@ -27,10 +27,19 @@ Requirements
 Launching VM
 ------------
 
+On Linux :
 ```
 mkdir ~/vagrant && cd ~/vagrant
 vagrant init iotlab/trusty64
 ```
+
+On Windows, open a dos console (cmd.exe):
+```
+md vagrant 
+cd vagrant
+vagrant init iotlab/trusty64
+```
+
 Note : iotlab/trusty64 is a public Vagrant box file on the cloud (https://vagrantcloud.com/iotlab/boxes/trusty64)
 
 * **Without Desktop**
@@ -62,6 +71,20 @@ Note : iotlab/trusty64 is a public Vagrant box file on the cloud (https://vagran
    ```
    vagrant up
    ```
+
+Keyboard configuration
+----------------------- 
+
+* user vagrant (login=vagrant/password=vagrant)
+
+If you use the VM with the desktop, at the login screen, the default keyboard is english. You can switch in french keyboard with :
+
+* keyboard layout en/fr CTRL+SHIFT.
+* or use the screen keyboard see below :
+
+![screen keyboard](./screen-keyboard.png)
+
+
 
 Building VM
 -----------
