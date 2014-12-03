@@ -85,3 +85,4 @@ providing for easy export of selected nodes.
 File user-state.json is polled by the web gui every 100ms; the intended
 use is that an externel process writes this file to display system state.
 
+See also file: web-view archi.odg
