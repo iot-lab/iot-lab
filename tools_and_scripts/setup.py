@@ -23,5 +23,5 @@ setup(
                  'Intended Audience :: End Users/Desktop',
                  'Environment :: Console',
                  'Topic :: Utilities', ],
-    install_requires=['iotlabcli'],
+    install_requires=['iotlabcli>=1.4.0'],
 )
