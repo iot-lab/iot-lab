@@ -18,7 +18,7 @@ main() {
 	nodes="$@"
 	sanity_check $nodes
 	ssh $site".iot-lab.info" "
-		./serial_aggregator.py -l $site,$arch,${nodes// /+}
+		serial_aggregator -l $site,$arch,${nodes// /+}
 	"
 }
 
@@ -35,9 +35,6 @@ sanity_check() {
 		is_number $1 || fatal "invalid node id: $1"
 		shift
 	done
-	if ! ssh $site".iot-lab.info" "test -f ./serial_aggregator.py"; then
-		fatal "cannot find ./serial_aggregator.py on ssh frontend $site"
-	fi
 }
 
 
