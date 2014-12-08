@@ -50,6 +50,7 @@ import threading
 import sys
 import argparse
 import os
+import itertools
 
 import iotlabcli
 from iotlabcli import experiment
@@ -270,7 +271,10 @@ def opts_parser():
 
     nodes_group.add_argument(
         '-l', '--list', type=node_parser.nodes_list_from_str,
-        dest='nodes_list', help='nodes list in format: "site,archi,1-5+9"')
+        action='append', default=[],
+        dest='nodes_list', help='nodes list in format: "site,archi,1-5+9". '
+        'Can be supplied multiple times'
+    )
 
     nodes_group.add_argument(
         '--with-a8', action='store_true',
@@ -279,9 +283,10 @@ def opts_parser():
     return parser
 
 
-def get_nodes(api, exp_id=None, nodes_list=None, with_a8=False):
-    """ Get nodes list from experiment and/or nodes_list.
+def get_nodes(api, exp_id=None, nodes_list_list=(), with_a8=False):
+    """ Get nodes list from experiment and/or nodes_list_list.
     Or currently running experiment if none provided """
+    nodes_list = frozenset(itertools.chain.from_iterable(nodes_list_list))
 
     nodes = []
     # Check that the experiment is running
@@ -291,8 +296,8 @@ def get_nodes(api, exp_id=None, nodes_list=None, with_a8=False):
             raise RuntimeError("Experiment %u is not running: '%s'" %
                                (exp_id, state))
 
-    # no nodes supplied, try to get current experiment
-    if exp_id is None and nodes_list is None:
+    # no nodes supplied, try to get currently running experiment
+    if exp_id is None and not len(nodes_list):
         exp_id = iotlabcli.get_current_experiment(api)
 
     # add nodes from experiment
@@ -300,9 +305,8 @@ def get_nodes(api, exp_id=None, nodes_list=None, with_a8=False):
         res = experiment.get_experiment(api, exp_id, 'resources')
         nodes.extend(extract_nodes(res, with_a8))
 
-    # add nodes from nodes_list
-    if nodes_list is not None:
-        nodes.extend([n for n in nodes_list if HOSTNAME in n])
+    # add nodes from nodes_list, may be empty
+    nodes.extend([n for n in nodes_list if HOSTNAME in n])
 
     return nodes
 
