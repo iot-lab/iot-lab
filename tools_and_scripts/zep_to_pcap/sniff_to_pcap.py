@@ -15,10 +15,10 @@ PCAP_GLOBAL_HEADER = (
     'D4 C3 B2 A1'
     '02 00'         # File format major revision (i.e. pcap <2>.4)
     '04 00'         # File format minor revision (i.e. pcap 2.<4>)
-    '00 00 00 00'
-    '00 00 00 00'
-    'FF FF 00 00'
-    '01 00 00 00'
+    '00 00 00 00'   # GMT to local correction: 0 if timestamps are UTC
+    '00 00 00 00'   # accuracy of timestamps -> set it to 0
+    'FF FF 00 00'   # packet capture limit -> typically 65535
+    '01 00 00 00'   # Ethernet
 )
 
 # pcap packet header that must preface every packet
@@ -36,7 +36,7 @@ ETH_HEADER = (
 )
 
 IP_HEADER = (
-    '45'           # IP version and healer length (multiples of 4 bytes)
+    '45'           # IP version and header length (multiples of 4 bytes)
     '00'
     'XX XX'        # Length - Will be calculated and replaced later
     '00 00'
@@ -48,10 +48,10 @@ IP_HEADER = (
 )
 
 UDP_HEADER = (
-    '80 01'
-    '45 5a'  # Port: ZepPort 17754 in hexa
+    '45 5a'  # SrcPort: use ZepPort also but not required
+    '45 5a'  # DstPort: ZepPort 17754 in hexa
     'YY YY'  # Length - Will be calculated and replaced later
-    '00 00'
+    '00 00'  # checksum
 )
 
 
