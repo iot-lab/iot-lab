@@ -37,6 +37,7 @@ To give a 'correct' looking output, only lines are printed.
 The script will get the serial links current site nodes.
 For multi-sites experiments, you should run the script on each site server.
 """
+# pylint:disable=too-few-public-methods
 
 # use readline for 'raw_input'
 import readline  # noqa  # pylint:disable=unused-import
@@ -50,15 +51,6 @@ from iotlabaggregator import connections, common
 
 from iotlabcli.parser import common as common_parser
 
-NODES_ARCHIS = ("wsn430:cc2420", "wsn430:cc1101", "m3:at86rf231")
-
-# debug logger for lines
-LINE_LOGGER = logging.getLogger('serial_aggregator_line')
-_LINE_LOGGER = logging.StreamHandler(sys.stdout)
-_LINE_LOGGER.setFormatter(iotlabaggregator.LOG_FMT)
-LINE_LOGGER.setLevel(logging.INFO)
-LINE_LOGGER.addHandler(_LINE_LOGGER)
-
 
 class SerialConnection(connections.Connection):  # pylint:disable=R0903,R0904
     """
@@ -68,16 +60,21 @@ class SerialConnection(connections.Connection):  # pylint:disable=R0903,R0904
     :param print_lines: should lines be printed to stdout
     :param line_handler: additional function to call on received lines.
         `line_handler(identifier, line)`
-
     """
     port = 20000
+
+    _line_logger = logging.StreamHandler(sys.stdout)
+    _line_logger.setFormatter(iotlabaggregator.LOG_FMT)
+    logger = logging.getLogger('SerialConnection')
+    logger.setLevel(logging.INFO)
+    logger.addHandler(_line_logger)
 
     def __init__(self, hostname, print_lines=False, line_handler=None):
         super(SerialConnection, self).__init__(hostname)
 
         self.line_handler = common.Event()
         if print_lines:
-            self.line_handler.append(self._print_line)
+            self.line_handler.append(self.print_line)
         if line_handler:
             self.line_handler.append(line_handler)
 
@@ -89,139 +86,136 @@ class SerialConnection(connections.Connection):  # pylint:disable=R0903,R0904
         for line in lines:
             if line[-1] == '\n':
                 # Handle Unicode.
-                self.line_handler(
-                    self.hostname, line[:-1].decode('utf-8', 'replace'))
+                line = line[:-1].decode('utf-8-', 'replace')
+                self.line_handler(self.hostname, line)
             else:
                 data = line  # last incomplete line
         return data
 
-    @staticmethod
-    def _print_line(identifier, line):
+    def print_line(self, identifier, line):
         """ Print one line prefixed by id in format: """
-        LINE_LOGGER.info("%s;%s", identifier, line)
+        self.logger.info("%s;%s", identifier, line)
+
+    def run(self):  # overwrite original function
+        """ Nothing to do, wait for any signal """
+        try:
+            self.read_input()
+        except (KeyboardInterrupt, EOFError):
+            pass
+
+    def read_input(self):
+        """ Read input and sends the messages to the given nodes """
+        while True:
+            line = raw_input()
+            nodes, message = self.extract_nodes_and_message(line)
+
+            if (None, '') != (nodes, message):
+                self.send_nodes(nodes, message + '\n')
+            # else: Only hitting 'enter' to get spacing
+
+    @staticmethod
+    def extract_nodes_and_message(line):
+        """
+        >>> SerialConnection.extract_nodes_and_message('')
+        (None, '')
+
+        >>> SerialConnection.extract_nodes_and_message(' ')
+        (None, ' ')
+
+        >>> SerialConnection.extract_nodes_and_message('message')
+        (None, 'message')
+
+        >>> SerialConnection.extract_nodes_and_message('-;message')
+        (None, 'message')
+
+        >>> SerialConnection.extract_nodes_and_message('my_message_csv;msg')
+        (None, 'my_message_csv;msg')
+
+        >>> SerialConnection.extract_nodes_and_message('M3,1;message')
+        (['m3-1'], 'message')
+
+        >>> SerialConnection.extract_nodes_and_message('m3,1-3+5;message')
+        (['m3-1', 'm3-2', 'm3-3', 'm3-5'], 'message')
+
+        >>> SerialConnection.extract_nodes_and_message('wsn430,3+5;message')
+        (['wsn430-3', 'wsn430-5'], 'message')
+
+        >>> SerialConnection.extract_nodes_and_message('a8,1+2;message')
+        (['node-a8-1', 'node-a8-2'], 'message')
+
+        # use dash in node destination
+        >>> SerialConnection.extract_nodes_and_message('m3-1;message')
+        (['m3-1'], 'message')
+
+        >>> SerialConnection.extract_nodes_and_message('A8-1;message')
+        (['node-a8-1'], 'message')
+
+        >>> SerialConnection.extract_nodes_and_message('node-a8-1;message')
+        (['node-a8-1'], 'message')
+
+        """
+        try:
+            nodes_str, message = line.split(';')
+            if '-' == nodes_str:
+                # -
+                return None, message
+
+            if ',' in nodes_str:
+                # m3,1-5+4
+                archi, list_str = nodes_str.split(',')
+            else:
+                # m3-1 , a8-2, node-a8-3, wsn430-4
+                # convert it as if it was with a comma
+                archi, list_str = nodes_str.rsplit('-', 1)
+                int(list_str)  # ValueError if not int
+
+            # normalize archi
+            archi = archi.lower()
+            archi = 'node-a8' if 'a8' == archi else archi
+
+            # get nodes list
+            nodes = common_parser.nodes_id_list(archi, list_str)
+
+            return nodes, message
+        except (IndexError, ValueError):
+            return None, line
 
 
-def extract_nodes_and_message(line):
-    """
-    >>> extract_nodes_and_message('')
-    (None, '')
+class SerialAggregator(connections.Aggregator):
+    """ Aggregator for the Sniffer """
+    connection_class = SerialConnection
 
-    >>> extract_nodes_and_message(' ')
-    (None, ' ')
-
-    >>> extract_nodes_and_message('message')
-    (None, 'message')
-
-    >>> extract_nodes_and_message('-;message')
-    (None, 'message')
-
-    >>> extract_nodes_and_message('my_message_csv;message')
-    (None, 'my_message_csv;message')
-
-    >>> extract_nodes_and_message('M3,1;message')
-    (['m3-1'], 'message')
-
-    >>> extract_nodes_and_message('m3,1-3+5;message')
-    (['m3-1', 'm3-2', 'm3-3', 'm3-5'], 'message')
-
-    >>> extract_nodes_and_message('wsn430,3+5;message')
-    (['wsn430-3', 'wsn430-5'], 'message')
-
-    >>> extract_nodes_and_message('a8,1+2;message')
-    (['node-a8-1', 'node-a8-2'], 'message')
-
-    # use dash in node destination
-    >>> extract_nodes_and_message('m3-1;message')
-    (['m3-1'], 'message')
-
-    >>> extract_nodes_and_message('A8-1;message')
-    (['node-a8-1'], 'message')
-
-    >>> extract_nodes_and_message('node-a8-1;message')
-    (['node-a8-1'], 'message')
-
-    """
-    try:
-        nodes_str, message = line.split(';')
-        if '-' == nodes_str:
-            # -
-            return None, message
-
-        if ',' in nodes_str:
-            # m3,1-5+4
-            archi, list_str = nodes_str.split(',')
-        else:
-            # m3-1 , a8-2, node-a8-3, wsn430-4
-            # convert it as if it was with a comma
-            archi, list_str = nodes_str.rsplit('-', 1)
-            int(list_str)  # ValueError if not int
-
-        # normalize archi
-        archi = archi.lower()
-        archi = 'node-a8' if 'a8' == archi else archi
-
-        # get nodes list
-        nodes = common_parser.nodes_id_list(archi, list_str)
-
-        return nodes, message
-    except (IndexError, ValueError):
-        return None, line
-
-
-def read_input(aggregator):
-    """ Read input and sends the messages to the given nodes """
-    while True:
-        line = raw_input()
-        nodes, message = extract_nodes_and_message(line)
-
-        if (None, '') != (nodes, message):
-            aggregator.send_nodes(nodes, message + '\n')
-        # else: Only hitting 'enter' to get spacing
-
-
-def opts_parser():
-    """ Argument parser object """
     parser = argparse.ArgumentParser()
     common.add_nodes_selection_parser(parser)
     parser.add_argument(
         '--with-a8', action='store_true',
         help=('redirect open-a8 serial port. ' +
               '`/etc/init.d/serial_redirection` must be running on the nodes'))
-    return parser
 
+    @staticmethod
+    def select_nodes(opts):
+        """ Select all gateways and open-a8 if `with_a8` """
+        nodes = common.get_nodes_selection(**vars(opts))
 
-def select_nodes(nodes, with_a8):
-    """ Select all gateways and open-a8 if `with_a8` """
-    # all gateways urls except A8
-    nodes_list = [n for n in nodes if not n.startswith('a8')]
+        # all gateways urls except A8
+        nodes_list = [n for n in nodes if not n.startswith('a8')]
 
-    # add open-a8 urls with 'node-' in front all urls
-    if with_a8:
-        nodes_list += ['node-' + n for n in nodes if n.startswith('a8')]
-    return nodes_list
+        # add open-a8 urls with 'node-' in front all urls
+        if opts.with_a8:
+            nodes_list += ['node-' + n for n in nodes if n.startswith('a8')]
+        return nodes_list
 
 
 def main(args=None):
-    """ Aggregate all nodes outputs """
+    """ Aggregate all nodes sniffer """
     args = args or sys.argv[1:]
-    opts = opts_parser().parse_args()
-
+    opts = SerialAggregator.parser.parse_args(args)
     try:
-        # parse arguments
-        nodes = common.get_nodes_selection(**vars(opts))
-        nodes_list = select_nodes(nodes, opts.with_a8)
-
-        # Create the aggregator
-        aggregator = connections.Aggregator(nodes_list, SerialConnection,
-                                            print_lines=True)  # SerialArgs
+        # Parse arguments
+        nodes_list = SerialAggregator.select_nodes(opts)
+        # Run the aggregator
+        with SerialAggregator(nodes_list, print_lines=True) as aggregator:
+            aggregator.run()
     except (ValueError, RuntimeError) as err:
         sys.stderr.write("%s\n" % err)
         exit(1)
-
-    try:
-        aggregator.start()
-        read_input(aggregator)
-    except (KeyboardInterrupt, EOFError):
-        iotlabaggregator.LOGGER.info("Stopping")
-    finally:
-        aggregator.stop()

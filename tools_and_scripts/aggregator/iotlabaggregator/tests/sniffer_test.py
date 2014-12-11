@@ -1,7 +1,6 @@
 #! /usr/bin/python
 # -*- coding:utf-8 -*-
 
-
 import unittest
 from mock import patch, Mock
 
@@ -63,6 +62,7 @@ class TestSnifferHandleRead(unittest.TestCase):
 
     def test_data_handler_one_char_at_a_time(self):
         msg = list(self.zep_message)
+
         def recv(_):
             return msg.pop(0)
 
@@ -83,6 +83,7 @@ class TestSnifferHandleRead(unittest.TestCase):
 
     def _test_data_handler_n_char_at_a_time(self, num_chars):
         msg = list(self.zep_message * 10)
+
         def recv(_):
             ret = msg[0:num_chars]
             del(msg[0:num_chars])

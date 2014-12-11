@@ -7,6 +7,7 @@ import sys
 import asyncore
 import threading
 import socket
+import signal
 
 from iotlabaggregator import LOGGER
 
@@ -93,15 +94,22 @@ class Aggregator(dict):  # pylint:disable=too-many-public-methods
             node.close()
         self.thread.join()
 
+    def run(self):  # pylint:disable=no-self-use
+        """ Main function to run """
+        try:
+            signal.pause()
+        except KeyboardInterrupt:
+            pass
+
     def __enter__(self):
         self.start()
+        return self
 
     def __exit__(self, _type, _value, _traceback):
         self.stop()
 
     def send_nodes(self, nodes_list, message):
         """ Send the `message` to `nodes_list` nodes
-
         If nodes_list is None, send to all nodes """
         if nodes_list is None:
             LOGGER.debug("Broadcast: %r", message)

@@ -7,7 +7,6 @@
 
 import argparse
 import sys
-import signal
 
 import iotlabaggregator
 from iotlabaggregator import connections, common, zeptopcap
@@ -18,9 +17,9 @@ class SnifferConnection(connections.Connection):
     port = 30000
     zep_hdr_len = 32
 
-    def __init__(self, hostname, outfile=sys.stdout):
+    def __init__(self, hostname, outfd=sys.stdout):
         super(SnifferConnection, self).__init__(hostname)
-        zpcap = zeptopcap.ZepPcap(outfile)
+        zpcap = zeptopcap.ZepPcap(outfd)
         self.pkt_handler = zpcap.write
 
     def handle_data(self, data):
@@ -82,41 +81,30 @@ class SnifferAggregator(connections.Aggregator):
     """ Aggregator for the Sniffer """
     connection_class = SnifferConnection
 
-
-def opts_parser():
-    """ Argument parser object """
     parser = argparse.ArgumentParser()
     common.add_nodes_selection_parser(parser)
     parser.add_argument(
-        '-o', '--outfile', required=True, type=argparse.FileType('wb'),
-        help="File wher the pcap will be saved. Use '-' for stdout.")
-    return parser
+        '-o', '--outfile', dest='outfd', type=argparse.FileType('wb'),
+        required=True, help="Pcap outfile. Use '-' for stdout.")
 
-
-def select_nodes(nodes):
-    """ Select all gateways that support sniffer """
-    nodes_list = [n for n in nodes if n.startswith(('m3', 'a8'))]
-    return nodes_list
+    @staticmethod
+    def select_nodes(opts):
+        """ Select all gateways that support sniffer """
+        nodes = common.get_nodes_selection(**vars(opts))
+        nodes_list = [n for n in nodes if n.startswith(('m3', 'a8'))]
+        return nodes_list
 
 
 def main(args=None):
     """ Aggregate all nodes radio sniffer """
     args = args or sys.argv[1:]
-    opts = opts_parser().parse_args(args)
+    opts = SnifferAggregator.parser.parse_args(args)
     try:
-        # parse arguments
-        nodes = common.get_nodes_selection(**vars(opts))
-        nodes_list = select_nodes(nodes)
+        # Parse arguments
+        nodes_list = SnifferAggregator.select_nodes(opts)
+        # Run the aggregator
+        with SnifferAggregator(nodes_list, opts.outfd) as aggregator:
+            aggregator.run()
     except (ValueError, RuntimeError) as err:
         sys.stderr.write("%s\n" % err)
         exit(1)
-
-    try:
-        # Run the  aggregator
-        aggregator = SnifferAggregator(nodes_list, opts.outfile)
-        aggregator.start()
-        signal.pause()
-    except KeyboardInterrupt:
-        iotlabaggregator.LOGGER.info("Stopping")
-    finally:
-        aggregator.stop()

@@ -5,6 +5,7 @@
 import os
 import itertools
 from iotlabcli import experiment
+from iotlabcli.helpers import node_url_sort_key
 import iotlabcli.parser.common
 import iotlabcli.parser.node
 
@@ -74,9 +75,10 @@ def extract_nodes(resources, hostname=HOSTNAME):
     return nodes
 
 
-def get_experiment_nodes(api, exp_id=None):
+def get_experiment_nodes(api, exp_id=None, hostname=HOSTNAME):
     """ Add the nodes from given experiment
     Return the experiment nodes list. Returns an empty list if exp_id is None
+    Restrict to the nodes from current site
 
     :raise ValueError: If the experiment is not running,
     """
@@ -91,25 +93,27 @@ def get_experiment_nodes(api, exp_id=None):
         raise RuntimeError("Experiment %u not running '%s'" % (exp_id, state))
 
     # Check that the experiment is running
-    return extract_nodes(experiment.get_experiment(api, exp_id, 'resources'))
+    resources = experiment.get_experiment(api, exp_id, 'resources')
+    return extract_nodes(resources, hostname)
 
 
-def query_nodes(api, exp_id=None, nodes_list_list=()):
+def query_nodes(api, exp_id=None, nodes_list_list=(), hostname=HOSTNAME):
     """ Get nodes list from experiment and/or nodes_list_list.
     Or currently running experiment if none provided """
     nodes_list = frozenset(itertools.chain.from_iterable(nodes_list_list))
 
-    nodes = []
+    nodes = set()
     # no nodes supplied, try to get currently running experiment
     if exp_id is None and not len(nodes_list):
         exp_id = iotlabcli.get_current_experiment(api)
 
     # add nodes from experiment, empty if exp_id is None
-    nodes.extend(get_experiment_nodes(api, exp_id))
+    nodes.update(get_experiment_nodes(api, exp_id, hostname))
     # add nodes from nodes_list, may be empty
-    nodes.extend([n for n in nodes_list if HOSTNAME in n])
+    nodes.update([n.split('.')[0] for n in nodes_list if hostname in n])
 
-    return nodes
+    # sorted output for tests
+    return sorted(list(nodes), key=node_url_sort_key)
 
 
 def add_nodes_selection_parser(parser):

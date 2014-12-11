@@ -5,7 +5,7 @@
 Intended to be run on the ssh frontends """
 
 import sys
-from setuptools import setup
+from setuptools import setup, find_packages
 
 
 def get_version():
@@ -39,7 +39,7 @@ setup(
     author_email='admin@iot-lab.info',
     url='http://www.iot-lab.info',
     download_url=DL_URL,
-    packages=['iotlabaggregator'],
+    packages=find_packages(),
     scripts=SCRIPTS,
     classifiers=['Development Status :: 3 - Alpha',
                  'Programming Language :: Python',
