@@ -1,5 +1,6 @@
 #! /usr/bin/env python
 # -*- coding:utf-8 -*-
+""" Aggregator tools for IoT-Lab platform """
 __version__ = '1.0.0'
 
 import sys

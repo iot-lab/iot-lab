@@ -74,28 +74,38 @@ def extract_nodes(resources, hostname=HOSTNAME):
     return nodes
 
 
+def get_experiment_nodes(api, exp_id=None):
+    """ Add the nodes from given experiment
+    Return the experiment nodes list. Returns an empty list if exp_id is None
+
+    :raise ValueError: If the experiment is not running,
+    """
+    # add nodes from experiment
+
+    if exp_id is None:
+        return []
+
+    # Check that the experiment is running
+    state = experiment.get_experiment(api, exp_id, 'state')["state"]
+    if 'Running' != state:
+        raise RuntimeError("Experiment %u not running '%s'" % (exp_id, state))
+
+    # Check that the experiment is running
+    return extract_nodes(experiment.get_experiment(api, exp_id, 'resources'))
+
+
 def query_nodes(api, exp_id=None, nodes_list_list=()):
     """ Get nodes list from experiment and/or nodes_list_list.
     Or currently running experiment if none provided """
     nodes_list = frozenset(itertools.chain.from_iterable(nodes_list_list))
 
     nodes = []
-    # Check that the experiment is running
-    if exp_id is not None:
-        state = experiment.get_experiment(api, exp_id, 'state')["state"]
-        if 'Running' != state:
-            raise RuntimeError("Experiment %u is not running: '%s'" %
-                               (exp_id, state))
-
     # no nodes supplied, try to get currently running experiment
     if exp_id is None and not len(nodes_list):
         exp_id = iotlabcli.get_current_experiment(api)
 
-    # add nodes from experiment
-    if exp_id is not None:
-        res = experiment.get_experiment(api, exp_id, 'resources')
-        nodes.extend(extract_nodes(res))
-
+    # add nodes from experiment, empty if exp_id is None
+    nodes.extend(get_experiment_nodes(api, exp_id))
     # add nodes from nodes_list, may be empty
     nodes.extend([n for n in nodes_list if HOSTNAME in n])
 

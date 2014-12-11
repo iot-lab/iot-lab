@@ -62,18 +62,21 @@ class Aggregator(dict):  # pylint:disable=too-many-public-methods
 
     After init, it can be manipulated like a dict.
     """
-    def __init__(self, nodes_list, connection_class=Connection,
-                 *args, **kwargs):
+
+    connection_class = Connection
+
+    def __init__(self, nodes_list, *args, **kwargs):
+
         if not nodes_list:
-            raise ValueError("%sAggregator: Empty nodes list %r" %
-                             (connection_class.__name__, nodes_list))
+            raise ValueError("%s: Empty nodes list %r" %
+                             (self.__class__.__name__, nodes_list))
         super(Aggregator, self).__init__()
 
         self.thread = threading.Thread(target=asyncore.loop,
                                        kwargs={'timeout': 1, 'use_poll': True})
         # create all the Connections
         for node_url in nodes_list:
-            node = connection_class(node_url, *args, **kwargs)
+            node = self.connection_class(node_url, *args, **kwargs)
             self[node_url] = node
 
     def start(self):

@@ -3,6 +3,8 @@
 
 """ Sniff tcp socket zep messages and save them as pcap """
 
+# pylint:disable=too-few-public-methods
+
 import argparse
 import sys
 import signal
@@ -11,36 +13,32 @@ import iotlabaggregator
 from iotlabaggregator import connections, common, zeptopcap
 
 
-class SnifferConnection(connections.Connection):  # pylint:disable=R0904
+class SnifferConnection(connections.Connection):
+    """ Connection to sniffer and data handling """
     port = 30000
-    pkt_length_offset = 32
+    zep_hdr_len = 32
 
-    def __init__(self, hostname, message_handler=(lambda data: None)):
+    def __init__(self, hostname, pkt_handler=(lambda data: None)):
         super(SnifferConnection, self).__init__(hostname)
-        self.message_handler = message_handler
+        self.pkt_handler = pkt_handler
 
     def handle_data(self, data):
         """ Print the data received line by line """
 
         while True:
             data = self._strip_until_pkt_start(data)
-            # has header
-            if not data.startswith('EX\2'):
+            if not data.startswith('EX\2') or len(data) < self.zep_hdr_len:
                 break
-
-            # has enough data to read length
-            if len(data) < self.pkt_length_offset:
-                break
-            pkt_len = ord(data[self.pkt_length_offset - 1])
-            full_len = self.pkt_length_offset + pkt_len
-
-            # packet is full
+            # length = header length + data[len_byte]
+            full_len = self.zep_hdr_len + ord(data[self.zep_hdr_len - 1])
             if len(data) < full_len:
                 break
 
-            iotlabaggregator.LOGGER.info("Got one message")
-            self.message_handler(data[0:full_len])
-            data = data[full_len:]
+            # Extract packet
+            pkt, data = data[:full_len], data[full_len:]
+            iotlabaggregator.LOGGER.debug("Got one message")
+            self.pkt_handler(pkt)
+
         return data
 
     @staticmethod
@@ -79,6 +77,11 @@ class SnifferConnection(connections.Connection):  # pylint:disable=R0904
         return msg[-2:]
 
 
+class SnifferAggregator(connections.Aggregator):
+    """ Aggregator for the Sniffer """
+    connection_class = SnifferConnection
+
+
 def opts_parser():
     """ Argument parser object """
     parser = argparse.ArgumentParser()
@@ -95,31 +98,25 @@ def select_nodes(nodes):
     return nodes_list
 
 
-def main():
-    opts = opts_parser().parse_args()
+def main(args=None):
+    """ Aggregate all nodes radio sniffer """
+    args = args or sys.argv[1:]
+    opts = opts_parser().parse_args(args)
     try:
         # parse arguments
         nodes = common.get_nodes_selection(**vars(opts))
         nodes_list = select_nodes(nodes)
-
-        zpcap = zeptopcap.ZepPcap(opts.outfile)
-
-        # Create the aggregator
-        aggregator = connections.Aggregator(
-            nodes_list, SnifferConnection,
-            message_handler=zpcap.write)  # SnifferArgs
     except (ValueError, RuntimeError) as err:
         sys.stderr.write("%s\n" % err)
         exit(1)
 
     try:
+        # Run the  aggregator
+        zpcap = zeptopcap.ZepPcap(opts.outfile)
+        aggregator = SnifferAggregator(nodes_list, pkt_handler=zpcap.write)
         aggregator.start()
         signal.pause()
     except KeyboardInterrupt:
         iotlabaggregator.LOGGER.info("Stopping")
     finally:
         aggregator.stop()
-
-
-if __name__ == '__main__':
-    main()

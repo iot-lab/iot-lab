@@ -39,7 +39,7 @@ For multi-sites experiments, you should run the script on each site server.
 """
 
 # use readline for 'raw_input'
-import readline  # pylint:disable=unused-import
+import readline  # noqa  # pylint:disable=unused-import
 
 import logging
 import sys
@@ -201,8 +201,9 @@ def select_nodes(nodes, with_a8):
     return nodes_list
 
 
-def main():
+def main(args=None):
     """ Aggregate all nodes outputs """
+    args = args or sys.argv[1:]
     opts = opts_parser().parse_args()
 
     try:
@@ -224,6 +225,3 @@ def main():
         iotlabaggregator.LOGGER.info("Stopping")
     finally:
         aggregator.stop()
-
-if __name__ == "__main__":
-    main()
