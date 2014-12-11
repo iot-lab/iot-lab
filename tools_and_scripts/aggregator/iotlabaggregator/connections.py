@@ -88,9 +88,16 @@ class Aggregator(dict):  # pylint:disable=too-many-public-methods
 
     def stop(self):
         """ Stop the nodes connection and stop asyncore.loop thread """
+        LOGGER.info("Stopping")
         for node in self.itervalues():
             node.close()
         self.thread.join()
+
+    def __enter__(self):
+        self.start()
+
+    def __exit__(self, _type, _value, _traceback):
+        self.stop()
 
     def send_nodes(self, nodes_list, message):
         """ Send the `message` to `nodes_list` nodes

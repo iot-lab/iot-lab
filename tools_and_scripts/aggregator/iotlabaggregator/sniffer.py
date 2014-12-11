@@ -18,9 +18,10 @@ class SnifferConnection(connections.Connection):
     port = 30000
     zep_hdr_len = 32
 
-    def __init__(self, hostname, pkt_handler=(lambda data: None)):
+    def __init__(self, hostname, outfile=sys.stdout):
         super(SnifferConnection, self).__init__(hostname)
-        self.pkt_handler = pkt_handler
+        zpcap = zeptopcap.ZepPcap(outfile)
+        self.pkt_handler = zpcap.write
 
     def handle_data(self, data):
         """ Print the data received line by line """
@@ -112,8 +113,7 @@ def main(args=None):
 
     try:
         # Run the  aggregator
-        zpcap = zeptopcap.ZepPcap(opts.outfile)
-        aggregator = SnifferAggregator(nodes_list, pkt_handler=zpcap.write)
+        aggregator = SnifferAggregator(nodes_list, opts.outfile)
         aggregator.start()
         signal.pause()
     except KeyboardInterrupt:
