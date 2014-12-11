@@ -1,0 +1,14 @@
+*~
+*.pyc
+dist
+build
+MANIFEST
+*.egg-info
+.tox
+
+*.egg
+*.swp
+.coverage
+coverage.xml
+nosetests.xml
+cover/
