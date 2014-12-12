@@ -113,7 +113,7 @@ def query_nodes(api, exp_id=None, nodes_list_list=(), hostname=HOSTNAME):
     nodes.update([n.split('.')[0] for n in nodes_list if hostname in n])
 
     # sorted output for tests
-    return sorted(list(nodes), key=node_url_sort_key)
+    return sorted(list(nodes))
 
 
 def add_nodes_selection_parser(parser):

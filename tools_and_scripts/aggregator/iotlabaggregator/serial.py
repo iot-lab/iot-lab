@@ -96,6 +96,31 @@ class SerialConnection(connections.Connection):  # pylint:disable=R0903,R0904
         """ Print one line prefixed by id in format: """
         self.logger.info("%s;%s", identifier, line)
 
+
+class SerialAggregator(connections.Aggregator):
+    """ Aggregator for the Sniffer """
+    connection_class = SerialConnection
+
+    parser = argparse.ArgumentParser()
+    common.add_nodes_selection_parser(parser)
+    parser.add_argument(
+        '--with-a8', action='store_true',
+        help=('redirect open-a8 serial port. ' +
+              '`/etc/init.d/serial_redirection` must be running on the nodes'))
+
+    @staticmethod
+    def select_nodes(opts):
+        """ Select all gateways and open-a8 if `with_a8` """
+        nodes = common.get_nodes_selection(**vars(opts))
+
+        # all gateways urls except A8
+        nodes_list = [n for n in nodes if not n.startswith('a8')]
+
+        # add open-a8 urls with 'node-' in front all urls
+        if opts.with_a8:
+            nodes_list += ['node-' + n for n in nodes if n.startswith('a8')]
+        return nodes_list
+
     def run(self):  # overwrite original function
         """ Nothing to do, wait for any signal """
         try:
@@ -116,41 +141,41 @@ class SerialConnection(connections.Connection):  # pylint:disable=R0903,R0904
     @staticmethod
     def extract_nodes_and_message(line):
         """
-        >>> SerialConnection.extract_nodes_and_message('')
+        >>> SerialAggregator.extract_nodes_and_message('')
         (None, '')
 
-        >>> SerialConnection.extract_nodes_and_message(' ')
+        >>> SerialAggregator.extract_nodes_and_message(' ')
         (None, ' ')
 
-        >>> SerialConnection.extract_nodes_and_message('message')
+        >>> SerialAggregator.extract_nodes_and_message('message')
         (None, 'message')
 
-        >>> SerialConnection.extract_nodes_and_message('-;message')
+        >>> SerialAggregator.extract_nodes_and_message('-;message')
         (None, 'message')
 
-        >>> SerialConnection.extract_nodes_and_message('my_message_csv;msg')
+        >>> SerialAggregator.extract_nodes_and_message('my_message_csv;msg')
         (None, 'my_message_csv;msg')
 
-        >>> SerialConnection.extract_nodes_and_message('M3,1;message')
+        >>> SerialAggregator.extract_nodes_and_message('M3,1;message')
         (['m3-1'], 'message')
 
-        >>> SerialConnection.extract_nodes_and_message('m3,1-3+5;message')
+        >>> SerialAggregator.extract_nodes_and_message('m3,1-3+5;message')
         (['m3-1', 'm3-2', 'm3-3', 'm3-5'], 'message')
 
-        >>> SerialConnection.extract_nodes_and_message('wsn430,3+5;message')
+        >>> SerialAggregator.extract_nodes_and_message('wsn430,3+5;message')
         (['wsn430-3', 'wsn430-5'], 'message')
 
-        >>> SerialConnection.extract_nodes_and_message('a8,1+2;message')
+        >>> SerialAggregator.extract_nodes_and_message('a8,1+2;message')
         (['node-a8-1', 'node-a8-2'], 'message')
 
         # use dash in node destination
-        >>> SerialConnection.extract_nodes_and_message('m3-1;message')
+        >>> SerialAggregator.extract_nodes_and_message('m3-1;message')
         (['m3-1'], 'message')
 
-        >>> SerialConnection.extract_nodes_and_message('A8-1;message')
+        >>> SerialAggregator.extract_nodes_and_message('A8-1;message')
         (['node-a8-1'], 'message')
 
-        >>> SerialConnection.extract_nodes_and_message('node-a8-1;message')
+        >>> SerialAggregator.extract_nodes_and_message('node-a8-1;message')
         (['node-a8-1'], 'message')
 
         """
@@ -181,29 +206,6 @@ class SerialConnection(connections.Connection):  # pylint:disable=R0903,R0904
             return None, line
 
 
-class SerialAggregator(connections.Aggregator):
-    """ Aggregator for the Sniffer """
-    connection_class = SerialConnection
-
-    parser = argparse.ArgumentParser()
-    common.add_nodes_selection_parser(parser)
-    parser.add_argument(
-        '--with-a8', action='store_true',
-        help=('redirect open-a8 serial port. ' +
-              '`/etc/init.d/serial_redirection` must be running on the nodes'))
-
-    @staticmethod
-    def select_nodes(opts):
-        """ Select all gateways and open-a8 if `with_a8` """
-        nodes = common.get_nodes_selection(**vars(opts))
-
-        # all gateways urls except A8
-        nodes_list = [n for n in nodes if not n.startswith('a8')]
-
-        # add open-a8 urls with 'node-' in front all urls
-        if opts.with_a8:
-            nodes_list += ['node-' + n for n in nodes if n.startswith('a8')]
-        return nodes_list
 
 
 def main(args=None):
