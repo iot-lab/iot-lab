@@ -17,9 +17,9 @@ class SnifferConnection(connections.Connection):
     port = 30000
     zep_hdr_len = 32
 
-    def __init__(self, hostname, outfd=sys.stdout):
+    def __init__(self, hostname, pkt_handler):
         super(SnifferConnection, self).__init__(hostname)
-        self.pkt_handler = outfd.write
+        self.pkt_handler = pkt_handler
 
     def handle_data(self, data):
         """ Print the data received line by line """
@@ -87,8 +87,8 @@ class SnifferAggregator(connections.Aggregator):
         required=True, help="Pcap outfile. Use '-' for stdout.")
     def __init__(self, nodes_list, outfd, *args, **kwargs):
         zpcap = zeptopcap.ZepPcap(outfd)
-        super(SnifferAggregator, self).__init__(nodes_list, outfd=zpcap,
-                                                *args, **kwargs)
+        super(SnifferAggregator, self).__init__(
+            nodes_list, pkt_handler=zpcap.write, *args, **kwargs)
 
     @staticmethod
     def select_nodes(opts):
