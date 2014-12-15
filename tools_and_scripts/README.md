@@ -47,7 +47,9 @@ Examples
     'm3,1-3+5;message'  -> sends 'message\n' to nodes 'm3-[1, 2, 3, 5]'
     'm3-1;message'      -> sends 'message\n' to nodes 'm3-1'
 
-    'message;semicolon' -> sends 'message;semicolon' to all nodes
+    'csv;message;with;semicolons' -> sends 'csv;message;with;semicolons' to all
+                                     nodes as 'csv;' is not a valid
+                                     node identifier
 
 
 CLI JSON Parser
