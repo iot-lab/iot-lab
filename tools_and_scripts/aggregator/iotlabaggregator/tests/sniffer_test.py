@@ -1,6 +1,8 @@
 #! /usr/bin/python
 # -*- coding:utf-8 -*-
 
+# pylint:disable=missing-docstring
+
 import unittest
 from mock import patch, Mock
 
@@ -33,7 +35,7 @@ class TestSnifferHandleRead(unittest.TestCase):
     def tearDown(self):
         patch.stopall()
 
-    def test_data_handler_simple(self):
+    def test_simple(self):
 
         def recv(_):
             return self.zep_message
@@ -44,9 +46,9 @@ class TestSnifferHandleRead(unittest.TestCase):
         sniff.handle_read()
         self.outfd.write.assert_called_with(self.zep_message)
 
-    def test_data_handler_invalid_start(self):
+    def test_invalid_data_start(self):
         def recv(_):
-            return 'invalid_data' + self.zep_message
+            return 'invaEEEXlidE_data' + self.zep_message
 
         sniff = sniffer.SnifferConnection('m3-1', self.outfd.write)
         sniff.recv = Mock(side_effect=recv)
@@ -57,33 +59,18 @@ class TestSnifferHandleRead(unittest.TestCase):
         self.assertEqual(2, self.outfd.write.call_count)
         self.outfd.write.assert_called_with(self.zep_message)
 
-    def test_data_handler_one_char_at_a_time(self):
-        msg = list(self.zep_message)
-
-        def recv(_):
-            return msg.pop(0)
-
-        sniff = sniffer.SnifferConnection('m3-1', self.outfd.write)
-        sniff.recv = Mock(side_effect=recv)
-
-        while msg:
-            sniff.handle_read()
-
-        self.assertEqual(1, self.outfd.write.call_count)
-        self.outfd.write.assert_called_with(self.zep_message)
-
-    def test_many_values(self):
+    def test_read_ret_values(self):
         for i in range(1, 100):
             self.outfd.reset_mock()
             print i
-            self._test_data_handler_n_char_at_a_time(i)
+            self.read_return_n_char_per_call(i)
 
-    def _test_data_handler_n_char_at_a_time(self, num_chars):
+    def read_return_n_char_per_call(self, num_chars):
         msg = list(self.zep_message * 10)
 
         def recv(_):
             ret = msg[0:num_chars]
-            del(msg[0:num_chars])
+            del msg[0:num_chars]
             return ''.join(ret)
 
         sniff = sniffer.SnifferConnection('m3-1', self.outfd.write)
