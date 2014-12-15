@@ -16,10 +16,10 @@ def get_version():
 
     Inspired from pep8 setup.py
     """
-    with open('iotlabaggregator/__init__.py') as f:
-        for line in f:
+    with open('iotlabaggregator/__init__.py') as init_f:
+        for line in init_f:
             if line.startswith('__version__'):
-                return eval(line.split('=')[-1])
+                return eval(line.split('=')[-1])  # pylint:disable=eval-used
 
 SCRIPTS = ['serial_aggregator', 'sniffer_aggregator']
 DL_URL = 'http://github.com/iot-lab/iot-lab/tools_and_scripts/aggregator/'

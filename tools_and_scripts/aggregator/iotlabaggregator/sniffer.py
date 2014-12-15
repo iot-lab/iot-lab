@@ -85,6 +85,7 @@ class SnifferAggregator(connections.Aggregator):
     parser.add_argument(
         '-o', '--outfile', dest='outfd', type=argparse.FileType('wb'),
         required=True, help="Pcap outfile. Use '-' for stdout.")
+
     def __init__(self, nodes_list, outfd, *args, **kwargs):
         zpcap = zeptopcap.ZepPcap(outfd)
         super(SnifferAggregator, self).__init__(

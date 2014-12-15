@@ -206,8 +206,6 @@ class SerialAggregator(connections.Aggregator):
             return None, line
 
 
-
-
 def main(args=None):
     """ Aggregate all nodes sniffer """
     args = args or sys.argv[1:]

@@ -79,7 +79,7 @@ LINE_LOGGER.addHandler(_LINE_LOGGER)
 
 
 # http://stackoverflow.com/questions/1092531/event-system-in-python
-class Event(list):
+class Event(list):  # pylint:disable=too-few-public-methods
     """Event subscription.
 
     A list of callable objects. Calling an instance of this will cause a

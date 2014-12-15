@@ -5,7 +5,6 @@
 import os
 import itertools
 from iotlabcli import experiment
-from iotlabcli.helpers import node_url_sort_key
 import iotlabcli.parser.common
 import iotlabcli.parser.node
 

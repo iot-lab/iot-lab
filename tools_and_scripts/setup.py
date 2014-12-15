@@ -14,7 +14,7 @@ setup(
     author_email='admin@iot-lab.info',
     url='http://www.iot-lab.info',
     download_url='http://github.com/iot-lab/iot-lab/tools_and_scripts/',
-    py_modules = ['serial_aggregator'],
+    py_modules=['serial_aggregator'],
     entry_points={
         'console_scripts': ['serial_aggregator = serial_aggregator:main'],
     },
