@@ -22,7 +22,7 @@ class ZepPcap(object):  # pylint:disable=too-few-public-methods
     # PCAP headers as native endian
     pcap_global_hdr = struct.pack(
         '=LHHLLLL',
-        0xa1b23c4d,    # Pcap header Little Endian
+        0xa1b2c3d4,    # Pcap header Little Endian
         2,             # File format major revision (i.e. pcap <2>.4)
         4,             # File format minor revision (i.e. pcap 2.<4>)
         0,             # GMT to local correction: 0 if timestamps are UTC
