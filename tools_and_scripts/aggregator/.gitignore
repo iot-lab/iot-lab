@@ -12,3 +12,5 @@ MANIFEST
 coverage.xml
 nosetests.xml
 cover/
+
+*.pcap
