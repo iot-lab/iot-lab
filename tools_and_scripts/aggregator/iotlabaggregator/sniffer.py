@@ -28,7 +28,7 @@ class SnifferConnection(connections.Connection):
             data = self._strip_until_pkt_start(data)
             if not data.startswith('EX\2') or len(data) < self.zep_hdr_len:
                 break
-            # length = header length + data[len_byte]
+            # length = header length + data['len_byte']
             full_len = self.zep_hdr_len + ord(data[self.zep_hdr_len - 1])
             if len(data) < full_len:
                 break
