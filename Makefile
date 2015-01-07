@@ -16,12 +16,20 @@ setup-openlab: parts/openlab
 setup-contiki: parts/openlab parts/contiki
 	cat parts/contiki/README-IoT-LAB.md
 
+setup-riot: parts/RIOT
+
+
+# Tools
 setup-cli-tools: parts/cli-tools
 
 setup-aggregation-tools: parts/aggregation-tools
 
+
+parts/RIOT:
+	git clone https://github.com/RIOT-OS/RIOT.git $@
+
 parts/%:
-	git clone https://github.com/iot-lab/$*.git parts/$*
+	git clone https://github.com/iot-lab/$*.git $@
 
 
 all: $(addprefix setup-, $(REPOS))
@@ -36,7 +44,7 @@ pull-%: parts/%
 	@# Following does not work on the server because of a git bug 1.7.2.5
 	@# git --work-tree=$(shell readlink -e $^) --git-dir=$(shell readlink -e $^/.git) pull
 
-setup-%: parts/%;
+setup-%: parts/%
 
 
 
