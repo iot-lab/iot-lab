@@ -18,6 +18,8 @@ setup-contiki: parts/openlab parts/contiki
 
 setup-cli-tools: parts/cli-tools
 
+setup-aggregation-tools: parts/aggregation-tools
+
 parts/%:
 	git clone https://github.com/iot-lab/$*.git parts/$*
 
