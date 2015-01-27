@@ -1,32 +1,29 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-""" plot_oml_consum.py
+""" plot_oml_traj.py
 
-plot oml filename node consumption
-           [-abcehptv] -i <filename> or --input=<filename>
+plot oml robot trajectory [-bdeht] -i <filename> or --input=<filename>
 
 for time verification --time or -t
 for begin sample --begin=<sample_beg> or -b <sample_beg>
 for end sample --end=<sample_end> or -e <sample_end>
 for label title plot --label=<title> or -l <title>
-for plot consumption --power or -p
-for plot voltage --voltage or -v
-for plot current --current or -c
-for all plot --all or -a
+for plot decoration --decor=<filename> or -c <filename>
 for help use --help or -h
 """
 
 # disabling pylint errors 'E1101' no-member, false positive from pylint
-#                         'R0912' too-many-branches
-# pylint:disable=I0011,E1101, R0912
+#                         'R0912' too-many branches
+# pylint:disable=I0011,E1101,R0912
 
 import sys
 import getopt
 import numpy as np
 import matplotlib.pyplot as plt
 
-FIELDS = {'t_s': 3, 't_us': 4, 'power': 5, 'voltage': 6, 'current': 7}
+FIELDS = {'t_s': 3, 't_us': 4, 'x': 5, 'y': 6, 'th': 8}
+DECO = {'marker': 0, 'color': 1, 'size': 2, 'x': 3, 'y': 4}
 
 
 def oml_load(filename):
@@ -40,8 +37,7 @@ def oml_load(filename):
     Returns:
     -------
     data : numpy array
-    [oml_timestamp 1 count timestamp_s timestamp_us power voltage current]
-
+    [oml_timestamp 1 count timestamp_s timestamp_us x y theta]
 
     >>> from StringIO import StringIO
     >>> oml_load(StringIO('\\n' * 10 + '1 2 3\\n'))
@@ -77,39 +73,55 @@ def oml_load(filename):
     return data
 
 
-def oml_all_plot(data, title):
-    """ Plot iot-lab oml all data
+def decor_load(filename):
+    """ Load iot-lab om file
 
     Parameters:
     ------------
-    data: numpy array
-      [oml_timestamp 1 count timestamp_s timestamp_us power voltage current]
-    title: string
-       title of the plot
+    filename: string
+              filename
+
+    Returns:
+    -------
+    data : array
+    [mark color x y]
+
+    >>> from StringIO import StringIO
+    >>> decor_load(StringIO('\\n' * 10 + '1 2 3\\n'))
+    array([ 1.,  2.,  3.])
+
+    >>> sys.stderr = sys.stdout  # hide stderr output
+
+    >>> oml_load('/invalid/file/path')
+    Traceback (most recent call last):
+    SystemExit: 2
+
+    >>> oml_load(StringIO('\\n' * 10 + 'invalid_content'))
+    array(nan)
+
+    # Invalid file content.
+    # Raises IOError on python2.6 and StopIteration in python2.7
+    >>> decor_load(StringIO('1 2 3'))  # doctest:+ELLIPSIS
+    Traceback (most recent call last):
+    SystemExit: ...
+
+
+    >>> sys.stderr = sys.__stderr__
     """
+    try:
+        data = np.genfromtxt(filename, skip_header=1, 
+                             dtype=None, invalid_raise=False)
+    except IOError as err:
+        sys.stderr.write("Error opening decor file:\n{0}\n".format(err))
+        sys.exit(2)
+    except (ValueError, StopIteration) as err:
+        sys.stderr.write("Error reading decor file:\n{0}\n".format(err))
+        sys.exit(3)
 
-    timestamps = data[:, FIELDS['t_s']] + data[:, FIELDS['t_us']] / 1e6
-
-    plt.figure()
-    plt.subplot(311)
-    plt.grid()
-    plt.title(title)
-    plt.plot(timestamps, data[:, FIELDS['power']])
-    plt.ylabel('Power (W)')
-    plt.subplot(312)
-    plt.grid()
-    plt.title("node2")
-    plt.plot(timestamps, data[:, FIELDS['voltage']])
-    plt.ylabel('Voltage (V)')
-    plt.subplot(313)
-    plt.grid()
-    plt.plot(timestamps, data[:, FIELDS['current']])
-    plt.ylabel('Current (A)')
-    plt.xlabel('Sample Time (sec)')
-    return
+    return data
 
 
-def oml_plot(data, title, labely, channel):
+def oml_plot(data, title, decor):
     """ Plot iot-lab oml data
 
     Parameters:
@@ -118,17 +130,34 @@ def oml_plot(data, title, labely, channel):
       [oml_timestamp 1 count timestamp_s timestamp_us power voltage current]
     title: string
        title of the plot
-    channel: number
-       channel to plot 5 = power, 6 = voltage, 7 = current
+    decor: array
+       [marker, color, size,  x, y]
+       for marker see http://matplotlib.org/api/markers_api.html
+       for color  see http://matplotlib.org/api/colors_api.html
+       plot point item for trajectory
     """
     timestamps = data[:, FIELDS['t_s']] + data[:, FIELDS['t_us']] / 1e6
 
     plt.figure()
-    plt.title(title)
+    plt.title(title + ' trajectory')
     plt.grid()
-    plt.plot(timestamps, data[:, FIELDS[channel]])
+    plt.plot(data[:, FIELDS['x']], data[:, FIELDS['y']])
     plt.xlabel('Sample Time (sec)')
-    plt.ylabel(labely)
+    plt.ylabel('yaw angle (rad)')
+
+    if decor is not "":
+        for ditem in decor:
+            print "DITEM", ditem
+            print "XY", ditem[DECO['x']], ditem[DECO['y']]
+            plt.scatter(ditem[DECO['x']], ditem[DECO['y']],
+                     marker=ditem[DECO['marker']],
+                     color=ditem[DECO['color']], s=ditem[DECO['size']])
+    plt.figure()
+    plt.title(title + ' angle')
+    plt.grid()
+    plt.plot(timestamps, data[:, FIELDS['th']])
+    plt.xlabel('X (m)')
+    plt.ylabel('Y (m)')
 
     return
 
@@ -176,16 +205,16 @@ def main(argv):
     options = []
     filename = ""
     try:
-        opts, _ = getopt.getopt(argv, "i:htpcvab:e:l:",
-                                ["input=", "help", "time", "power", "current",
-                                 "voltage", "all", "begin=", "end=", "label="])
+        opts, _ = getopt.getopt(argv, "i:htd:b:e:l:",
+                                ["input=", "help", "time",
+                                 "begin=", "end=", "label="])
     except getopt.GetoptError:
         usage()
         sys.exit(2)
 
     s_beg = 0
     s_end = -1
-    title = "Node"
+    title = "Robot"
     for opt, arg in opts:
         if opt in ("-h", "--help"):
             usage()
@@ -200,14 +229,9 @@ def main(argv):
             s_end = int(arg)
         elif opt in ("-t", "--time"):
             options.append("-t")
-        elif opt in ("-p", "--power"):
-            options.append("-p")
-        elif opt in ("-c", "--current"):
-            options.append("-c")
-        elif opt in ("-v", "--voltage"):
-            options.append('-v')
-        elif opt in ("-a", "--all"):
-            options.append("-a")
+        elif opt in ("-d", "--decor"):
+            options.append("-d")
+            filename_decor = arg
 
     if len(filename) == 0:
         usage()
@@ -215,19 +239,12 @@ def main(argv):
 
     # Load file
     data = oml_load(filename)[s_beg:s_end, :]
-    # Plot power consumption
-    if "-p" in options:
-        oml_plot(data, title +
-                 " power consumption", "Power (W)", 'power')
-    # Plot voltage
-    if "-v" in options:
-        oml_plot(data, title + " voltage", "Voltage (V)", 'voltage')
-    # Plot voltage
-    if "-c" in options:
-        oml_plot(data, title + " current", "Current (A)", 'current')
-    # All Plot
-    if "-a" in options:
-        oml_all_plot(data, title)
+    # decor = [['o', 'blue', 2, 4], ['o', 'red', 1, 6]]
+    decor = ""
+    if "-d" in options:
+        decor = decor_load(filename_decor)
+        print "DECOR", decor
+    oml_plot(data, title, decor)
     # Clock verification
     if "-t" in options:
         oml_clock(data)
