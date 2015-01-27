@@ -109,7 +109,7 @@ def decor_load(filename):
     >>> sys.stderr = sys.__stderr__
     """
     try:
-        data = np.genfromtxt(filename, skip_header=1, 
+        data = np.genfromtxt(filename, skip_header=1,
                              dtype=None, invalid_raise=False)
     except IOError as err:
         sys.stderr.write("Error opening decor file:\n{0}\n".format(err))
@@ -142,23 +142,20 @@ def oml_plot(data, title, decor):
     plt.title(title + ' trajectory')
     plt.grid()
     plt.plot(data[:, FIELDS['x']], data[:, FIELDS['y']])
-    plt.xlabel('Sample Time (sec)')
-    plt.ylabel('yaw angle (rad)')
+    plt.xlabel('X (m)')
+    plt.ylabel('Y (m)')
 
     if decor is not "":
         for ditem in decor:
-            print "DITEM", ditem
-            print "XY", ditem[DECO['x']], ditem[DECO['y']]
             plt.scatter(ditem[DECO['x']], ditem[DECO['y']],
-                     marker=ditem[DECO['marker']],
-                     color=ditem[DECO['color']], s=ditem[DECO['size']])
+                        marker=ditem[DECO['marker']],
+                        color=ditem[DECO['color']], s=ditem[DECO['size']])
     plt.figure()
     plt.title(title + ' angle')
     plt.grid()
     plt.plot(timestamps, data[:, FIELDS['th']])
-    plt.xlabel('X (m)')
-    plt.ylabel('Y (m)')
-
+    plt.xlabel('Sample Time (sec)')
+    plt.ylabel('yaw angle (rad)')
     return
 
 
