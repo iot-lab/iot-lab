@@ -3,13 +3,13 @@
 
 """ plot_oml_traj.py
 
-plot oml robot trajectory [-bdeht] -i <filename> or --input=<filename>
+plot oml robot trajectory [-behmt] -i <filename> or --input=<filename>
 
 for time verification --time or -t
 for begin sample --begin=<sample_beg> or -b <sample_beg>
 for end sample --end=<sample_end> or -e <sample_end>
 for label title plot --label=<title> or -l <title>
-for plot decoration --decor=<filename> or -c <filename>
+for plot maps and elements --maps=<filename> or -c <filename>
 for help use --help or -h
 """
 
@@ -21,9 +21,12 @@ import sys
 import getopt
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.cm as cm
+import Image
 
-FIELDS = {'t_s': 3, 't_us': 4, 'x': 5, 'y': 6, 'th': 8}
+FIELDS = {'t_s': 3, 't_us': 4, 'x': 5, 'y': 6, 'th': 7}
 DECO = {'marker': 0, 'color': 1, 'size': 2, 'x': 3, 'y': 4}
+MAPS = {'marker': 0, 'file': 1, 'ratio': 2, 'sizex': 3, 'sizey': 4}
 
 
 def oml_load(filename):
@@ -73,7 +76,7 @@ def oml_load(filename):
     return data
 
 
-def decor_load(filename):
+def maps_load(filename):
     """ Load iot-lab om file
 
     Parameters:
@@ -83,11 +86,14 @@ def decor_load(filename):
 
     Returns:
     -------
-    data : array
-    [mark color x y]
+    data_deco : numpy array
+    [[mark color size x y] [mark1 color1 size1 x1 y1]...]
+
+    data_map : numpy array
+    ['f' 'filename' ratio sizex sizey]
 
     >>> from StringIO import StringIO
-    >>> decor_load(StringIO('\\n' * 10 + '1 2 3\\n'))
+    >>> maps_load(StringIO('\\n' * 10 + '1 2 3\\n'))
     array([ 1.,  2.,  3.])
 
     >>> sys.stderr = sys.stdout  # hide stderr output
@@ -101,27 +107,53 @@ def decor_load(filename):
 
     # Invalid file content.
     # Raises IOError on python2.6 and StopIteration in python2.7
-    >>> decor_load(StringIO('1 2 3'))  # doctest:+ELLIPSIS
+    >>> maps_load(StringIO('1 2 3'))  # doctest:+ELLIPSIS
     Traceback (most recent call last):
     SystemExit: ...
 
 
     >>> sys.stderr = sys.__stderr__
     """
+    data = None
     try:
         data = np.genfromtxt(filename, skip_header=1,
                              dtype=None, invalid_raise=False)
     except IOError as err:
-        sys.stderr.write("Error opening decor file:\n{0}\n".format(err))
+        sys.stderr.write("Error opening maps file:\n{0}\n".format(err))
         sys.exit(2)
     except (ValueError, StopIteration) as err:
-        sys.stderr.write("Error reading decor file:\n{0}\n".format(err))
+        sys.stderr.write("Error reading maps file:\n{0}\n".format(err))
         sys.exit(3)
 
-    return data
+    # Search if there is a map and split with other
+    # elements (data_deco) and the map (data_map)
+    findmap = False
+    index = 0
+    data_map = None
+    if data.size == 1:
+        data = np.atleast_1d(data)
+
+    while index < data.size and not findmap:
+        if data[index][DECO['marker']] == 'f':
+            findmap = True
+            data_map = data[index]
+            data_deco = np.delete(data, index, 0)
+        else:
+            index = index + 1
+    # If the map exists rescale x,y elements
+    if findmap is False:
+        data_deco = data
+    else:
+        ratio = data_map[MAPS['ratio']]
+        sizey = data_map[MAPS['sizey']]
+        for ditem in data_deco:
+            ditem[DECO['x']] = ditem[DECO['x']] / ratio
+            ditem[DECO['y']] = sizey - ditem[DECO['y']] / ratio
+
+    return data_deco, data_map
 
 
-def oml_plot(data, title, decor):
+def oml_plot(data, title, deco, maps):
     """ Plot iot-lab oml data
 
     Parameters:
@@ -130,26 +162,53 @@ def oml_plot(data, title, decor):
       [oml_timestamp 1 count timestamp_s timestamp_us power voltage current]
     title: string
        title of the plot
-    decor: array
+    deco: array
        [marker, color, size,  x, y]
        for marker see http://matplotlib.org/api/markers_api.html
        for color  see http://matplotlib.org/api/colors_api.html
-       plot point item for trajectory
+    maps: array (size 1)
+       [marker, filename_img, ratio, sizex, sizey]
+       plot point item for trajectory with filename_img in background
     """
     timestamps = data[:, FIELDS['t_s']] + data[:, FIELDS['t_us']] / 1e6
-
+    # Figure trajectory initialization
     plt.figure()
     plt.title(title + ' trajectory')
     plt.grid()
-    plt.plot(data[:, FIELDS['x']], data[:, FIELDS['y']])
-    plt.xlabel('X (m)')
-    plt.ylabel('Y (m)')
+    # Plot map image in background
+    if maps is not None:
+        fname = maps[MAPS['file']]
+        try:
+            image = Image.open(fname).convert("L")
+        except IOError as err:
+            sys.stderr.write(
+                "Error opening image map file:\n{0}\n".format(err)
+                )
+            sys.exit(2)
+        arr = np.asarray(image)
+        plt.imshow(arr, cmap=cm.Greys_r)
+        ratio = maps[MAPS['ratio']]
+        sizey = maps[MAPS['sizey']]
+    else:
+        ratio = 0
+        sizey = 0
+    # Plot elements for decoration
+    for ditem in deco:
+        plt.scatter(ditem[DECO['x']], ditem[DECO['y']],
+                    marker=ditem[DECO['marker']],
+                    color=ditem[DECO['color']], s=ditem[DECO['size']])
+    # Plot robot trajectory
+    if ratio == 0:
+        plt.plot(data[:, FIELDS['x']], data[:, FIELDS['y']])
+        plt.xlabel('X (m)')
+        plt.ylabel('Y (m)')
+    else:
+        plt.plot(data[:, FIELDS['x']]/ratio,
+                 sizey - data[:, FIELDS['y']]/ratio)
+        plt.xlabel('X (pixels)')
+        plt.ylabel('Y (pixels)')
 
-    if decor is not "":
-        for ditem in decor:
-            plt.scatter(ditem[DECO['x']], ditem[DECO['y']],
-                        marker=ditem[DECO['marker']],
-                        color=ditem[DECO['color']], s=ditem[DECO['size']])
+    # Figure angle initialization
     plt.figure()
     plt.title(title + ' angle')
     plt.grid()
@@ -202,7 +261,7 @@ def main(argv):
     options = []
     filename = ""
     try:
-        opts, _ = getopt.getopt(argv, "i:htd:b:e:l:",
+        opts, _ = getopt.getopt(argv, "i:htm:b:e:l:",
                                 ["input=", "help", "time",
                                  "begin=", "end=", "label="])
     except getopt.GetoptError:
@@ -226,9 +285,9 @@ def main(argv):
             s_end = int(arg)
         elif opt in ("-t", "--time"):
             options.append("-t")
-        elif opt in ("-d", "--decor"):
-            options.append("-d")
-            filename_decor = arg
+        elif opt in ("-m", "--maps"):
+            options.append("-m")
+            filename_maps = arg
 
     if len(filename) == 0:
         usage()
@@ -236,12 +295,9 @@ def main(argv):
 
     # Load file
     data = oml_load(filename)[s_beg:s_end, :]
-    # decor = [['o', 'blue', 2, 4], ['o', 'red', 1, 6]]
-    decor = ""
-    if "-d" in options:
-        decor = decor_load(filename_decor)
-        print "DECOR", decor
-    oml_plot(data, title, decor)
+    if "-m" in options:
+        deco, img_map = maps_load(filename_maps)
+    oml_plot(data, title, deco, img_map)
     # Clock verification
     if "-t" in options:
         oml_clock(data)
