@@ -176,7 +176,7 @@ def oml_plot(data, title, deco, maps):
     plt.title(title + ' trajectory')
     plt.grid()
     # Plot map image in background
-    if maps is not None:
+    if maps is not "":
         fname = maps[MAPS['file']]
         try:
             image = Image.open(fname).convert("L")
@@ -297,6 +297,9 @@ def main(argv):
     data = oml_load(filename)[s_beg:s_end, :]
     if "-m" in options:
         deco, img_map = maps_load(filename_maps)
+    else:
+        deco = ""
+        img_map = ""
     oml_plot(data, title, deco, img_map)
     # Clock verification
     if "-t" in options:
