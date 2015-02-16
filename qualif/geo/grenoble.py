@@ -41,7 +41,10 @@ def dump(nodes_dict):
 		print id, x, y, z
 
 
-def dump3ds(namevar, nodes_dict, ofx, ofy):
+
+def dump3ds(namevar, nodes_dict):
+	ofx = 1.58
+	ofy = 27.37
 	print namevar, " = # (",
 	first = True
 	for id in nodes_dict:
@@ -58,11 +61,26 @@ def dump3ds(namevar, nodes_dict, ofx, ofy):
 	print ")"
 
 
+def dumpgazebo(namevar, nodes_dict):
+	ofx = - 3.11
+	ofy = + 7.80
+	header ="   <include>"
+	footer ="    <uri>model://iotlab_m3_node/</uri>\n   </include>"
+	for id in nodes_dict:
+		x, y, z = nodes_dict[id]
+		x = x + ofx
+		y = y + ofy
+		z = 0
+		nodename = namevar+"-"+str(id)
+		print header
+		print "    <name>", nodename, "</name>"
+		print "    <pose>",x, y, z, "0 0 0 </pose>" 
+		print footer
 def test():
 	m3 = list_nodes("m3")
 	a8 = list_nodes("a8")
-	dump(m3)
-	dump(a8)
+	dumpgazebo("m3", m3)
+	#dump(a8)
 
 if __name__ == '__main__': # pragma: no cover
 	test()

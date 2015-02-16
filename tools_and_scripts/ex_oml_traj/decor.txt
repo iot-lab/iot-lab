@@ -1,0 +1,8 @@
+# marker color size x y /'f' filename ratio sizex sizey
+f grenoble-iotlab.png 0.05 1214 808
+s red 10 42 35.2
+s red 10 19.05 33.3
+
+
+
+
