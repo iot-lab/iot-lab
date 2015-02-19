@@ -4,6 +4,7 @@ import iotlabcli
 import iotlabcli.helpers
 import iotlabcli.experiment
 import iotlabcli.parser.common
+import functools
 from fabric.api import env, run, execute
 from fabric.api import task, parallel, roles, runs_once
 from fabric.utils import abort, puts
@@ -70,13 +71,13 @@ def exp_task(func):
     """ Declare a task that will only be called after calling 'exp' task.
     If exp task was already called, a new call won't be done."""
     @runs_once
-    @task(name=func.__name__)
+    @task
+    @functools.wraps(func)
     def wrapper(*args, **kwargs):
         """ wrapper that calls 'exp' before actual task """
         execute(exp, exp_id=None)
         ret = func(*args, **kwargs)
         print_result(ret)
-    wrapper.__doc__ = func.__doc__
 
     return wrapper
 
