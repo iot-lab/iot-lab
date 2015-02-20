@@ -8,29 +8,15 @@ import re
 import json
 import signal
 
-import serial_aggregator
-import iotlabcli
-from iotlabcli.parser import common as common_parser
-from iotlabcli.parser import node as node_parser
+import iotlabaggregator.common
+from iotlabaggregator.serial import SerialAggregator
 
 
 def opts_parser():
     """ Argument parser object """
     import argparse
     parser = argparse.ArgumentParser()
-    common_parser.add_auth_arguments(parser)
-
-    nodes_group = parser.add_argument_group(
-        description="By default, select currently running experiment nodes",
-        title="Nodes selection")
-
-    nodes_group.add_argument('-i', '--id', dest='experiment_id', type=int,
-                             help='experiment id submission')
-
-    nodes_group.add_argument(
-        '-l', '--list', type=node_parser.nodes_list_from_str,
-        dest='nodes_list', help='nodes list, may be given multiple times')
-
+    iotlabaggregator.common.add_nodes_selection_parser(parser)
     return parser
 
 
@@ -39,8 +25,8 @@ NODES_UID = {}
 
 def handle_uid(identifier, line):
     """ Print one line prefixed by id in format: """
-    url = re.sub('node-', '', identifier)  # remove node- from a8 nodes
-    url += '.%s.iot-lab.info' % serial_aggregator.HOSTNAME
+    node_id = re.sub('node-', '', identifier)  # remove node- from a8 nodes
+    url = '%s.%s.iot-lab.info' % (node_id, iotlabaggregator.common.HOSTNAME)
 
     if url in NODES_UID:
         return
@@ -55,35 +41,34 @@ def handle_uid(identifier, line):
     sys.stderr.write("%s : %s\n" % (uid, url))
 
 
+def get_uids(nodes_list):
+    """ Get the given nodes uid """
+    signal.signal(signal.SIGALRM, (lambda signal, frame: 0))
+    signal.signal(signal.SIGALRM, (lambda signal, frame: 0))
+    with SerialAggregator(nodes_list, line_handler=handle_uid):
+        # as aggr:
+        signal.pause()
+    return NODES_UID
+
+
 def main():
     """ Reads nodes from ressource json in stdin and
     aggregate serial links of all nodes
     """
     parser = opts_parser()
     opts = parser.parse_args()
+    opts.with_a8 = True
 
     try:
-        username, password = iotlabcli.get_user_credentials(
-            opts.username, opts.password)
-        api = iotlabcli.Api(username, password)
-        nodes_list = serial_aggregator.get_nodes(
-            api, opts.experiment_id, opts.nodes_list, with_a8=True)
+        nodes_list = SerialAggregator.select_nodes(opts)
+        # nodes_list = SerialAggregator.select_nodes(**var(opts))
+
     except RuntimeError as err:
         sys.stderr.write("%s\n" % err)
         exit(1)
 
-    aggregator = serial_aggregator.NodeAggregator(
-        nodes_list, print_lines=False, line_handler=handle_uid)
-    aggregator.start()
-    try:
-        signal.signal(signal.SIGALRM, (lambda signal, frame: 0))
-        signal.signal(signal.SIGINT, (lambda signal, frame: 0))
-        signal.pause()
-        sys.stderr.write("Closing connections\n")
-    finally:
-        aggregator.stop()
-
-    print json.dumps(NODES_UID, indent=4, sort_keys=True)
+    uids = get_uids(nodes_list)
+    print json.dumps(uids, indent=4, sort_keys=True)
 
 
 if __name__ == "__main__":
