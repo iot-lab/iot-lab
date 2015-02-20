@@ -7,7 +7,7 @@ arch=${arch:-m3}
 usage() {
 	echo "usage: `basename $0` <node id> [<node id> ...]"
 	echo
-	echo "       runs serial_aggregator.py on site=$site, arch=$arch"
+	echo "       runs serial_aggregator on site=$site, arch=$arch"
 	echo "       to specify alternative site or arch (m3|wsn430):"
 	echo "       site=<site> arch=<arch> ./`basename $0` <node id> ..."
 }

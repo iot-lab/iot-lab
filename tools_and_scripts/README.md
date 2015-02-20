@@ -3,55 +3,6 @@ Tools Description
 
 See the associated script files for more information.
 
-
-Serial aggregator
------------------
-
-Aggregate all the serial links of an experiment and print it to stdout.
-
-### Usage ###
-
-    $ ./serial_aggregator.py [-i <exp_id>] [-l nodes_list]
-    1395240359.286712;node-46; Type Enter to stop printing this help
-    1395240359.286853;node-46;
-    1395240359.292523;node-9;
-    1395240359.292675;node-9;Senslab Simple Demo program
-    1395240359.292820;node-9;Type command
-    1395240359.293094;node-9;    h:  print this help
-    1395240359.293241;node-9;    t:  temperature measure
-    1395240359.293612;node-9;    l:  luminosity measure
-    1395240359.293760;node-9;    s:  send a radio packet
-    1395240359.294044;node-9;
-    1395240359.294212;node-9; Type Enter to stop printing this help
-    1395240359.294781;node-37;
-    1395240359.294949;node-37;Senslab Simple Demo program
-    1395240359.295098;node-37;Type command
-    ...
-
-
-### Sending messages ###
-
-Standard input is parsed to allow sending messages to the nodes.
-
-Parsing is done using the function `extract_nodes_and_message(line)` see the
-docstring for all allowed values.
-
-Examples
---------
-
-    ''    -> does not send anything to anyone, allows 'blanking' lines
-
-    ' '   -> sends   ' \n' to all nodes
-    'msg' -> sends 'msg\n' to all nodes
-
-    'm3,1-3+5;message'  -> sends 'message\n' to nodes 'm3-[1, 2, 3, 5]'
-    'm3-1;message'      -> sends 'message\n' to nodes 'm3-1'
-
-    'csv;message;with;semicolons' -> sends 'csv;message;with;semicolons' to all
-                                     nodes as 'csv;' is not a valid
-                                     node identifier
-
-
 CLI JSON Parser
 ---------------
 
@@ -120,13 +71,3 @@ for help use --help or -h
 An example of use :
  * `> cd ex_oml_traj/`
  * `> ../plot_oml_traj.py -i m3-382-c2.oml -m decor.txt`
-
-
-IoT-LAB Firmware Autotest
--------------------------
-
-Base class to help writing automated firmware testing on IoT-LAB.
-Inspired by what is done in Contiki regression-tests using Cooja.
-
-BETA script (at 2014-03-25)
-
