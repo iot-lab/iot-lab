@@ -92,27 +92,6 @@ def maps_load(filename):
     data_map : numpy array
     ['f' 'filename' ratio sizex sizey]
 
-    >>> from StringIO import StringIO
-    >>> maps_load(StringIO('\\n' * 10 + '1 2 3\\n'))
-    array([ 1.,  2.,  3.])
-
-    >>> sys.stderr = sys.stdout  # hide stderr output
-
-    >>> oml_load('/invalid/file/path')
-    Traceback (most recent call last):
-    SystemExit: 2
-
-    >>> oml_load(StringIO('\\n' * 10 + 'invalid_content'))
-    array(nan)
-
-    # Invalid file content.
-    # Raises IOError on python2.6 and StopIteration in python2.7
-    >>> maps_load(StringIO('1 2 3'))  # doctest:+ELLIPSIS
-    Traceback (most recent call last):
-    SystemExit: ...
-
-
-    >>> sys.stderr = sys.__stderr__
     """
     data = None
     try:
