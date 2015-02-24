@@ -17,6 +17,7 @@ import fabric.utils
 import traceback
 
 import json
+import multiprocessing
 
 from iotlabcli import experiment, get_user_credentials
 import iotlabcli.parser.common
@@ -129,7 +130,10 @@ class RunExperiment(object):
         fabric.utils.puts("sleep 500")
 
         # # TODO wait for A8 nodes to be started
-        time.sleep(500)
+        for i in range(5, 0, -1):
+            fabric.utils.puts("Remaining sleep %i" % (i * 100))
+            time.sleep(100)
+
         with fabric.context_managers.cd('~/.iot-lab/%s/log' % self.exp_id):
             fabric.operations.run(
                 'grep "Boot A8 succeeded" --color=auto a8-*')
@@ -148,7 +152,7 @@ class RunExperiment(object):
             hosts=['node-%s' % node for node in self.nodes])
 
     @staticmethod
-    @fabric.api.parallel(pool_size=10)
+    @fabric.api.parallel(pool_size=multiprocessing.cpu_count())
     def configure_node(fw_path):
         fabric.operations.run('flash_a8_m3 %s 2>/dev/null' % fw_path)
         fabric.operations.run("/etc/init.d/serial_redirection restart",
@@ -216,7 +220,8 @@ class RunExperiment(object):
         return nodes
 
 
-@fabric.api.parallel(pool_size=4)
+# give 2 * a8_ssh connections == 2 * cpu_count
+@fabric.api.parallel(pool_size=2)
 def run_exp(api, config, all_bookable):
     cfg = config[env.host_string]
     exps = RunExperiment(api, all_bookable=all_bookable, **cfg)
