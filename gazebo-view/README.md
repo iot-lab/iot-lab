@@ -18,10 +18,13 @@ Installation
 
 - Compile the iot-lab plugin (located in `mypath`):
 
- > cd my_path/gazebo-view/worlds/
- > mkdir build & cd build
- > cmake ..
- > make
+ $ cd my_path/gazebo-view/worlds/
+ 
+ $ mkdir build & cd build
+ 
+ $ cmake ..
+ 
+ $ make
 
 - Customize Gazebo shell variable path:
 
@@ -36,7 +39,7 @@ in IoT-LAB Grenoble site. The 3D world
 contains :
 
 - the transparent walls of the corridor J :
-  [models/corridorJ/](https://github.com/iot-lab/iot-lab/blob/master/gazebo-view/models/corridorJ/
+  [models/corridorJ](https://github.com/iot-lab/iot-lab/blob/master/gazebo-view/models/corridorJ)
 
 - the docks of the Turtlebot2
   [models/turtlebot2_dock/](https://github.com/iot-lab/iot-lab/blob/master/gazebo-view/models/cturtlebot2_dockJ/)
@@ -52,8 +55,9 @@ IoT-LAB experiment saved in `robot.oml`
 Running Visualization
 ---------------------
 
- > cd my_path/gazebo-view/worlds/
- > gazebo iot-lab_corridorJ.world
+ $ cd my_path/gazebo-view/worlds/
+ 
+ $ gazebo iot-lab_corridorJ.world
 
 See a [video]()
 
