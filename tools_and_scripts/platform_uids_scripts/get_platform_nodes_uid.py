@@ -163,7 +163,8 @@ class RunExperiment(object):
         fabric.operations.run('mkdir -p %d' % self.exp_id)
         with fabric.context_managers.cd('%d' % self.exp_id):
             fabric.operations.put(script, script_name, mode=0755)
-            ret = fabric.operations.run('./%s 2>/dev/null' % script_name)
+            ret = fabric.operations.run(
+                './%s -i %s 2>/dev/null' % (script_name, self.exp_id))
         return ret
 
     def teardown_exp(self):
@@ -215,7 +216,7 @@ class RunExperiment(object):
         return nodes
 
 
-@fabric.api.parallel(pool_size=2)
+@fabric.api.parallel(pool_size=4)
 def run_exp(api, config, all_bookable):
     cfg = config[env.host_string]
     exps = RunExperiment(api, all_bookable=all_bookable, **cfg)
