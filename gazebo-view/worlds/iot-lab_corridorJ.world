@@ -1,0 +1,515 @@
+<?xml version="1.0" ?>
+<sdf version="1.5">
+  <world name="default"> 
+    <light name='sun' type='directional'>
+      <cast_shadows>1</cast_shadows>
+      <pose>0 0 10 0 -0 0</pose>
+      <diffuse>0.8 0.8 0.8 1</diffuse>
+      <specular>0.2 0.2 0.2 1</specular>
+      <attenuation>
+        <range>1000</range>
+        <constant>0.9</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <direction>-0.5 0.1 -0.9</direction>
+    </light>
+  <gui> 
+   <camera name="view1">
+     <pose>48 19 7 0 0.275643 2.35619</pose>
+   </camera>
+   <camera name="view2">
+     <pose>48 19 7 0 0.275643 2.35619</pose>
+   </camera>
+ </gui>
+
+ <include>
+   <uri>model://ground_plane</uri>
+ </include>
+
+ <include>
+   <pose>38.75 33.8 0 0 0 0</pose>
+   <static>true</static>
+   <allow_auto_disable>true</allow_auto_disable>
+   <name>corridorJ</name>
+   <uri>model://corridorJ</uri>
+ </include> 
+ 
+ <include>
+   <pose>19.05 33.3 0.05 0 0 0</pose>
+    <name>dock_dev</name>
+    <uri>model://turtlebot2_dock</uri>
+ </include> 
+   
+ <include>
+   <pose>42 35.2 0.05 0 0 0</pose>
+   <name>dock_prod</name>
+   <uri>model://turtlebot2_dock</uri>
+ </include> 
+   
+ <include>
+      <name> m3-1 </name>
+      <pose> 16.99 34.56 -0.1 0 0 0 </pose>
+      <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-2 </name>
+   <pose> 17.59 34.56-0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-3 </name>
+   <pose> 18.19 34.56 -0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-4 </name>
+   <pose> 18.79 34.56 -0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-5 </name>
+   <pose> 19.39 34.56 -0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+     <name> m3-6 </name>
+     <pose> 19.99 34.56 -0.1 0 0 0 </pose>
+     <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-7 </name>
+   <pose> 21.44 34.56 -0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-8 </name>
+   <pose> 22.04 34.56 -0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-9 </name>
+   <pose> 22.64 34.56 -0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-10 </name>
+   <pose> 23.24 34.56 -0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-11 </name>
+   <pose> 23.84 34.56 -0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-12 </name>
+   <pose> 24.44 34.56 -0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-13 </name>
+   <pose> 25.04 34.56 -0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-14 </name>
+   <pose> 25.64 34.56 -0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-15 </name>
+   <pose> 26.24 34.56 -0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-16 </name>
+   <pose> 26.84 34.56 -0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-17 </name>
+   <pose> 27.44 34.56 -0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-18 </name>
+   <pose> 28.04 34.56 -0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-19 </name>
+   <pose> 28.64 34.56 -0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-20 </name>
+   <pose> 29.24 34.56 -0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-21 </name>
+   <pose> 29.84 34.56 -0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-22 </name>
+   <pose> 30.44 34.56 -0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-23 </name>
+   <pose> 31.04 34.56 -0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-24 </name>
+   <pose> 31.64 34.56 -0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-25 </name>
+   <pose> 32.24 34.56 -0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-26 </name>
+   <pose> 32.84 34.56 -0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-27 </name>
+   <pose> 33.44 34.56 -0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-28 </name>
+   <pose> 34.04 34.56 -0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-29 </name>
+   <pose> 34.64 34.56 -0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-30 </name>
+   <pose> 35.24 34.56 -0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-31 </name>
+   <pose> 35.84 34.56 -0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-32 </name>
+   <pose> 36.44 34.56 -0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-33 </name>
+   <pose> 37.04 34.56 -0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-34 </name>
+   <pose> 37.64 34.56 -0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-35 </name>
+   <pose> 38.24 34.56 -0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-36 </name>
+   <pose> 38.84 34.56 -0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-37 </name>
+   <pose> 39.44 34.56 -0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-38 </name>
+   <pose> 40.04 34.56 -0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-39 </name>
+   <pose> 40.64 34.56 -0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-40 </name>
+   <pose> 41.24 34.56 -0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-41 </name>
+   <pose> 41.84 34.56 -0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-42 </name>
+   <pose> 42.44 34.56 -0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-43 </name>
+   <pose> 43.04 34.56 -0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-44 </name>
+   <pose> 43.64 34.56 -0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-45 </name>
+   <pose> 44.24 34.56 -0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-46 </name>
+   <pose> 44.84 34.56 0-0.10 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-47 </name>
+   <pose> 45.44 34.56 -0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-48 </name>
+   <pose> 46.04 34.56 -0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-49 </name>
+   <pose> 46.64 34.56 -0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-50 </name>
+   <pose> 47.24 34.56 -0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-51 </name>
+   <pose> 47.84 34.56 -0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-52 </name>
+   <pose> 48.44 34.56 -0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-53 </name>
+   <pose> 49.04 34.56 -0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-54 </name>
+   <pose> 49.64 34.56 -0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-55 </name>
+   <pose> 50.24 34.56 -0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-56 </name>
+   <pose> 50.84 34.56 -0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-57 </name>
+   <pose> 51.44 34.56 -0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-58 </name>
+   <pose> 52.04 34.56 -0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-59 </name>
+   <pose> 52.64 34.56 -0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-60 </name>
+   <pose> 53.24 34.56 -0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-61 </name>
+   <pose> 53.84 34.56 -0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-62 </name>
+   <pose> 54.44 34.56 -0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-63 </name>
+   <pose> 55.04 34.56 -0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-64 </name>
+   <pose> 55.64 34.56 -0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-65 </name>
+   <pose> 56.24 34.56 -0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-66 </name>
+   <pose> 56.84 34.56 -0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-67 </name>
+   <pose> 57.44 34.56 -0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-68 </name>
+   <pose> 58.04 34.56 -0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-69 </name>
+   <pose> 58.64 34.56 -0.1 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+
+ <include>
+   <name> m3-359 </name>
+   <pose> 31.64 33.55 3.23 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-360 </name>
+   <pose> 32.24 33.55 2.63 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-361 </name>
+   <pose> 32.84 33.55 3.23 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-362 </name>
+   <pose> 33.44 33.55 3.23 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-363 </name>
+   <pose> 34.64 32.72 2.63 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-364 </name>
+   <pose> 34.64 32.72 2.63 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-365 </name>
+   <pose> 35.84 33.55 2.63 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-366 </name>
+   <pose> 36.44 33.55 3.23 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-367 </name>
+   <pose> 37.04 33.55 3.23 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-368 </name>
+   <pose> 37.64 33.55 2.63 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-369 </name>
+   <pose> 38.24 33.55 2.63 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-370 </name>
+   <pose> 43.04 33.55 2.63 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-371 </name>
+   <pose> 43.64 33.55 2.63 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-372 </name>
+   <pose> 44.24 33.55 3.23 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-373 </name>
+   <pose> 44.84 33.55 2.63 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-374 </name>
+   <pose> 45.44 33.55 2.63 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-375 </name>
+   <pose> 46.04 33.55 3.23 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-376 </name>
+   <pose> 49.04 33.55 2.63 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-377 </name>
+   <pose> 49.64 33.55 2.63 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-378 </name>
+   <pose> 50.24 33.55  3.23 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-379 </name>
+   <pose> 50.84 33.55  2.63 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+ <include>
+   <name> m3-380 </name>
+   <pose> 51.44 33.55 2.63 0 0 0 </pose>
+   <uri>model://iotlab_m3_node/</uri>
+ </include>
+
+
+ <include>
+   <uri>model://turtlebot2</uri>
+   <static>true</static>
+   <plugin filename="build/libanimate_pose.so" name="pose_animation"/>
+ </include>
+
+</world> 
+</sdf>

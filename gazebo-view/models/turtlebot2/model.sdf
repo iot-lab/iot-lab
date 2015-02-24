@@ -1,0 +1,412 @@
+<?xml version="1.0" ?>
+<sdf version="1.4">
+  <model name="turtlebot2">
+    <link name="rack">
+      <inertial>
+        <pose>0.001453 -0.000453 0.029787 0 0 0</pose>
+        <inertia>
+          <ixx>0.0001</ixx>
+          <ixy>0.0</ixy>
+          <ixz>0.0</ixz>
+          <iyy>0.0001</iyy>
+          <iyz>0.0</iyz>
+          <izz>0.0001</izz>
+        </inertia>
+        <mass>2.4000</mass>
+      </inertial>
+
+      <collision name="plate_bottom_collision">
+        <pose>0.0 0.0 0.1306 0 0 0</pose>
+        <geometry>
+          <cylinder>
+	    <radius>0.170</radius>
+	    <length>0.006</length>
+          </cylinder>
+        </geometry>
+      </collision>
+      <visual name="plate_bottom_visual">
+        <pose>0.02364 0.0 0.1306 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <uri>model://turtlebot2/meshes/plate_bottom.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+
+      <collision name="plate_middle_collision">
+        <pose>0.0 0.0 0.1874 0 0 0</pose>
+        <geometry>
+          <cylinder>
+	    <radius>0.170</radius>
+	    <length>0.006</length>
+          </cylinder>
+        </geometry>
+      </collision>
+      <visual name="plate_middle_visual">
+        <pose> -0.01364 0.0 0.1874 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <uri>model://turtlebot2/meshes/plate_middle.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+
+      <collision name="plate_top_collision">
+        <pose>0.0 0.0 0.3966 0 0 0</pose>
+        <geometry>
+          <cylinder>
+	    <radius>0.170</radius>
+	    <length>0.006</length>
+          </cylinder>
+        </geometry>
+      </collision>
+      <visual name="plate_middle_visual">
+        <pose>-0.01364 0.0  0.3966 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <uri>model://turtlebot2/meshes/plate_middle.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+ 
+      <collision name="3d_sensor_pole_0_collision">
+        <pose>-0.1024 0.098  0.2372 0 0 0</pose>
+        <geometry> 
+          <cylinder>
+	    <radius>0.006</radius>
+	    <length>0.0936</length>
+          </cylinder>
+        </geometry>
+      </collision>
+      <visual name="3d_sensor_pole_0_visual">
+        <pose>-0.1024 0.098  0.2372 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <uri>model://turtlebot2/meshes/pole_kinect.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      
+      <collision name="3d_sensor_pole_1_collision">
+        <pose>-0.1024 -0.098  0.2372 0 0 0</pose>
+        <geometry> 
+          <cylinder>
+	    <radius>0.006</radius>
+	    <length>0.0936</length>
+          </cylinder>
+        </geometry>
+      </collision>
+      <visual name="3d_sensor_pole_1_visual">
+        <pose>-0.1024 -0.098  0.2372 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <uri>model://turtlebot2/meshes/pole_kinect.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+ 
+      <collision name="bottom_pole_0_collision">
+        <pose>0.120 0.08 0.09 0 0 0</pose>
+        <geometry> 
+          <cylinder>
+	    <radius>0.006</radius>
+	    <length>0.0492</length>
+          </cylinder>
+        </geometry>
+      </collision>
+      <visual name="pole_bottom_0_visual">
+        <pose>0.120 0.08 0.1 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <uri>model://turtlebot2/meshes/pole_middle.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      
+      <collision name="bottom_pole_1_collision">
+        <pose>0.055 0.120 0.1 0 0 0</pose>
+        <geometry> 
+          <cylinder>
+	    <radius>0.006</radius>
+	    <length>0.0492</length>
+          </cylinder>
+        </geometry>
+      </collision>
+      <visual name="pole_bottom_1_visual">
+        <pose>0.055 0.120 0.1 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <uri>model://turtlebot2/meshes/pole_middle.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+
+      <collision name="bottom_pole_2_collision">
+        <pose>-0.055 0.120 0.1 0 0 0</pose> 
+        <geometry> 
+          <cylinder>
+	    <radius>0.006</radius>
+	    <length>0.0492</length>
+          </cylinder>
+        </geometry>
+      </collision>
+      <visual name="pole_bottom_2_visual">
+        <pose>-0.055 0.120 0.1 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <uri>model://turtlebot2/meshes/pole_middle.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      
+      <collision name="bottom_pole_3_collision">
+        <pose>0.120 -0.08 0.1 0 0 0</pose>
+        <geometry> 
+          <cylinder>
+	    <radius>0.006</radius>
+	    <length>0.0492</length>
+          </cylinder>
+        </geometry>
+      </collision>
+      <visual name="pole_bottom_3_visual">
+        <pose>0.120 -0.08 0.1 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <uri>model://turtlebot2/meshes/pole_middle.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+
+      <collision name="bottom_pole_4_collision">
+        <pose>0.055 -0.120 0.1 0 0 0</pose>
+        <geometry> 
+          <cylinder>
+	    <radius>0.006</radius>
+	    <length>0.0492</length>
+          </cylinder>
+        </geometry>
+      </collision>
+      <visual name="pole_bottom_4_visual">
+        <pose>0.055 -0.120 0.1 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <uri>model://turtlebot2/meshes/pole_middle.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+
+      <collision name="bottom_pole_5_collision">
+        <pose>-0.055 -0.120 0.1 0 0 0</pose>
+        <geometry> 
+          <cylinder>
+	    <radius>0.006</radius>
+	    <length>0.0492</length>
+          </cylinder>
+        </geometry>
+      </collision>
+      <visual name="pole_bottom_5_visual">
+        <pose>-0.055 -0.120 0.1 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <uri>model://turtlebot2/meshes/pole_bottom.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+
+      <collision name="middle_pole_0_collision">
+        <pose>0.0381 0.1505 0.1540 0 0 0</pose>
+        <geometry> 
+          <cylinder>
+	    <radius>0.006</radius>
+	    <length>0.0608</length>
+          </cylinder>
+        </geometry>
+      </collision>
+      <visual name="middle_pole_0_visual">
+        <pose>0.0381 0.1505 0.1540 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <uri>model://turtlebot2/meshes/pole_middle.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+ 
+      <collision name="middle_pole_1_collision">
+        <pose>0.0381 -0.1505 0.1540 0 0 0</pose>
+        <geometry> 
+          <cylinder>
+	    <radius>0.006</radius>
+	    <length>0.0608</length>
+          </cylinder>
+        </geometry>
+      </collision>
+      <visual name="middle_pole_1_visual">
+        <pose>0.0381 -0.1505 0.1540 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <uri>model://turtlebot2/meshes/pole_middle.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+
+      <collision name="middle_pole_2_collision">
+        <pose>-0.0381 0.1505 0.1540 0 0 0</pose>
+        <geometry> 
+          <cylinder>
+	    <radius>0.006</radius>
+	    <length>0.0608</length>
+          </cylinder>
+        </geometry>
+      </collision>
+      <visual name="middle_pole_2_visual">
+        <pose>-0.0381 0.1505 0.1540 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <uri>model://turtlebot2/meshes/pole_middle.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+
+      <collision name="middle_pole_3_collision">
+        <pose>-0.0381 0.1505 0.1540 0 0 0</pose>
+        <geometry> 
+          <cylinder>
+	    <radius>0.006</radius>
+	    <length>0.0608</length>
+          </cylinder>
+        </geometry>
+      </collision>
+      <visual name="middle_pole_3_visual">
+        <pose>-0.0381 -0.1505 0.1540 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <uri>model://turtlebot2/meshes/pole_middle.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+
+      <collision name="top_pole_0_collision">
+        <pose>0.0381 0.1505 0.2920 0 0 0</pose>
+        <geometry> 
+          <cylinder>
+	    <radius>0.006</radius>
+	    <length>0.0936</length>
+          </cylinder>
+        </geometry>
+      </collision>
+      <visual name="3d_sensor_pole_0_visual">
+        <pose>0.0381 0.1505 0.2920 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <uri>model://turtlebot2/meshes/pole_top.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+
+      <collision name="top_pole_1_collision">
+        <pose>0.0381 -0.1505 0.2920 0 0 0</pose>
+        <geometry> 
+          <cylinder>
+	    <radius>0.006</radius>
+	    <length>0.0936</length>
+          </cylinder>
+        </geometry>
+      </collision>
+      <visual name="3d_sensor_pole_1_visual">
+        <pose>0.0381 -0.1505 0.2920 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <uri>model://turtlebot2/meshes/pole_top.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+
+      <collision name="top_pole_2_collision">
+        <pose>-0.0381 0.1505 0.2920 0 0 0</pose>
+        <geometry> 
+          <cylinder>
+	    <radius>0.006</radius>
+	    <length>0.0936</length>
+          </cylinder>
+        </geometry>
+      </collision>
+      <visual name="3d_sensor_pole_2_visual">
+        <pose>-0.0381 0.1505 0.2920 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <uri>model://turtlebot2/meshes/pole_top.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+
+      <collision name="top_pole_3_collision">
+        <pose>-0.0381 -0.1505 0.2920 0 0 0</pose>
+        <geometry> 
+          <cylinder>
+	    <radius>0.006</radius>
+	    <length>0.0936</length>
+          </cylinder>
+        </geometry>
+      </collision>
+      <visual name="3d_sensor_pole_2_visual">
+        <pose>-0.0381 -0.1505 0.2920 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <uri>model://turtlebot2/meshes/pole_top.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <sensor name="laser" type="ray">
+        <pose>-0.065000 0 0.092000 0 0 0</pose>
+        <ray>
+          <scan>
+            <horizontal>
+              <samples>180</samples>
+              <resolution>1.000000</resolution>
+              <min_angle>-2.268928</min_angle>
+              <max_angle>2.268928</max_angle>
+            </horizontal>
+          </scan>
+          <range>
+            <min>0.080000</min>
+            <max>10</max>
+            <resolution>0.010000</resolution>
+          </range>
+        </ray>
+        <update_rate>20</update_rate>
+      </sensor>
+    </link>
+    <include>
+      <uri>model://kinect</uri>
+      <pose>-0.087098 0 0.293 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://kobuki</uri>
+    </include>
+
+    <joint name="create_rack" type="revolute">
+      <parent>kobuki::base</parent>
+      <child>rack</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>0</upper>
+        </limit>
+        <use_parent_model_frame>true</use_parent_model_frame>
+      </axis>
+    </joint>
+    <joint name="kinect_rack" type="revolute">
+      <parent>kinect::link</parent>
+      <child>rack</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>0</upper>
+        </limit>
+        <use_parent_model_frame>true</use_parent_model_frame>
+      </axis>
+    </joint>
+  </model>
+</sdf>

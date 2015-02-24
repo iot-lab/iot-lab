@@ -70,7 +70,6 @@ def dumpgazebo(namevar, nodes_dict):
 		x, y, z = nodes_dict[id]
 		x = x + ofx
 		y = y + ofy
-		z = 0
 		nodename = namevar+"-"+str(id)
 		print header
 		print "    <name>", nodename, "</name>"

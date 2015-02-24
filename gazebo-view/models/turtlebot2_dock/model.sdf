@@ -1,0 +1,31 @@
+<?xml version="1.0" ?>
+<sdf version="1.5">
+ <model name="turtlebot2_dock">
+ <allow_auto_disable>1</allow_auto_disable>
+ <static>1</static>
+ <pose>0 0 0 0 0 0</pose>
+ <link name="turtlebot2_dock">
+   <collision name='collision'>
+     <geometry>
+       <box>
+	 <size>.1 .1 .05</size>
+       </box>
+     </geometry>
+   </collision>
+   <visual name='visual'>
+     <transparency>0</transparency>
+     <geometry>
+       <box>
+	 <size>.1 .135 .05</size>
+       </box> 
+     </geometry>
+     <material>
+       <script>
+	 <uri>file://media/materials/scripts/gazebo.material</uri>
+	 <name>Gazebo/Black</name>
+       </script>
+     </material>
+   </visual>
+ </link>
+ </model>  
+</sdf>
