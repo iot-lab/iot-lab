@@ -1,0 +1,72 @@
+<?xml version="1.0" ?>
+<sdf version="1.5">
+  <world name="default"> 
+    <light name='sun' type='directional'>
+      <cast_shadows>1</cast_shadows>
+      <pose>0 0 10 0 -0 0</pose>
+      <diffuse>0.8 0.8 0.8 1</diffuse>
+      <specular>0.2 0.2 0.2 1</specular>
+      <attenuation>
+        <range>1000</range>
+        <constant>0.9</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <direction>-0.5 0.1 -0.9</direction>
+    </light>
+
+<!--
+Define the pose x y z roll pitch yaw
+-->
+  <gui> 
+   <camera name="view1">
+     <pose>48 19 7 0 0.275643 2.35619</pose>
+   </camera>
+ </gui>
+
+ <include>
+   <uri>model://ground_plane</uri>
+ </include>
+
+<!--
+Put the IoT-LAB nodes
+
+<include>
+   <pose>38.75 33.8 0 0 0 0</pose>
+   <static>true</static>
+   <allow_auto_disable>true</allow_auto_disable>
+   <name>corridorJ</name>
+   <uri>model://corridorJ</uri>
+ </include> 
+
+-->
+
+<!--
+Put the Turtlebot dock position with pose
+
+ <include>
+   <pose>19.05 33.3 0.05 0 0 0</pose>
+    <name>dock_turtlebot</name>
+    <uri>model://turtlebot2_dock</uri>
+ </include> 
+   
+-->
+
+<!--
+Put the IoT-LAB nodes with and name
+
+ <include>
+      <name> m3-1 </name>
+      <pose> 16.99 34.56 -0.1 0 0 0 </pose>
+      <uri>model://iotlab_m3_node/</uri>
+ </include>
+-->
+
+ <include>
+   <uri>model://turtlebot2</uri>
+   <static>true</static>
+   <plugin filename="build/libanimate_pose.so" name="pose_animation"/>
+ </include>
+
+</world> 
+</sdf>

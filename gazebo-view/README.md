@@ -18,13 +18,13 @@ Installation
 
 - Compile the iot-lab plugin (located in `mypath`):
 
- $ cd my_path/gazebo-view/worlds/
+ `$ cd my_path/gazebo-view/worlds/`
  
- $ mkdir build & cd build
+ `$ mkdir build & cd build`
  
- $ cmake ..
+ `$ cmake ..`
  
- $ make
+ `$ make`
 
 - Customize Gazebo shell variable path:
 
@@ -55,11 +55,11 @@ IoT-LAB experiment saved in `robot.oml`
 Running Visualization
 ---------------------
 
- $ cd my_path/gazebo-view/worlds/
+ `$ cd my_path/gazebo-view/worlds/`
  
- $ gazebo iot-lab_corridorJ.world
+ `$ gazebo iot-lab_corridorJ.world`
 
-See a [video]()
+See a [video](http://youtu.be/A6DYpzkhvjI)
 
 Create a new world
 ------------------
@@ -70,10 +70,10 @@ You can also defined a world file, for example `worlds/mysite.world`,
 to visualize an other IoT-LAB site or part of a site. All the
 description files respect the [sdf format](http://sdformat.org)
 
-A template file, empty.world, can help you to write your own
-file. Then, you need to: 
+A template file, `words/template_site.world`, can help you to write
+your own file. Then, you need to:
 
-- Describe turtlebot2_dock pose in worlds/mysite.world
+- Describe turtlebot2_dock pose (x y z roll pitch yaw) in worlds/mysite.world
 
 - Describe an other 3D environnement, like `models/corridorJ/`, using the [building editor of gazebo](http://gazebosim.org/tutorials?tut=building_editor&cat=build_world)
 
