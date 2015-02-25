@@ -124,36 +124,75 @@ class RunExperiment(object):
 
         fabric.utils.puts("Exp-started: %s" % start_date)
 
-    def wait_a8_started(self):
-        """ Wait for A8 nodes to be booted """
-        fabric.utils.puts("wait_a8_started TODO %i" % self.exp_id)
-        fabric.utils.puts("sleep 500")
+    @staticmethod
+    def _num_a8_booted_nodes(log_path):
+        """ Return a tuple with the number of experiment started a8 nodes
+        with num of booted nodes """
+        with fabric.api.settings(warn_only=True):
+            with fabric.context_managers.cd(log_path):
+                # use cat to get count in one line
+                ok_nodes = fabric.operations.run(
+                    'cat a8-* | grep -c "Start experiment succeeded"')
+                booted = fabric.operations.run(
+                    'cat a8-* | grep -c "Boot A8 succeeded"')
+        return int(ok_nodes), int(booted)
 
-        # # TODO wait for A8 nodes to be started
-        for i in range(5, 0, -1):
-            fabric.utils.puts("Remaining sleep %i" % (i * 100))
-            time.sleep(100)
+    @staticmethod
+    def _print_a8_booted_nodes(log_path):
+        """ Print booted and boot failed nodes """
+        with fabric.api.settings(warn_only=True):
+            with fabric.context_managers.cd(log_path):
+                fabric.operations.run(
+                    'grep "Boot A8 succeeded" --color=auto a8-*')
+                fabric.operations.run(
+                    'grep "Boot A8 failed" --color=auto a8-* ''')
 
-        with fabric.context_managers.cd('~/.iot-lab/%s/log' % self.exp_id):
-            fabric.operations.run(
-                'grep "Boot A8 succeeded" --color=auto a8-*')
-            fabric.operations.run(
-                'grep "Boot A8 failed" a8-* --color=auto; echo ''')
+    def wait_a8_started(self, num_loop_max=10, step=50):
+        """ Wait for A8 nodes to be booted
+
+        We wait either for minimum of:
+         * max time == num_loop_max * step
+         * All nodes booted
+         * More than half A8 booted and no more nodes booted since last loop
+
+        :param step: duration between each check in seconds
+        :param num_loop_max: number of loop to wait at max
+        """
+
+        fabric.utils.puts("wait_a8_started %i" % self.exp_id)
+        log_path = '~/.iot-lab/%s/log' % self.exp_id
+
+        old_num_booted = 0
+        for i in range(num_loop_max, 0, -1):
+            fabric.utils.puts("Remaining sleep %i" % (i * step))
+            time.sleep(step)
+            num_ok, num_booted = self._num_a8_booted_nodes(log_path)
+
+            if (num_ok == num_booted):
+                break  # all booted
+            if ((num_ok / 2) < num_booted) and (old_num_booted == num_booted):
+                # no new nodes booted since last time and more than half did
+                break
+
+            # keep waiting
+            old_num_booted = num_booted
+
+        self._print_a8_booted_nodes(log_path)
 
     def setup_a8_nodes(self):
         """ Setup firmware and serial redirection on A8 """
-        # TODO Flash the A8 node and start redirection
 
         fw_path = '~/A8/%s' % os.path.basename(self.firmware)
         fabric.operations.put(self.firmware, fw_path)
 
         fabric.tasks.execute(
-            self.configure_node, fw_path,
+            self.configure_a8_node, fw_path,
             hosts=['node-%s' % node for node in self.nodes])
 
     @staticmethod
     @fabric.api.parallel(pool_size=multiprocessing.cpu_count())
-    def configure_node(fw_path):
+    def configure_a8_node(fw_path):
+        """ Configure a8 node """
         fabric.operations.run('flash_a8_m3 %s 2>/dev/null' % fw_path)
         fabric.operations.run("/etc/init.d/serial_redirection restart",
                               pty=False)
@@ -223,6 +262,7 @@ class RunExperiment(object):
 # give 2 * a8_ssh connections == 2 * cpu_count
 @fabric.api.parallel(pool_size=2)
 def run_exp(api, config, all_bookable):
+    """ Run an experiment """
     cfg = config[env.host_string]
     exps = RunExperiment(api, all_bookable=all_bookable, **cfg)
     ret = exps.run('test_uid', 10, UID_SCRIPT)
@@ -255,31 +295,19 @@ def main():
         if len(config) == 0:
             raise ValueError("No valid hosts")
 
-
         result_dict = fabric.tasks.execute(
             run_exp, api, config, opts.all_bookable,
             hosts=sorted(config.keys()))
 
         result = {}
-        for ret in result_dict.itervalues():
+        for ret in result_dict.values():
             if ret is not None:
                 result.update(json.loads(ret))
-
         result_str = json.dumps(result, indent=4, sort_keys=True)
-
 
         print result_str
         with open(opts.outfile, 'w') as outfile:
             outfile.write(result_str)
-
-#            exps = RunExperiment(api, firmware, site, archi, opts.all_bookable)
-#            ret = exps.run('test_uid', 10, UID_SCRIPT)
-#            if ret is not None:
-#                result.update(json.loads(ret))
-#
-#        print json.dumps(result, indent=4, sort_keys=True)
-#        with open(opts.outfile, 'w') as outfile:
-#            outfile.write(json.dumps(result, indent=4, sort_keys=True))
 
     except:
         traceback.print_exc()
