@@ -261,11 +261,11 @@ class RunExperiment(object):
 
 # give 2 * a8_ssh connections == 2 * cpu_count
 @fabric.api.parallel(pool_size=2)
-def run_exp(api, config, all_bookable):
+def run_exp(api, name, duration, config, all_bookable):
     """ Run an experiment """
     cfg = config[env.host_string]
     exps = RunExperiment(api, all_bookable=all_bookable, **cfg)
-    ret = exps.run('test_uid', 10, UID_SCRIPT)
+    ret = exps.run(name, duration, UID_SCRIPT)
     return ret
 
 
@@ -296,7 +296,7 @@ def main():
             raise ValueError("No valid hosts")
 
         result_dict = fabric.tasks.execute(
-            run_exp, api, config, opts.all_bookable,
+            run_exp, api, opts.name, opts.duration, config, opts.all_bookable,
             hosts=sorted(config.keys()))
 
         result = {}
