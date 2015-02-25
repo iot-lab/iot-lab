@@ -30,7 +30,7 @@ PARSER = argparse.ArgumentParser()
 iotlabcli.parser.common.add_auth_arguments(PARSER)
 
 PARSER.add_argument('--name', default='uid_experiment')
-PARSER.add_argument('--duration', default=10, type=int)
+PARSER.add_argument('--duration', default=60, type=int)
 
 PARSER.add_argument('--all-bookable', help="Run on %r nodes.\n"
                     "Default: Alive" % list(STATES),
