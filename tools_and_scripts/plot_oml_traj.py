@@ -23,10 +23,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import Image
+import csv
 
 FIELDS = {'t_s': 3, 't_us': 4, 'x': 5, 'y': 6, 'th': 7}
 DECO = {'marker': 0, 'color': 1, 'size': 2, 'x': 3, 'y': 4}
-MAPS = {'marker': 0, 'file': 1, 'ratio': 2, 'sizex': 3, 'sizey': 4}
+MAPS = {'marker': 0, 'file': 1, 'ratio': 2, 'sizex': 3, 'sizey': 4, 
+        'offsetx': 5, 'offsety': 6}
 
 
 def oml_load(filename):
@@ -90,44 +92,49 @@ def maps_load(filename):
     [[mark color size x y] [mark1 color1 size1 x1 y1]...]
 
     data_map : numpy array
-    ['f' 'filename' ratio sizex sizey]
+    ['f' 'filename' ratio sizex sizey ofx ofy]
 
     """
-    data = None
     try:
-        data = np.genfromtxt(filename, skip_header=1,
-                             dtype=None, invalid_raise=False)
+        datafile = open(filename, 'r')
+        datareader = csv.reader(datafile, delimiter=' ')
     except IOError as err:
         sys.stderr.write("Error opening maps file:\n{0}\n".format(err))
         sys.exit(2)
     except (ValueError, StopIteration) as err:
         sys.stderr.write("Error reading maps file:\n{0}\n".format(err))
         sys.exit(3)
+        
 
     # Search if there is a map and split with other
     # elements (data_deco) and the map (data_map)
     findmap = False
-    index = 0
-    data_map = None
-    if data.size == 1:
-        data = np.atleast_1d(data)
+    data_map  = []
+    data_deco = []
+    for row in datareader:
+        if  len(row) > 0:
+            if row[0] == 'f':
+                findmap = True 
+                # float conversion
+                for index in range(2, len(row)):
+                    row[index] = float(row[index]) 
+                data_map = row
+            else:
+                if row[0] != '#':
+                    # float conversion
+                    for index in range(2, len(row)):
+                        row[index] = float(row[index])
+                    data_deco.append(row)
 
-    while index < data.size and not findmap:
-        if data[index][DECO['marker']] == 'f':
-            findmap = True
-            data_map = data[index]
-            data_deco = np.delete(data, index, 0)
-        else:
-            index = index + 1
     # If the map exists rescale x,y elements
-    if findmap is False:
-        data_deco = data
-    else:
+    if findmap is True:
         ratio = data_map[MAPS['ratio']]
         sizey = data_map[MAPS['sizey']]
+        ofx = data_map[MAPS['offsetx']]
+        ofy = data_map[MAPS['offsety']]
         for ditem in data_deco:
-            ditem[DECO['x']] = ditem[DECO['x']] / ratio
-            ditem[DECO['y']] = sizey - ditem[DECO['y']] / ratio
+            ditem[DECO['x']] = (ditem[DECO['x']] + ofx) / ratio
+            ditem[DECO['y']] = sizey - (ditem[DECO['y']] + ofy) / ratio 
 
     return data_deco, data_map
 
@@ -155,7 +162,7 @@ def oml_plot(data, title, deco, maps):
     plt.title(title + ' trajectory')
     plt.grid()
     # Plot map image in background
-    if maps is not "":
+    if len(maps) > 0 :
         fname = maps[MAPS['file']]
         try:
             image = Image.open(fname).convert("L")
@@ -168,9 +175,13 @@ def oml_plot(data, title, deco, maps):
         plt.imshow(arr, cmap=cm.Greys_r)
         ratio = maps[MAPS['ratio']]
         sizey = maps[MAPS['sizey']]
+        ofx = maps[MAPS['offsetx']]
+        ofy = maps[MAPS['offsety']]
     else:
         ratio = 0
         sizey = 0
+        ofx = 0
+        ofy = 0
     # Plot elements for decoration
     for ditem in deco:
         plt.scatter(ditem[DECO['x']], ditem[DECO['y']],
@@ -182,8 +193,8 @@ def oml_plot(data, title, deco, maps):
         plt.xlabel('X (m)')
         plt.ylabel('Y (m)')
     else:
-        plt.plot(data[:, FIELDS['x']]/ratio,
-                 sizey - data[:, FIELDS['y']]/ratio)
+        plt.plot((data[:, FIELDS['x']] + ofx)/ratio,
+                 sizey - (data[:, FIELDS['y']] + ofy)/ratio)
         plt.xlabel('X (pixels)')
         plt.ylabel('Y (pixels)')
 

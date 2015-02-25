@@ -1,0 +1,7 @@
+# marker color size x y /'f' filename ratio sizex sizey
+f lille-iotlab.pgm 0.05 1472 1120 -10.0388 0
+s red 10 0.0 0.0
+
+
+
+

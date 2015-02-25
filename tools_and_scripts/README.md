@@ -70,4 +70,4 @@ for help use --help or -h
 
 An example of use :
  * `> cd ex_oml_traj/`
- * `> ../plot_oml_traj.py -i m3-382-c2.oml -m decor.txt`
+ * `> ../plot_oml_traj.py -i m3-382-c2.oml -m grenoble-map.txt`
