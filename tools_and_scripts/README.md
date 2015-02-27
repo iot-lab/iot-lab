@@ -71,3 +71,5 @@ for help use --help or -h
 An example of use :
  * `> cd ex_oml_traj/`
  * `> ../plot_oml_traj.py -i m3-382-c2.oml -m grenoble-map.txt`
+ * `> ../plot_oml_traj.py --input=m3-382-c2.oml --maps=grenoble-map.txt --circuit=circuits/grenoble/circuit2.json`
+ * `> ../plot_oml_traj.py --maps=strasbourg-map.txt --circuit=circuits/strasbourg/square.json`
