@@ -3,13 +3,14 @@
 
 """ plot_oml_traj.py
 
-plot oml robot trajectory [-behmt] -i <filename> or --input=<filename>
+plot oml robot trajectory [-behmtc] -i <filename> or --input=<filename>
 
 for time verification --time or -t
 for begin sample --begin=<sample_beg> or -b <sample_beg>
 for end sample --end=<sample_end> or -e <sample_end>
 for label title plot --label=<title> or -l <title>
-for plot maps and elements --maps=<filename> or -c <filename>
+for plot maps and elements --maps=<filename> or -m <filename>
+for plot circuit --circuit=<filename> or -c <filename>
 for help use --help or -h
 """
 
@@ -24,6 +25,9 @@ import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import Image
 import csv
+
+import json
+import matplotlib.patches as patches
 
 FIELDS = {'t_s': 3, 't_us': 4, 'x': 5, 'y': 6, 'th': 7}
 DECO = {'marker': 0, 'color': 1, 'size': 2, 'x': 3, 'y': 4}
@@ -138,8 +142,47 @@ def maps_load(filename):
 
     return data_deco, data_map
 
+def circuit_load(filename):
+    """ Load robot circuit file
 
-def oml_plot(data, title, deco, maps):
+    Parameters:
+    ------------
+    filename: string
+              filename
+
+    Returns:
+    -------
+    circuit: json object
+    {
+       "coordinates": [
+       {
+         "name": "0",
+         "x": 9.5036359876481,
+         "y": -0.8644077467101,
+         "z": 0,
+         "w": -2.4504422620417
+       },
+       {
+         "name": "1",
+         "x": 0.88773354001121,
+         "y": 9.750401138047,
+         "z": 0,
+         "w": 0.46435151843117
+       }
+      ],
+      "points":[
+                "0",
+                "1"
+      ]
+    }
+    """
+
+    json_data=open(filename,"rb")
+    circuit = json.load(json_data)
+    json_data.close()
+    return circuit
+
+def oml_plot(data, title, deco, maps, circuit=None):
     """ Plot iot-lab oml data
 
     Parameters:
@@ -155,10 +198,11 @@ def oml_plot(data, title, deco, maps):
     maps: array (size 1)
        [marker, filename_img, ratio, sizex, sizey]
        plot point item for trajectory with filename_img in background
+    circuit: 
+       TODO
     """
-    timestamps = data[:, FIELDS['t_s']] + data[:, FIELDS['t_us']] / 1e6
     # Figure trajectory initialization
-    plt.figure()
+    circuit_fig = plt.figure()
     plt.title(title + ' trajectory')
     plt.grid()
     # Plot map image in background
@@ -188,23 +232,46 @@ def oml_plot(data, title, deco, maps):
                     marker=ditem[DECO['marker']],
                     color=ditem[DECO['color']], s=ditem[DECO['size']])
     # Plot robot trajectory
-    if ratio == 0:
-        plt.plot(data[:, FIELDS['x']], data[:, FIELDS['y']])
-        plt.xlabel('X (m)')
-        plt.ylabel('Y (m)')
-    else:
-        plt.plot((data[:, FIELDS['x']] + ofx)/ratio,
-                 sizey - (data[:, FIELDS['y']] + ofy)/ratio)
-        plt.xlabel('X (pixels)')
-        plt.ylabel('Y (pixels)')
+    if data !=None:
+        timestamps = data[:, FIELDS['t_s']] + data[:, FIELDS['t_us']] / 1e6
+        if ratio == 0:
+            plt.plot(data[:, FIELDS['x']], data[:, FIELDS['y']])
+            plt.xlabel('X (m)')
+            plt.ylabel('Y (m)')
+        else:
+            plt.plot((data[:, FIELDS['x']] + ofx)/ratio,
+                     sizey - (data[:, FIELDS['y']] + ofy)/ratio)
+            plt.xlabel('X (pixels)')
+            plt.ylabel('Y (pixels)')
+    # Plot circuit
+    if circuit!=None:
+        c_x = []
+        c_y = []
+        checkpoint_path =  []
+
+        if ratio == 0:
+            for checkpoint in circuit['coordinates']:
+                c_x.append(checkpoint['x'])
+                c_y.append(checkpoint['y'])
+                checkpoint_path.append( [ checkpoint['x'], checkpoint['y'] ])
+        else:
+            for checkpoint in circuit['coordinates']:
+                c_x.append((checkpoint['x'] + ofx)/ratio)
+                c_y.append(sizey - (checkpoint['y'] + ofy)/ratio)
+                checkpoint_path.append( [ (checkpoint['x'] + ofx)/ratio , sizey - (checkpoint['y'] + ofy)/ratio ] ) 
+
+        checkpoint_lines = patches.Polygon(checkpoint_path, linestyle='dashed', linewidth=2, edgecolor='red', fill=False)
+        ax = circuit_fig.add_subplot(111)
+        ax.add_patch(checkpoint_lines)
+        plt.plot(c_x, c_y,'ro')    
 
     # Figure angle initialization
-    plt.figure()
-    plt.title(title + ' angle')
-    plt.grid()
-    plt.plot(timestamps, data[:, FIELDS['th']])
-    plt.xlabel('Sample Time (sec)')
-    plt.ylabel('yaw angle (rad)')
+    #plt.figure()
+    #plt.title(title + ' angle')
+    #plt.grid()
+    #plt.plot(timestamps, data[:, FIELDS['th']])
+    #plt.xlabel('Sample Time (sec)')
+    #plt.ylabel('yaw angle (rad)')
     return
 
 
@@ -251,9 +318,9 @@ def main(argv):
     options = []
     filename = ""
     try:
-        opts, _ = getopt.getopt(argv, "i:htm:b:e:l:",
+        opts, _ = getopt.getopt(argv, "i:htm:b:e:l:c:",
                                 ["input=", "help", "time",
-                                 "begin=", "end=", "label="])
+                                 "begin=", "end=", "label=","map=","circuit="])
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -278,19 +345,29 @@ def main(argv):
         elif opt in ("-m", "--maps"):
             options.append("-m")
             filename_maps = arg
+        elif opt in ("-c", "--circuit"):
+            options.append("-c")
+            filename_circuit = arg
 
-    if len(filename) == 0:
-        usage()
-        sys.exit(2)
 
     # Load file
-    data = oml_load(filename)[s_beg:s_end, :]
+    if "-i" in options:
+        if len(filename) == 0:
+            usage()
+            sys.exit(2)
+    	data = oml_load(filename)[s_beg:s_end, :]
+    else:
+        data = None
     if "-m" in options:
         deco, img_map = maps_load(filename_maps)
     else:
         deco = ""
         img_map = ""
-    oml_plot(data, title, deco, img_map)
+    if "-c" in options:
+        circuit = circuit_load(filename_circuit)
+    else:
+        circuit = None
+    oml_plot(data, title, deco, img_map, circuit)
     # Clock verification
     if "-t" in options:
         oml_clock(data)
