@@ -3,15 +3,16 @@
 
 """ plot_oml_traj.py
 
-plot oml robot trajectory [-behmtc] -i <filename> or --input=<filename>
+./plot_oml_traj.py --input=<oml_filename> --maps=<map_filename.txt> --circuit=<circuit_filename.json> --time --angle --label=<MyExperiment>
 
+for help use --help or -h
 for time verification --time or -t
+for plot angle --angle or -a
 for begin sample --begin=<sample_beg> or -b <sample_beg>
 for end sample --end=<sample_end> or -e <sample_end>
 for label title plot --label=<title> or -l <title>
 for plot maps and elements --maps=<filename> or -m <filename>
 for plot circuit --circuit=<filename> or -c <filename>
-for help use --help or -h
 """
 
 # disabling pylint errors 'E1101' no-member, false positive from pylint
@@ -182,7 +183,7 @@ def circuit_load(filename):
     json_data.close()
     return circuit
 
-def oml_plot(data, title, deco, maps, circuit=None):
+def oml_plot(data, title, deco, maps, options, circuit=None):
     """ Plot iot-lab oml data
 
     Parameters:
@@ -232,7 +233,7 @@ def oml_plot(data, title, deco, maps, circuit=None):
                     marker=ditem[DECO['marker']],
                     color=ditem[DECO['color']], s=ditem[DECO['size']])
     # Plot robot trajectory
-    if data !=None:
+    if "-i" in options:
         timestamps = data[:, FIELDS['t_s']] + data[:, FIELDS['t_us']] / 1e6
         if ratio == 0:
             plt.plot(data[:, FIELDS['x']], data[:, FIELDS['y']])
@@ -244,7 +245,8 @@ def oml_plot(data, title, deco, maps, circuit=None):
             plt.xlabel('X (pixels)')
             plt.ylabel('Y (pixels)')
     # Plot circuit
-    if circuit!=None:
+    #if circuit!=None:
+    if "-c" in options:
         c_x = []
         c_y = []
         checkpoint_path =  []
@@ -266,12 +268,13 @@ def oml_plot(data, title, deco, maps, circuit=None):
         plt.plot(c_x, c_y,'ro')    
 
     # Figure angle initialization
-    #plt.figure()
-    #plt.title(title + ' angle')
-    #plt.grid()
-    #plt.plot(timestamps, data[:, FIELDS['th']])
-    #plt.xlabel('Sample Time (sec)')
-    #plt.ylabel('yaw angle (rad)')
+    if "-a" in options:
+        plt.figure()
+        plt.title(title + ' angle')
+        plt.grid()
+        plt.plot(timestamps, data[:, FIELDS['th']])
+        plt.xlabel('Sample Time (sec)')
+        plt.ylabel('yaw angle (rad)')
     return
 
 
@@ -318,9 +321,9 @@ def main(argv):
     options = []
     filename = ""
     try:
-        opts, _ = getopt.getopt(argv, "i:htm:b:e:l:c:",
-                                ["input=", "help", "time",
-                                 "begin=", "end=", "label=","map=","circuit="])
+        opts, _ = getopt.getopt(argv, "i:hta:m:b:e:l:c:",
+                                ["input=", "help", "time","angle", "maps=",
+                                 "begin=", "end=", "label=","circuit="])
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -333,6 +336,7 @@ def main(argv):
             usage()
             sys.exit()
         elif opt in ("-i", "--input"):
+            options.append("-i")
             filename = arg
         elif opt in ("-l", "--label"):
             title = arg
@@ -348,7 +352,8 @@ def main(argv):
         elif opt in ("-c", "--circuit"):
             options.append("-c")
             filename_circuit = arg
-
+        elif opt in ("-a", "--angle"):
+            options.append("-a")
 
     # Load file
     if "-i" in options:
@@ -367,7 +372,7 @@ def main(argv):
         circuit = circuit_load(filename_circuit)
     else:
         circuit = None
-    oml_plot(data, title, deco, img_map, circuit)
+    oml_plot(data, title, deco, img_map, options, circuit)
     # Clock verification
     if "-t" in options:
         oml_clock(data)
