@@ -85,7 +85,9 @@ class RunExperiment(object):
             self.submit_exp(name, duration)
             self.wait_exp()
             if 'a8:at86rf231' == self.archi:
-                self.setup_a8_nodes()
+                setup_ret = self.setup_a8_nodes()
+                if 0 not in setup_ret.values():
+                    raise StandardError("Setup A8 failed for all")
             ret = self.run_exp(script)
         except:
             traceback.print_exc()
@@ -147,7 +149,7 @@ class RunExperiment(object):
                 fabric.operations.run(
                     'grep "Boot A8 failed" --color=auto a8-* ''')
 
-    def wait_a8_started(self, num_loop_max=10, step=50):
+    def wait_a8_started(self, num_loop_max=20, step=30):
         """ Wait for A8 nodes to be booted
 
         We wait either for minimum of:
@@ -185,7 +187,7 @@ class RunExperiment(object):
         fw_path = '~/A8/%s' % os.path.basename(self.firmware)
         fabric.operations.put(self.firmware, fw_path)
 
-        fabric.tasks.execute(
+        return fabric.tasks.execute(
             self.configure_a8_node, fw_path,
             hosts=['node-%s' % node for node in self.nodes])
 
@@ -194,8 +196,9 @@ class RunExperiment(object):
     def configure_a8_node(fw_path):
         """ Configure a8 node """
         fabric.operations.run('flash_a8_m3 %s 2>/dev/null' % fw_path)
-        fabric.operations.run("/etc/init.d/serial_redirection restart",
+        fabric.operations.run('/etc/init.d/serial_redirection restart',
                               pty=False)
+        return 0
 
     def run_exp(self, script):
         """ Actually run the experiment script """
@@ -207,7 +210,7 @@ class RunExperiment(object):
         with fabric.context_managers.cd('%d' % self.exp_id):
             fabric.operations.put(script, script_name, mode=0755)
             ret = fabric.operations.run(
-                './%s -i %s 2>/dev/null' % (script_name, self.exp_id))
+                './%s -i %s 2>log' % (script_name, self.exp_id))
         return ret
 
     def teardown_exp(self):
