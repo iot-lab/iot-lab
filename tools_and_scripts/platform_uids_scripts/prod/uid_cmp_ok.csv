@@ -2,6 +2,7 @@ wsn430-1.euratech.iot-lab.info,c321
 wsn430-2.euratech.iot-lab.info,c23a
 wsn430-3.euratech.iot-lab.info,cf17
 wsn430-4.euratech.iot-lab.info,bd11
+wsn430-5.euratech.iot-lab.info,b6bc
 wsn430-6.euratech.iot-lab.info,ccaa
 wsn430-7.euratech.iot-lab.info,b154
 wsn430-8.euratech.iot-lab.info,b27b
@@ -75,6 +76,7 @@ wsn430-80.euratech.iot-lab.info,babc
 wsn430-81.euratech.iot-lab.info,b5f1
 wsn430-82.euratech.iot-lab.info,c8c8
 wsn430-83.euratech.iot-lab.info,c640
+wsn430-84.euratech.iot-lab.info,ca25
 wsn430-85.euratech.iot-lab.info,b659
 wsn430-86.euratech.iot-lab.info,b5cc
 wsn430-87.euratech.iot-lab.info,b2c1
@@ -152,6 +154,7 @@ wsn430-158.euratech.iot-lab.info,b0e0
 wsn430-159.euratech.iot-lab.info,cf07
 wsn430-160.euratech.iot-lab.info,b8c6
 wsn430-161.euratech.iot-lab.info,b282
+wsn430-162.euratech.iot-lab.info,c167
 wsn430-163.euratech.iot-lab.info,c534
 wsn430-164.euratech.iot-lab.info,b31c
 wsn430-165.euratech.iot-lab.info,bc60
@@ -161,6 +164,7 @@ wsn430-168.euratech.iot-lab.info,cd29
 wsn430-169.euratech.iot-lab.info,c3a3
 wsn430-170.euratech.iot-lab.info,cc1d
 wsn430-171.euratech.iot-lab.info,c6ba
+wsn430-172.euratech.iot-lab.info,b320
 wsn430-173.euratech.iot-lab.info,cc61
 wsn430-174.euratech.iot-lab.info,b1f4
 wsn430-175.euratech.iot-lab.info,b46b
@@ -196,6 +200,7 @@ wsn430-204.euratech.iot-lab.info,c23c
 wsn430-205.euratech.iot-lab.info,bd5c
 wsn430-206.euratech.iot-lab.info,ce56
 wsn430-207.euratech.iot-lab.info,c447
+wsn430-208.euratech.iot-lab.info,c33a
 wsn430-209.euratech.iot-lab.info,ce00
 wsn430-210.euratech.iot-lab.info,c117
 wsn430-211.euratech.iot-lab.info,1f43
@@ -462,8 +467,6 @@ m3-23.grenoble.iot-lab.info,a669
 m3-24.grenoble.iot-lab.info,8971
 m3-25.grenoble.iot-lab.info,9071
 m3-26.grenoble.iot-lab.info,9469
-m3-27.grenoble.iot-lab.info,b778
-m3-28.grenoble.iot-lab.info,a882
 m3-29.grenoble.iot-lab.info,0662
 m3-30.grenoble.iot-lab.info,c168
 m3-31.grenoble.iot-lab.info,b377
@@ -1017,6 +1020,7 @@ wsn430-247.grenoble.iot-lab.info,c819
 wsn430-248.grenoble.iot-lab.info,b4e4
 wsn430-249.grenoble.iot-lab.info,c94e
 wsn430-250.grenoble.iot-lab.info,c8fb
+wsn430-251.grenoble.iot-lab.info,be2e
 wsn430-252.grenoble.iot-lab.info,c4ed
 wsn430-253.grenoble.iot-lab.info,b669
 wsn430-254.grenoble.iot-lab.info,cd4c
@@ -1715,7 +1719,6 @@ m3-61.strasbourg.iot-lab.info,a988
 m3-62.strasbourg.iot-lab.info,b386
 m3-63.strasbourg.iot-lab.info,9887
 m3-64.strasbourg.iot-lab.info,9687
-m3-96.strasbourg.iot-lab.info,9286
 wsn430-1.strasbourg.iot-lab.info,c0d8
 wsn430-2.strasbourg.iot-lab.info,b2a7
 wsn430-3.strasbourg.iot-lab.info,c6f0
