@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """ Get all nodes UID """
 
-UID_SCRIPT = 'get_iotlab_uid.py'
 
 import sys
 import os.path
@@ -40,15 +39,21 @@ PARSER.add_argument('--site', action='append',
 PARSER.add_argument('--archi', choices=ARCHIS, action='append',
                     help="Run on ARCHI. Default: all")
 
-PARSER.add_argument('--firmware-m3', dest='firmware_m3:at86rf231')
-PARSER.add_argument('--firmware-a8', dest='firmware_a8:at86rf231')
-PARSER.add_argument('--firmware-cc1101', dest='firmware_wsn430:cc1101')
-PARSER.add_argument('--firmware-cc2420', dest='firmware_wsn430:cc2420')
+PARSER.add_argument('--m3', dest='fw_m3:at86rf231', help='m3 firmware')
+PARSER.add_argument('--a8', dest='fw_a8:at86rf231', help='a8 firmware')
+PARSER.add_argument('--cc1101', dest='fw_wsn430:cc1101', help='cc1101 fw')
+PARSER.add_argument('--cc2420', dest='fw_wsn430:cc2420', help='cc2420 fw')
 
-PARSER.add_argument('--outfile', default='/dev/null')
+PARSER.add_argument('-o', '--outfile', default='/dev/null')
 
+
+SCRIPT_DIR =  os.path.relpath(os.path.dirname(__file__))
+UTILS_DIR = os.path.join(SCRIPT_DIR, 'utils')
+
+
+UID_SCRIPT = os.path.join(UTILS_DIR, 'get_iotlab_uid.py')
+env.ssh_config_path = os.path.join(UTILS_DIR, 'ssh_config')
 env.use_ssh_config = True
-env.ssh_config_path = './ssh_config'
 
 env.reject_unknown_hosts = False
 env.disable_known_hosts = True
@@ -286,7 +291,7 @@ def main():
         # Generate config for all targets
         config = {}
         for site, archi in targets:
-            firmware = vars(opts)['firmware_%s' % archi]
+            firmware = vars(opts)['fw_%s' % archi]
             if firmware is None:
                 fabric.utils.puts("No firmware for %s %s" % (site, archi))
             else:
