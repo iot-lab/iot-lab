@@ -36,6 +36,13 @@ def oar_uids(api):
     for node in resources['items']:
         # collect uid for non Absent nodes
         uid = node['uid'].lower() if 'Absent' != node['state'] else None
+        if uid in ['unknown', ' ']:
+            uid = ''
+        elif uid == '05df':
+            # TODO Remove me after next OAR update
+            print "Hiding node %s with uid '05df'" % node['network_address']
+            uid = ''
+
         oar_uids_dict[node['network_address']] = uid
 
     return oar_uids_dict
