@@ -13,6 +13,7 @@ import fabric.tasks
 import fabric.context_managers
 import fabric.api
 import fabric.utils
+import fabric.decorators
 import traceback
 
 import json
@@ -81,13 +82,14 @@ class RunExperiment(object):
 
     def run(self, name, duration, script):
         """ Run a whole experiment """
+        full_name = '%s_%s_%s' % (name, self.site, self.archi.split(':')[0])
         ret = None
         fabric.utils.puts("run_exp: %s %d %s %s %s %r" % (
-            name, duration, self.site, self.archi, self.firmware,
+            full_name, duration, self.site, self.archi, self.firmware,
             list(self.states)))
 
         try:
-            self.submit_exp(name, duration)
+            self.submit_exp(full_name, duration)
             self.wait_exp()
             if 'a8:at86rf231' == self.archi:
                 setup_ret = self.setup_a8_nodes()
@@ -132,10 +134,11 @@ class RunExperiment(object):
         fabric.utils.puts("Exp-started: %s" % start_date)
 
     @staticmethod
+    @fabric.decorators.with_settings(warn_only=True)
     def _num_a8_booted_nodes(log_path):
         """ Return a tuple with the number of experiment started a8 nodes
         with num of booted nodes """
-        with fabric.api.settings(warn_only=True):
+        with fabric.api.hide('warnings'):
             with fabric.context_managers.cd(log_path):
                 # use cat to get count in one line
                 ok_nodes = fabric.operations.run(
@@ -145,9 +148,10 @@ class RunExperiment(object):
         return int(ok_nodes), int(booted)
 
     @staticmethod
+    @fabric.decorators.with_settings(warn_only=True)
     def _print_a8_booted_nodes(log_path):
         """ Print booted and boot failed nodes """
-        with fabric.api.settings(warn_only=True):
+        with fabric.api.hide('warnings'):
             with fabric.context_managers.cd(log_path):
                 fabric.operations.run(
                     'grep "Boot A8 succeeded" --color=auto a8-*')

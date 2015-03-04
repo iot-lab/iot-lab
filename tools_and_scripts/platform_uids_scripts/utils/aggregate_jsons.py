@@ -1,4 +1,4 @@
-#! /urs/bin/env python
+#! /usr/bin/env python
 # -*- coding: utf-8 -*-
 """ Aggregate multiple json dicts into one
 
