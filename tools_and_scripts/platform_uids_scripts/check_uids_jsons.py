@@ -3,8 +3,9 @@
 
 """ Check the given uids jsons files against platform stored ones """
 
-import json
+import os
 import sys
+import json
 import logging
 import argparse
 
@@ -23,6 +24,8 @@ def opts_parser():
     common_parser.add_auth_arguments(parser)
 
     parser.add_argument('uids_json_files', nargs='+', help='uids json files')
+    parser.add_argument('--outdir', default='.',
+                        help='out directory for result files')
     return parser
 
 
@@ -99,6 +102,7 @@ def main():
 
     parser = opts_parser()
     opts = parser.parse_args()
+    os.listdir(opts.outdir)  # existing directory
 
     try:
         username, password = iotlabcli.get_user_credentials(
@@ -111,8 +115,9 @@ def main():
 
     nodes_uids = nodes_read_uids(opts.uids_json_files)
 
+
     nodes_cmp = compare_nodes_uids(server_uids, nodes_uids)
-    write_outputs(nodes_cmp, 'uid_cmp')
+    write_outputs(nodes_cmp, os.path.join(opts.outdir, 'uid_cmp'))
 
 
 if __name__ == '__main__':
