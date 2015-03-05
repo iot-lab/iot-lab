@@ -99,9 +99,8 @@ def update_csv_file(csv_fd, new_csv_fd, uid_dict):
 
 
 PARSER = argparse.ArgumentParser()
-PARSER.add_argument('-i', '--input-file', required=True, nargs='+',
-                    help='input files')
 PARSER.add_argument('-r', '--resources-dir', required=True, help='input files')
+PARSER.add_argument('input_file', nargs='+', help='input files')
 
 
 def main():
