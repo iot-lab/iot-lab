@@ -1,6 +1,9 @@
 # Add new repositories in REPOS variable
 
-REPOS = contiki wsn430 openlab cli-tools aggregation-tools riot
+IOTLAB_REPOS = contiki wsn430 openlab cli-tools aggregation-tools
+EXTERN_REPOS = riot
+REPOS = $(IOTLAB_REPOS) $(EXTERN_REPOS)
+
 SETUP_REPOS = $(sort $(addprefix setup-, $(REPOS)))
 
 help:
@@ -12,32 +15,40 @@ help:
 	@echo  ""
 	@printf "\tpull\n"
 	@echo  ""
-
-
 all: $(addprefix setup-, $(REPOS))
-setup-%: parts/%
+
+
+
+ifdef GITHUB_GIT
+GITHUB_URL = git@github.com:
+else
+GITHUB_URL = https://github.com/
+endif
+
+
+# External repositories
+setup-riot: parts/RIOT
+parts/RIOT:
+	git clone $(GITHUB_URL)RIOT-OS/RIOT.git $@
+
+
+# IoT-Lab repositories
+$(addprefix setup-, $(IOTLAB_REPOS)): setup-%: parts/%
 parts/%:
-	git clone https://github.com/iot-lab/$*.git $@
+	git clone $(GITHUB_URL)iot-lab/$*.git $@
 
 
 # print documentation on release
 setup-wsn430: parts/wsn430
 	cat parts/wsn430/README.md
-
 setup-openlab: parts/openlab
 	cat parts/openlab/README-IoT-LAB.md
-
 setup-contiki: parts/contiki
 	cat parts/contiki/README-IoT-LAB.md
 
-# External repository
-setup-riot: parts/RIOT
-parts/RIOT:
-	git clone https://github.com/RIOT-OS/RIOT.git $@
 
 
 # Pull in new changes
-
 pull: $(subst parts/,pull-,$(wildcard parts/*))
 	git pull
 pull-%: parts/%
