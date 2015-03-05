@@ -23,6 +23,4 @@ init-hook='import sys; sys.path.append("../../parts/cli-tools/")'
 # --enable=similarities". If you want to run only the classes checker, but have
 # no Warning level messages displayed, use"--disable=all --enable=classes
 # --disable=W"
-# R0801(duplicate-code)
-# I0011(locally-disabled)
-disable=R0801,I0011
+disable=locally-disabled,star-args,duplicate-code

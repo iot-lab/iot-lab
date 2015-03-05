@@ -48,7 +48,7 @@ PARSER.add_argument('--cc2420', dest='fw_wsn430:cc2420', help='cc2420 fw')
 PARSER.add_argument('-o', '--outfile', default='/dev/null')
 
 
-SCRIPT_DIR =  os.path.relpath(os.path.dirname(__file__))
+SCRIPT_DIR = os.path.relpath(os.path.dirname(__file__))
 UTILS_DIR = os.path.join(SCRIPT_DIR, 'utils')
 
 
@@ -96,7 +96,7 @@ class RunExperiment(object):
                 if 0 not in setup_ret.values():
                     raise StandardError("Setup A8 failed for all")
             ret = self.run_exp(script)
-        except:
+        except:  # pylint:disable=bare-except
             traceback.print_exc()
         finally:
             self.teardown_exp()
@@ -179,7 +179,7 @@ class RunExperiment(object):
             time.sleep(step)
             num_ok, num_booted = self._num_a8_booted_nodes(log_path)
 
-            if (num_ok == num_booted):
+            if num_ok == num_booted:
                 break  # all booted
             if ((num_ok / 2) < num_booted) and (old_num_booted == num_booted):
                 # no new nodes booted since last time and more than half did
@@ -321,10 +321,9 @@ def main():
         with open(opts.outfile, 'w') as outfile:
             outfile.write(result_str)
 
-    except:
+    except:  # pylint:disable=bare-except
         traceback.print_exc()
         print >> sys.stderr, sys.exc_info()
-
     finally:
         fabric.network.disconnect_all()
 

@@ -3,7 +3,8 @@
 
 """ plot_oml_traj.py
 
-./plot_oml_traj.py --input=<oml_filename> --maps=<map_filename.txt> --circuit=<circuit_filename.json> --time --angle --label=<MyExperiment>
+./plot_oml_traj.py --input=<oml_filename> --maps=<map_filename.txt>
+        --circuit=<circuit_filename.json> --time --angle --label=<MyExperiment>
 
 for help use --help or -h
 for time verification --time or -t
@@ -32,7 +33,7 @@ import matplotlib.patches as patches
 
 FIELDS = {'t_s': 3, 't_us': 4, 'x': 5, 'y': 6, 'th': 7}
 DECO = {'marker': 0, 'color': 1, 'size': 2, 'x': 3, 'y': 4}
-MAPS = {'marker': 0, 'file': 1, 'ratio': 2, 'sizex': 3, 'sizey': 4, 
+MAPS = {'marker': 0, 'file': 1, 'ratio': 2, 'sizex': 3, 'sizey': 4,
         'offsetx': 5, 'offsety': 6}
 
 
@@ -109,20 +110,19 @@ def maps_load(filename):
     except (ValueError, StopIteration) as err:
         sys.stderr.write("Error reading maps file:\n{0}\n".format(err))
         sys.exit(3)
-        
 
     # Search if there is a map and split with other
     # elements (data_deco) and the map (data_map)
     findmap = False
-    data_map  = []
+    data_map = []
     data_deco = []
     for row in datareader:
-        if  len(row) > 0:
+        if len(row) > 0:
             if row[0] == 'f':
-                findmap = True 
+                findmap = True
                 # float conversion
                 for index in range(2, len(row)):
-                    row[index] = float(row[index]) 
+                    row[index] = float(row[index])
                 data_map = row
             else:
                 if row[0] != '#':
@@ -139,9 +139,10 @@ def maps_load(filename):
         ofy = data_map[MAPS['offsety']]
         for ditem in data_deco:
             ditem[DECO['x']] = (ditem[DECO['x']] + ofx) / ratio
-            ditem[DECO['y']] = sizey - (ditem[DECO['y']] + ofy) / ratio 
+            ditem[DECO['y']] = sizey - (ditem[DECO['y']] + ofy) / ratio
 
     return data_deco, data_map
+
 
 def circuit_load(filename):
     """ Load robot circuit file
@@ -178,10 +179,11 @@ def circuit_load(filename):
     }
     """
 
-    json_data=open(filename,"rb")
+    json_data = open(filename, "rb")
     circuit = json.load(json_data)
     json_data.close()
     return circuit
+
 
 def oml_plot(data, title, deco, maps, options, circuit=None):
     """ Plot iot-lab oml data
@@ -199,7 +201,7 @@ def oml_plot(data, title, deco, maps, options, circuit=None):
     maps: array (size 1)
        [marker, filename_img, ratio, sizex, sizey]
        plot point item for trajectory with filename_img in background
-    circuit: 
+    circuit:
        TODO
     """
     # Figure trajectory initialization
@@ -207,14 +209,13 @@ def oml_plot(data, title, deco, maps, options, circuit=None):
     plt.title(title + ' trajectory')
     plt.grid()
     # Plot map image in background
-    if len(maps) > 0 :
+    if len(maps) > 0:
         fname = maps[MAPS['file']]
         try:
             image = Image.open(fname).convert("L")
         except IOError as err:
             sys.stderr.write(
-                "Error opening image map file:\n{0}\n".format(err)
-                )
+                "Error opening image map file:\n{0}\n".format(err))
             sys.exit(2)
         arr = np.asarray(image)
         plt.imshow(arr, cmap=cm.Greys_r)
@@ -244,28 +245,31 @@ def oml_plot(data, title, deco, maps, options, circuit=None):
                      sizey - (data[:, FIELDS['y']] + ofy)/ratio)
             plt.xlabel('X (pixels)')
             plt.ylabel('Y (pixels)')
+
     # Plot circuit
-    #if circuit!=None:
+    # if circuit is not None:
     if "-c" in options:
         c_x = []
         c_y = []
-        checkpoint_path =  []
+        checkpoint_path = []
 
-        if ratio == 0:
-            for checkpoint in circuit['coordinates']:
-                c_x.append(checkpoint['x'])
-                c_y.append(checkpoint['y'])
-                checkpoint_path.append( [ checkpoint['x'], checkpoint['y'] ])
-        else:
-            for checkpoint in circuit['coordinates']:
-                c_x.append((checkpoint['x'] + ofx)/ratio)
-                c_y.append(sizey - (checkpoint['y'] + ofy)/ratio)
-                checkpoint_path.append( [ (checkpoint['x'] + ofx)/ratio , sizey - (checkpoint['y'] + ofy)/ratio ] ) 
+        for checkpoint in circuit['coordinates']:
+            if ratio == 0:
+                coord_x = checkpoint['x']
+                coord_y = checkpoint['y']
+            else:
+                coord_x = (checkpoint['x'] + ofx)/ratio
+                coord_y = sizey - (checkpoint['y'] + ofy)/ratio
+            c_x.append(coord_x)
+            c_y.append(coord_y)
+            checkpoint_path.append([coord_x, coord_y])
 
-        checkpoint_lines = patches.Polygon(checkpoint_path, linestyle='dashed', linewidth=2, edgecolor='red', fill=False)
-        ax = circuit_fig.add_subplot(111)
-        ax.add_patch(checkpoint_lines)
-        plt.plot(c_x, c_y,'ro')    
+        checkpoint_lines = patches.Polygon(checkpoint_path, linestyle='dashed',
+                                           linewidth=2, edgecolor='red',
+                                           fill=False)
+        a_x = circuit_fig.add_subplot(111)
+        a_x.add_patch(checkpoint_lines)
+        plt.plot(c_x, c_y, 'ro')
 
     # Figure angle initialization
     if "-a" in options:
@@ -316,14 +320,13 @@ def usage():
 
 
 def main(argv):
-    """ Main command
-    """
+    """ Main command """
     options = []
     filename = ""
     try:
         opts, _ = getopt.getopt(argv, "i:hta:m:b:e:l:c:",
-                                ["input=", "help", "time","angle", "maps=",
-                                 "begin=", "end=", "label=","circuit="])
+                                ["input=", "help", "time", "angle", "maps=",
+                                 "begin=", "end=", "label=", "circuit="])
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -360,7 +363,7 @@ def main(argv):
         if len(filename) == 0:
             usage()
             sys.exit(2)
-    	data = oml_load(filename)[s_beg:s_end, :]
+        data = oml_load(filename)[s_beg:s_end, :]
     else:
         data = None
     if "-m" in options:

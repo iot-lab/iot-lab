@@ -105,7 +105,6 @@ def main():
 
     nodes_uids = nodes_read_uids(opts.uids_json_files)
 
-
     nodes_cmp = compare_nodes_uids(server_uids, nodes_uids)
     write_outputs(nodes_cmp, os.path.join(opts.outdir, 'uid_cmp'))
 

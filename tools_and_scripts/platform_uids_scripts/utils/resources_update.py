@@ -74,6 +74,7 @@ def read_input_file(csv_in):
 
 
 def update_csv_row(row, uid_dict):
+    """ Update the row with the new uid """
     node_num = row[0]
 
     try:
@@ -104,6 +105,8 @@ PARSER.add_argument('input_file', nargs='+', help='input files')
 
 
 def main():
+    """ Update the fit-dev/install-lib/resources csv files using the
+    'uid_cmd_*' csv files passed as input """
     opts = PARSER.parse_args()
 
     # Read input files
