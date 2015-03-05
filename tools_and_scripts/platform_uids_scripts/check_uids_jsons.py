@@ -9,13 +9,13 @@ import json
 import logging
 import argparse
 
-LOGGER = logging.getLogger('check_uids_jsons')
-LOGGER.setLevel(logging.DEBUG)
-
 import iotlabcli
 from iotlabcli import experiment
 from iotlabcli.parser import common as common_parser
 from iotlabcli.helpers import node_url_sort_key
+
+LOGGER = logging.getLogger('check_uids_jsons')
+LOGGER.setLevel(logging.DEBUG)
 
 
 def opts_parser():

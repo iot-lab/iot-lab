@@ -5,6 +5,7 @@ import iotlabcli.helpers
 import iotlabcli.experiment
 import iotlabcli.parser.common
 import functools
+import logging
 from fabric.api import env, run, execute
 from fabric.api import task, parallel, roles, runs_once
 from fabric.utils import abort, puts
@@ -16,7 +17,6 @@ assert (1, 5, 0) >= _VERSION, \
      ": %r" % env.version)
 
 # Debug paramiko
-import logging
 logging.basicConfig(level=logging.CRITICAL)
 # logging.basicConfig(level=logging.DEBUG)
 
