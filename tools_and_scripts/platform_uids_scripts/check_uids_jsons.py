@@ -34,15 +34,7 @@ def oar_uids(api):
     oar_uids_dict = {}
     resources = experiment.info_experiment(api)
     for node in resources['items']:
-        # collect uid for non Absent nodes
-        uid = node['uid'].lower() if 'Absent' != node['state'] else None
-        if uid in ['unknown', ' ']:
-            uid = ''
-        elif uid == '05df':
-            # TODO Remove me after next OAR update
-            print "Hiding node %s with uid '05df'" % node['network_address']
-            uid = ''
-
+        uid = node['uid'].lower().strip()
         oar_uids_dict[node['network_address']] = uid
 
     return oar_uids_dict
@@ -65,7 +57,6 @@ def compare_nodes_uids(old, new):
         'no_data': None,
         'ok': [],
         'outdated': [],
-        'node_absent': [],
     }
 
     not_tested = set(old.items())
@@ -78,14 +69,6 @@ def compare_nodes_uids(old, new):
         else:
             result_dict['outdated'].append((node, uid))
         not_tested.remove((node, old[node]))
-
-    # remove absent nodes
-    for node, uid in list(not_tested):
-        if uid is None:
-            result_dict['node_absent'].append((node, uid))
-            not_tested.remove((node, uid))
-
-        print node
 
     result_dict['no_data'] = list(not_tested)
 
