@@ -25,7 +25,11 @@ import getopt
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
-import Image
+
+# http://stackoverflow.com/a/26605247/395687
+# pip install --no-index -f http://dist.plone.org/thirdparty/ -U PIL
+# or 'apt-get install python-imaging'
+from PIL import Image
 import csv
 
 import json
