@@ -16,5 +16,8 @@ Host *.strasbourg*
 # Add dev sites with a8 nodes here
 Host *.devgrenoble*
   ProxyCommand ssh devgrenoble.iot-lab.info -W %h:%p
+Host *.paris*
+  ProxyCommand ssh paris.iot-lab.info -W %h:%p
+
 Host devstras.iot-lab.info
   Hostname devstrasbourg.iot-lab.info
