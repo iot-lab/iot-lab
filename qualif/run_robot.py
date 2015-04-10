@@ -86,7 +86,7 @@ def launch():
     parser = argparse.ArgumentParser(description="Robot Experimentations")
     # add arguments
     parser.add_argument('node_name', metavar='node_name', type=str, nargs=1,
-                        help="complete node name")
+                        help="complete node name, ex: m3-381.grenoble.iot-lab.info")
     parser.add_argument('-c', '--count', type=int,
                         help="number of experimentations to launch")
     parser.add_argument('-t', '--time', type=int,
@@ -109,7 +109,6 @@ def launch():
     if args.profile is None:
         args.profile = PROFILEEXPE_DEF
 
-    print "ARGS", args.node_name, args.profile, args.time, args.count
     robot = RobotExpe(node_name, args.profile, args.time)
     robot.loop(args.count)
 

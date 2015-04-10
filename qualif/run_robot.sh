@@ -3,7 +3,7 @@ set -e
 
 nb_runs=${nb_runs:-10}
 site=${site:-devgrenoble}
-robot_id=${robot_id:-381}
+robot_id=${robot_id:-382}
 circuit=
 duration=${duration:-5}
 
@@ -36,16 +36,6 @@ run_test() {
 	done
 	printf "%*c\r" 50
 }
-
-
-mock_docking() {
-	sleep 5
-	ssh turtlebot@m3-381.devgrenoble.iot-lab.info -p 2222"
-		echo \"Robot_state: 'DOCKED'\" \
-			>> /var/log/iotlab-ros/turtlebot_debug.log
-	"
-}
-
 
 get_exp_id() {
 	./parse_json.py 'x["id"]'
