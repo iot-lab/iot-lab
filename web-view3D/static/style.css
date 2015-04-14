@@ -1,0 +1,14 @@
+#div3d {
+    height:500px;
+    background-color:#000000;
+    z-index:-1;
+}
+
+#messages {
+    border:1px solid rgb(195, 195, 195);
+    color:grey;
+    height:250px;
+    overflow:auto;
+}
+
+
