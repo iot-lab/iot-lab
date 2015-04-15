@@ -22,8 +22,10 @@ function aggregator_client(socket) {
                 var index = val.indexOf(";")
                 if(index < 0)
                     socket.emit('nodes', val);
-                else
-                    socket.emit('message', { node: val.slice(0,index), message: val.slice(index+1,val.length) });
+                else {
+                    var index2 = val.indexOf(";",index+1);
+                    socket.emit('message', { timestamp: val.slice(0, index), node: val.slice(index+1, index2), message: val.slice(index2+1,val.length) });
+                }
             }
         }
     });
@@ -60,7 +62,7 @@ function getNodes(){
 }
 
 function send(data){
-    aggregator.write(data);
+    aggregator.write(data + "\n");
 }
 
 // ======
