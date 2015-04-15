@@ -62,8 +62,9 @@ $('#nodes').on("click", function() {
     socket.emit('nodes');
 });
 
-$('#send').on("submit", function() {
-    preventDefault();
+//$('#send').on("submit", function() {
+//    preventDefault();
+$('#send').on("click", function() {
     console.log("envoi");
     socket.emit('message', $("#command").val());
 });
