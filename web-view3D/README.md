@@ -15,14 +15,14 @@ Prerequisites
 
 Run
 ---
-1. Run 'serial_aggregator' into testbed site ssh frontend as tcp server
-'''sh
+1. Run `serial_aggregator` into testbed site ssh frontend as tcp server
+```sh
 socat tcp-listen:9000,fork,reuseaddr exec:'ssh <site>.iot-lab.info "serial_aggregator -i <experiment id>"'
-'''
+```
 2. Run the node.js application
-'''sh
+```sh
 node app.js
-'''
+```
 3. Open your browser at (http://localhost:3000)
 
 Usage
