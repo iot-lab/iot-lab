@@ -17,7 +17,7 @@ Run
 ---
 1. Run `serial_aggregator` into testbed site ssh frontend as tcp server
 ```sh
-socat tcp-listen:9000,fork,reuseaddr exec:'ssh <site>.iot-lab.info "serial_aggregator -i <experiment id>"'
+socat tcp-listen:9000,fork,reuseaddr exec:'ssh <user>@<site>.iot-lab.info "serial_aggregator -i <experiment id>"'
 ```
 2. Run the node.js application
 ```sh
