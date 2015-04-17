@@ -6,7 +6,7 @@ Provides control and viewing capabilities from serial-aggregator into your brows
 **This work is under development**
 
 This work implement a node.js application, which consume and interprete the serial_aggragator data into a webpage with 3D view of the topology.
-For now, the index.html file implements the sonar example, available at [[github:openlab/appli/iot-lab/sonar]].
+For now, the index.html file implements the sonar example, available at (github:openlab/appli/iot-lab/sonar).
 
 Prerequisites
 -------------
@@ -21,7 +21,7 @@ socat tcp-listen:9000,fork,reuseaddr exec:'ssh <user>@<site>.iot-lab.info "seria
 ```
 2. Run the node.js application
 ```sh
-node app.js
+nodejs app.js
 ```
 3. Open your browser at (http://localhost:3000)
 
