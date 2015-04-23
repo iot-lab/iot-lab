@@ -1,6 +1,7 @@
 # Add new repositories in REPOS variable
 
 IOTLAB_REPOS = contiki wsn430 openlab cli-tools aggregation-tools
+IOTLAB_REPOS += contiki-upstream-unstable
 EXTERN_REPOS = riot
 REPOS = $(IOTLAB_REPOS) $(EXTERN_REPOS)
 
