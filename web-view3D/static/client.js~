@@ -73,5 +73,5 @@ $('#send').on("click", function() {
 $('#broadcast').click(function () {
     socket.emit('message', selectedNodes[0]+';b');
     
-})
+});
 

@@ -50,8 +50,14 @@
         <div class="col-md-12 text-center">
         <p>
         <div class="btn-group" role="group">
-            <button id="broadcast" type="button" class="btn btn-info">-Broadcast</button>
-            
+            <button id="sonar1" type="button" class="btn btn-info">-30 dBm</button>
+            <button id="sonar2" type="button" class="btn btn-info">-20 dBm</button>
+            <button id="sonar3" type="button" class="btn btn-info">-15 dBm</button>
+            <button id="sonar4" type="button" class="btn btn-info">-10 dBm</button>
+            <button id="sonar5" type="button" class="btn btn-info">-5 dBm</button>
+            <button id="sonar6" type="button" class="btn btn-primary">0 dBm</button>
+            <button id="sonar7" type="button" class="btn btn-primary">5 dBm</button>
+            <button id="sonar8" type="button" class="btn btn-primary">10 dBm</button>
         </div>
         </p>
         </div>
