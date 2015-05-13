@@ -4,6 +4,7 @@ var http = require('http').Server(app);
 var https = require('https');
 var io = require('socket.io')(http);
 var net = require('net');
+var HashMap = require('hashmap').HashMap;
 
 var aggregator = null;
 
@@ -84,10 +85,10 @@ io.on('connection', function(socket) {
     
     aggregator_client(socket);
 
-    socket.on('disconnect',function(){
-    	console.log("Client disconnected.");
-	socket.emit('ciao',{message:'Au revoir :)'});
-    });
+   // socket.on('disconnect',function(){
+    //	console.log("Client disconnected.");
+//	socket.emit('ciao',{message:'Au revoir :)'});
+  //  });
 });
 
 

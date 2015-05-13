@@ -16,8 +16,8 @@ var offX, offY;
 // list of selected nodes
 var selectedNodes = [];
 
-//list of nodes used in sonar function
-var sonarNodes = [];
+//list of nodes used in radio collision function
+var receptionNodes = [];
 
 var cpt=0;
 
@@ -181,20 +181,32 @@ function create_particle(nodes_list){
     init_color();
 }
 
-function sonar(node){
+//if broadcast message received, nodes in orange
+
+function broadcast(node){
     for (var i = 0; i < objects.length; i++) {
         if (objects[i].name == node){
             var col = 0xff8400;//(Math.abs(parseFloat(sonarlist[j][1]))/100);
             objects[i].material.color.setHex(col);
         }
-    }
-    myrender();
+} 
+     myrender();
 }
 
+//if unicast message received, nodes in gray  
 
+function unicast(node){
+    for (var i = 0; i < objects.length;i++){
+ 	if (objects[i].name == node){ 
+	   var col  =  0xA9A9A9 ;
+	   objects[i].material.color.setHex(col);
+	}
+   }  
+   myrender();
+}
 
 function init_color() {
-    sonarNodes=[];
+    receptionNodes=[];
     for (var i = 0; i < objects.length; i++) {
 
         if (selectedNodes.indexOf(objects[i].name) != -1) {

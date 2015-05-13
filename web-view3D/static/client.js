@@ -4,7 +4,7 @@ socket.on('welcome', function(data) {
     console.log('Got welcome from the server');
 });
 socket.on('nodes',handle_nodes);
-socket.on('message', handle_message);
+socket.on('message',handle_broadcast);
 
 var prout = "";
 
@@ -14,11 +14,29 @@ function handle_nodes(data) {
     data = data.split(',');
 }
 
-function handle_message(data) {
+//broadcast message reçu
+var map = {};
+var str1;
+var str2;
+var j;
+
+function handle_broadcast(data) {
     $("#messages").prepend("<li><strong>" + data.node + ":</strong>" + data.message + "</li>");
-    // si message de type addr;addr;rssi, c'est que le noeud a recu le ping
-    if(data.message.split(";").length == 3)
-        sonar(data.node);
+
+  	if(data.message.match("ping")){
+           broadcast(data.node);
+
+	   for (j=0;j<40;j++){	
+            str1 = j; //data.message.split(";");
+	    map[j] = data.node;
+	}
+}
+	else if (data.message.match("pong")) {
+	     //str2 = data.message.split("from");	
+             for (j=0;j<40;j++){
+	     unicast(map[j]);
+	}}
+
 }
 
 var site = $("#site");
@@ -46,12 +64,6 @@ $("#resources").on("click", function() {
         });
 });
 
-$("#site").on("change", function() {
-    var isCC2420 = site.val() == "euratech" || site.val()=="rennes"
-    $("#sonar7").prop("disabled",isCC2420);
-    $("#sonar8").prop("disabled",isCC2420);
-});
-
 $('#reset').on("click", function () {
     unselect();
     init_color();
@@ -73,5 +85,5 @@ $('#send').on("click", function() {
 $('#broadcast').click(function () {
     socket.emit('message', selectedNodes[0]+';b');
     
-});
+})
 
