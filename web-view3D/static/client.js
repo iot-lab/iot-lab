@@ -15,27 +15,25 @@ function handle_nodes(data) {
 }
 
 //broadcast message reçu
-var map = {};
-var str1;
-var str2;
-var j;
+var map = [];
+var j,i = 2;
 
 function handle_broadcast(data) {
     $("#messages").prepend("<li><strong>" + data.node + ":</strong>" + data.message + "</li>");
 
   	if(data.message.match("ping")){
-           broadcast(data.node);
 
-	   for (j=0;j<40;j++){	
-            str1 = j; //data.message.split(";");
-	    map[j] = data.node;
-	}
-}
+           broadcast(data.node);
+	   map.splice(1,0,data.node);
+	   console.log(map);
+
+	    }
+
 	else if (data.message.match("pong")) {
-	     //str2 = data.message.split("from");	
-             for (j=0;j<40;j++){
-	     unicast(map[j]);
-	}}
+	     unicast(map.slice(i-1,i));
+	     console.log(map.slice(i-1,i));
+	     i++;  
+   }
 
 }
 
@@ -85,5 +83,5 @@ $('#send').on("click", function() {
 $('#broadcast').click(function () {
     socket.emit('message', selectedNodes[0]+';b');
     
-})
+});
 

@@ -196,9 +196,9 @@ function broadcast(node){
 //if unicast message received, nodes in gray  
 
 function unicast(node){
-    for (var i = 0; i < objects.length;i++){
+    for (var i = 0; i < objects.length; i++){
  	if (objects[i].name == node){ 
-	   var col  =  0xA9A9A9 ;
+	   var col  =  0xA9A9A9;
 	   objects[i].material.color.setHex(col);
 	}
    }  
