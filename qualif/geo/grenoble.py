@@ -35,6 +35,17 @@ def list_nodes(node_type):
 			dict[id] = [n[1], n[2], n[3]]
 	return dict
 
+
+def list_nodes_offset(node_type, ofx, ofy, ofz):
+	dict = {}
+	type_str = node_type + "-"
+	for n in nodes:
+		if n[0][0:len(type_str)] == type_str:
+			id = int(n[0].replace(type_str, ""))
+			dict[id] = [n[1] + ofx , n[2] + ofy, n[3] + ofz]
+	return dict
+
+
 def dump(nodes_dict):
 	for id in nodes_dict:
 		x, y, z = nodes_dict[id]	
