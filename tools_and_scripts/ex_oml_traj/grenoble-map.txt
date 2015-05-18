@@ -1,8 +1,8 @@
 # marker color size x y /'f' filename ratio sizex sizey offsetx offsety
 f grenoble-iotlab.png 0.05 1214 808 0 0
-s red 10 42 35.2
-s red 10 19.05 33.3
-
+s blue 10 42 35.2
+s blue 10 19.05 33.3
+s green 10 35.24 34.56
 
 
 
