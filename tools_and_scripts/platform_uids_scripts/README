@@ -1,13 +1,13 @@
+Platform UID Scripts
+====================
 
+Scripts to automatically get nodes uids for the testbed
 
-Scripts
-=======
 
 get_iotlab_uid.py
 -----------------
 
-Returns the uids for currently running experiment or nodes given in parameter
-(also tries to connect to A8 nodes)
+Returns the uids for specified site/nodes (also handles A8 nodes)
 
 
 check_uid_jsons.py
@@ -17,20 +17,19 @@ Uses the given jsons uids files and compare them with the
 'experiment-cli info' results
 
 
-
-USAGE
+Usage
 -----
 
+    $ ./get_iotlab_uip.py --site grenoble --m3
+    $ ./get_iotlab_uip.py --m3 --a8 --cc1101 --cc2420 --all-bookable -o all_platform_uid.json
 
-grenoble $ python get_iotlab_uip.py [-i <exp_id>] | tee <exp_id>_uid_out.json
-strasbourg $ python get_iotlab_uip.py [-i <exp_id_2>] | tee <exp_id_2>_uid_out.json
+    $ ./check_uid_jsons.py prod/*json *uid_json
+    outdated: 0
+    ok: 1981
+    no_data: 432
 
-$ python check_uid_jsons.py *uid_out.json
-ignored: 1093
-ok: 20
-ko: 20
-$ ls uid_cmp*
-uid_cmp_ignored.csv  uid_cmp_ko.csv  uid_cmp_ok.csv
+### Running on dev platform ###
 
+For admins:
 
-
+    export IOTLAB_API_URL="https://devwww.iot-lab.info/rest/"
