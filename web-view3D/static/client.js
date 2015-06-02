@@ -16,7 +16,7 @@ function handle_nodes(data) {
 
 //broadcast message reçu
 var map = [];
-var j,i = 2;
+var i = 1;
 
 function handle_broadcast(data) {
     $("#messages").prepend("<li><strong>" + data.node + ":</strong>" + data.message + "</li>");
@@ -26,15 +26,12 @@ function handle_broadcast(data) {
            broadcast(data.node);
 	   map.splice(1,0,data.node);
 	   console.log(map);
-
-	    }
-
+	 }
 	else if (data.message.match("pong")) {
 	     unicast(map.slice(i-1,i));
 	     console.log(map.slice(i-1,i));
 	     i++;  
    }
-
 }
 
 var site = $("#site");
