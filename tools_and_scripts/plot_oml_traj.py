@@ -142,8 +142,8 @@ def maps_load(filename):
         ofx = data_map[MAPS['offsetx']]
         ofy = data_map[MAPS['offsety']]
         for ditem in data_deco:
-            ditem[DECO['x']] = (ditem[DECO['x']] + ofx) / ratio
-            ditem[DECO['y']] = sizey - (ditem[DECO['y']] + ofy) / ratio
+            ditem[DECO['x']] = (ditem[DECO['x']] - ofx) / ratio
+            ditem[DECO['y']] = sizey - (ditem[DECO['y']] - ofy) / ratio
 
     return data_deco, data_map
 
@@ -245,8 +245,8 @@ def oml_plot(data, title, deco, maps, options, circuit=None):
             plt.xlabel('X (m)')
             plt.ylabel('Y (m)')
         else:
-            plt.plot((data[:, FIELDS['x']] + ofx)/ratio,
-                     sizey - (data[:, FIELDS['y']] + ofy)/ratio)
+            plt.plot((data[:, FIELDS['x']] - ofx)/ratio,
+                     sizey - (data[:, FIELDS['y']] - ofy)/ratio)
             plt.xlabel('X (pixels)')
             plt.ylabel('Y (pixels)')
 
@@ -262,8 +262,8 @@ def oml_plot(data, title, deco, maps, options, circuit=None):
                 coord_x = checkpoint['x']
                 coord_y = checkpoint['y']
             else:
-                coord_x = (checkpoint['x'] + ofx)/ratio
-                coord_y = sizey - (checkpoint['y'] + ofy)/ratio
+                coord_x = (checkpoint['x'] - ofx)/ratio
+                coord_y = sizey - (checkpoint['y'] - ofy)/ratio
             c_x.append(coord_x)
             c_y.append(coord_y)
             checkpoint_path.append([coord_x, coord_y])

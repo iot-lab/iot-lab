@@ -23,6 +23,24 @@ from iotlabcli import experiment, get_user_credentials
 import iotlabcli.parser.common
 from fabric.api import env
 
+
+SCRIPT_DIR = os.path.relpath(os.path.dirname(__file__))
+UTILS_DIR = os.path.join(SCRIPT_DIR, 'utils')
+
+FW_DIR = 'firmwares/'
+if not os.path.isdir(FW_DIR):
+    fabric.utils.puts('Cannot find firmwares folder, run:')
+    fabric.utils.puts('    make -C ../.. setup-iot-lab.wiki')
+    exit(1)
+
+FW_DICT = {
+    'm3:at86rf231': os.path.join(FW_DIR, 'm3_print_uids.elf'),
+    'a8:at86rf231': os.path.join(FW_DIR, 'a8_print_uids.elf'),
+    'wsn430:cc1101': os.path.join(FW_DIR, 'wsn430_print_uids.elf'),
+    'wsn430:cc2420': os.path.join(FW_DIR, 'wsn430_print_uids.elf'),
+}
+
+
 STATES = ('Alive', 'Busy')  # , 'Absent')
 ARCHIS = ('m3:at86rf231', 'a8:at86rf231', 'wsn430:cc1101', 'wsn430:cc2420')
 
@@ -32,24 +50,22 @@ iotlabcli.parser.common.add_auth_arguments(PARSER)
 PARSER.add_argument('--name', default='uid_experiment')
 PARSER.add_argument('--duration', default=60, type=int)
 
-PARSER.add_argument('--all-bookable', help="Run on %r nodes.\n"
-                    "Default: Alive" % list(STATES),
-                    action='store_true', default=False)
-PARSER.add_argument('--site', action='append',
-                    help="Run on SITE. Default: all")
-PARSER.add_argument('--archi', choices=ARCHIS, action='append',
-                    help="Run on ARCHI. Default: all")
-
-PARSER.add_argument('--m3', dest='fw_m3:at86rf231', help='m3 firmware')
-PARSER.add_argument('--a8', dest='fw_a8:at86rf231', help='a8 firmware')
-PARSER.add_argument('--cc1101', dest='fw_wsn430:cc1101', help='cc1101 fw')
-PARSER.add_argument('--cc2420', dest='fw_wsn430:cc2420', help='cc2420 fw')
-
 PARSER.add_argument('-o', '--outfile', default='/dev/null')
 
+# Restrict nodes to sites/state
+SELECT_PARSER = PARSER.add_argument_group('Nodes selection on site/state')
+SELECT_PARSER.add_argument('--all-bookable', help="Run on %r nodes.\n"
+                           "Default: Alive" % list(STATES),
+                           action='store_true', default=False)
+SELECT_PARSER.add_argument('--site', action='append',
+                           help="Run on SITE. Default: all")
 
-SCRIPT_DIR = os.path.relpath(os.path.dirname(__file__))
-UTILS_DIR = os.path.join(SCRIPT_DIR, 'utils')
+# Restrict nodes to archis
+NODE_PARSER = PARSER.add_argument_group('Nodes architectures to run on')
+NODE_PARSER.add_argument('--m3:at86rf231', '--m3', action='store_true')
+NODE_PARSER.add_argument('--a8:at86rf231', '--a8', action='store_true')
+NODE_PARSER.add_argument('--wsn430:cc1101', '--cc1101', action='store_true')
+NODE_PARSER.add_argument('--wsn430:cc2420', '--cc2420', action='store_true')
 
 
 UID_SCRIPT = os.path.join(UTILS_DIR, 'get_iotlab_uid.py')
@@ -229,15 +245,13 @@ class RunExperiment(object):
             experiment.stop_experiment(self.api, self.exp_id)
 
     @staticmethod
-    def targets_list(sites_dict, sites, archis):
+    def targets_list(sites_dict, sites):
         """ Filter sites_dict to return a list of (site, archi) tuples """
         targets = []
         for site, archi_list in sites_dict.iteritems():
             if sites is not None and site not in sites:  # filter sites
                 continue
             for archi in archi_list:
-                if archis is not None and archi not in archis:  # filter archis
-                    continue
                 targets.append((site, archi))
         return targets
 
@@ -284,29 +298,31 @@ def run_exp(api, name, duration, config, all_bookable):
 def main():
     """ Start experiments on all sites/nodes and get the nodes uids """
     opts = PARSER.parse_args()
+
+    user, passwd = get_user_credentials(opts.username, opts.password)
+    api = iotlabcli.Api(user, passwd)
+    env.user = user
+
+    fabric.utils.puts("Get platform nodes...")
+    sites_dict = RunExperiment.site_archi_dict(api)
+    targets = RunExperiment.targets_list(sites_dict, opts.site)
+
+    # Generate config for all targets
+    config = {}
+    for site, archi in targets:
+        # replace ':' in host to prevent it being interpreted as port
+        host = '%s-%s' % (archi.replace(':', '+'), site)
+        if not vars(opts)[archi]:
+            config[host] = {
+                'site': site, 'archi': archi, 'firmware': FW_DICT[archi],
+            }
+        else:
+            fabric.utils.puts("Ignore %s %s" % (site, archi))
+
+    if len(config) == 0:
+        fabric.utils.abort("No valid hosts")
+
     try:
-        user, passwd = get_user_credentials(opts.username, opts.password)
-        api = iotlabcli.Api(user, passwd)
-        env.user = user
-
-        sites_dict = RunExperiment.site_archi_dict(api)
-        targets = RunExperiment.targets_list(sites_dict, opts.site, opts.archi)
-
-        # Generate config for all targets
-        config = {}
-        for site, archi in targets:
-            firmware = vars(opts)['fw_%s' % archi]
-            if firmware is None:
-                fabric.utils.puts("No firmware for %s %s" % (site, archi))
-            else:
-                # replace ':' in host to prevent it being interpreted as port
-                config['%s-%s' % (archi.replace(':', '+'), site)] = {
-                    'site': site, 'archi': archi, 'firmware': firmware
-                }
-
-        if len(config) == 0:
-            raise ValueError("No valid hosts")
-
         result_dict = fabric.tasks.execute(
             run_exp, api, opts.name, opts.duration, config, opts.all_bookable,
             hosts=sorted(config.keys()))
