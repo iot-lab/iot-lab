@@ -28,9 +28,9 @@ plot oml filename node consumption
            [-abcehptv] -i <filename> or --input=\<filename\>
 
 for time verification --time or -t
-for begin sample --begin=<sample_beg> or -b <sample_beg>
-for end sample --end=<sample_end> or -e <sample_end>
-for label title plot --label=<title> or -l <title>
+for begin sample --begin=\<sample_beg\> or -b \<sample_beg\>
+for end sample --end=\<sample_end\> or -e \<sample_end\>
+for label title plot --label=\<title\> or -l \<title\>
 for plot consumption --power or -p
 for plot voltage --voltage or -v
 for plot current --current or -c
@@ -43,12 +43,12 @@ OML plot radio power
 
 `plot_oml_radio.py`
 
-plot oml filename [-tbeaplh] -i <filename> or --input=<filename>
+plot oml filename [-tbeaplh] -i \<filename\> or --input=\<filename\>
 
 for time verification --time or -t
-for begin sample --begin=<sample_beg> or -b <sample_beg>
-for end sample --end=<sample_end> or -e <sample_end>
-for label title plot --label=<title> or -l <title>
+for begin sample --begin=\<sample_beg\> or -b \<sample_beg\>
+for end sample --end=\<sample_end\> or -e \<sample_end\>
+for label title plot --label=\<title\> or -l \<title\>
 for plot in one window --all or -a
 for plot in separate windows --plot or -p
 for help use --help or -h
@@ -59,13 +59,13 @@ OML plot mobile node trajectory
 
 `plot_oml_traj.py`
 
-plot oml robot trajectory [-behmt] -i <filename> or --input=<filename>
+plot oml robot trajectory [-behmt] -i \<filename\> or --input=\<filename\>
 
 for time verification --time or -t
-for begin sample --begin=<sample_beg> or -b <sample_beg>
-for end sample --end=<sample_end> or -e <sample_end>
-for label title plot --label=<title> or -l <title>
-for plot maps and elements --maps=<filename> or -c <filename>
+for begin sample --begin=\<sample_beg\> or -b \<sample_beg\>
+for end sample --end=\<sample_end\> or -e \<sample_end\>
+for label title plot --label=\<title\> or -l \<title\>
+for plot maps and elements --maps=\<filename\> or -c \<filename\>
 for help use --help or -h
 
 An example of use :
