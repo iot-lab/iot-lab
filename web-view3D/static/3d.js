@@ -181,6 +181,18 @@ function create_particle(nodes_list){
     init_color();
 }
 
+//Show power values for sonar test in case of m3 or WSN430
+function id(obj) {
+   nodeId = obj.object.name;
+    	if (nodeId.substring(0,6) == "wsn430") {               
+                        $('#m3').hide();
+                        console.log("hiding done");
+                }
+    else if (nodeId.substring(0,2) == "m3") {
+                        $('#wsn').hide();
+                        console.log("hiding done");
+                }
+}
 //if broadcast message received, nodes in orange
 
 function broadcast(node){
@@ -212,6 +224,7 @@ function init_color() {
         if (selectedNodes.indexOf(objects[i].name) != -1) {
             //bleu clair
             objects[i].material.color.setHex(0x0099CC);
+             
         }
         else if (objects[i].state == "Unreachable") {
                 //gris
@@ -291,8 +304,8 @@ function toggleNode(obj) {
     if (i == -1) selectedNodes.push(nodeId);
     else selectedNodes.splice(i, 1);
     init_color();
+    id(obj);
     myrender();
-
 }
 
 /*

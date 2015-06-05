@@ -5,7 +5,6 @@ socket.on('welcome', function(data) {
 });
 socket.on('nodes',handle_nodes);
 socket.on('message',handle_broadcast);
-
 var prout = "";
 
 function handle_nodes(data) {
@@ -34,6 +33,7 @@ function handle_broadcast(data) {
    }
 }
 
+
 var site = $("#site");
 $("#resources").on("click", function() {
     if(site.val() != "")
@@ -52,16 +52,6 @@ $("#resources").on("click", function() {
                 node[4] = resources[i].archi;
                 node[5] = resources[i].state;
                 nodes[i] = node;
-
-		if(node[0].substring(0,6)=="wsn430"){
-			$('#wsn').hide();
-			console.log("hiding done");
-		}
-		else if(node[0].substring(0,2)=="m3"){
-			$('#m3').hide();
-			console.log("hiding done");
-		}
-            
 	    }
             loadNodes(nodes);
             //upgradeNodes([]);
