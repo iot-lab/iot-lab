@@ -25,7 +25,7 @@ OML plot consumption
 `plot_oml_consum.py`
 
 plot oml filename node consumption
-           [-abcehptv] -i <filename> or --input=<filename>
+           [-abcehptv] -i <filename> or --input=\<filename\>
 
 for time verification --time or -t
 for begin sample --begin=<sample_beg> or -b <sample_beg>
