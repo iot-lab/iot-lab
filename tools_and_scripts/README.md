@@ -77,10 +77,15 @@ OML plot mobile node trajectory
 plot oml robot trajectory [-behmt] -i \<filename\> or --input=\<filename\>
 
 for time verification --time or -t
+
 for begin sample --begin=\<sample_beg\> or -b \<sample_beg\>
+
 for end sample --end=\<sample_end\> or -e \<sample_end\>
+
 for label title plot --label=\<title\> or -l \<title\>
+
 for plot maps and elements --maps=\<filename\> or -c \<filename\>
+
 for help use --help or -h
 
 An example of use :
