@@ -186,13 +186,19 @@ function id(obj) {
    nodeId = obj.object.name;
     	if (nodeId.substring(0,2) == "m3") {               
 		$('#sonar_M3').show();
-                console.log("hiding done");
+        	$('#sonar_WSN430_CC1101').hide();
+                $('#sonar_WSN430_CC2420').hide();
+        	
                 }
     else if (nodeId.substring(0,6) == "wsn430") {
-                 $('#sonar_WSN430_CC2420').show();
- 		 $('#sonar_WSN430_CC1101').show();
-		 console.log("hiding done");
-                }
+		$('#sonar_M3').hide();
+		if (obj.object.archi.substring(7,13) == "cc1101"){
+		$('#sonar_WSN430_CC1101').show();
+		}
+		else {
+                $('#sonar_WSN430_CC2420').show();
+		}
+		}
 }
 //if broadcast message received, nodes in orange
 

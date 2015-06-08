@@ -50,6 +50,13 @@ $('#sonar_M3').hide();
 $('#sonar_WSN430_CC2420').hide();
 $('#sonar_WSN430_CC1101').hide();
 
+$("#site").on("change", function() {
+    if( site.val() == "euratech" || site.val()=="rennes")
+    $("#sonar_WSN430_CC2420").hide();
+    else 
+      $("#sonar_WSN430_CC1101").hide();    
+});
+
 $('#reset').on("click", function () {
     unselect();
     init_color();
