@@ -4,7 +4,7 @@ socket.on('welcome', function(data) {
     console.log('Got welcome from the server');
 });
 socket.on('nodes',handle_nodes);
-socket.on('message',handle_broadcast);
+socket.on('message',handle_sonar);
 var prout = "";
 
 function handle_nodes(data) {
@@ -13,26 +13,11 @@ function handle_nodes(data) {
     data = data.split(',');
 }
 
-//broadcast message reçu
-var map = [];
-var i = 1;
-
-function handle_broadcast(data) {
+function handle_sonar(data) {
     $("#messages").prepend("<li><strong>" + data.node + ":</strong>" + data.message + "</li>");
-
-  	if(data.message.match("ping")){
-
-           broadcast(data.node);
-	   map.splice(1,0,data.node);
-	   console.log(map);
-	 }
-	else if (data.message.match("pong")) {
-	     unicast(map.slice(i-1,i));
-	     console.log(map.slice(i-1,i));
-	     i++;  
-   }
+    if(data.message.split(";").length == 3)
+        sonar(data.node);
 }
-
 
 var site = $("#site");
 $("#resources").on("click", function() {

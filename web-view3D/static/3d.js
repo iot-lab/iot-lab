@@ -186,7 +186,7 @@ function id(obj) {
    nodeId = obj.object.name;
     	if (nodeId.substring(0,2) == "m3") {               
 		$('#sonar_M3').show();
-                        console.log("hiding done");
+                console.log("hiding done");
                 }
     else if (nodeId.substring(0,6) == "wsn430") {
                  $('#sonar_WSN430_CC2420').show();
@@ -196,7 +196,7 @@ function id(obj) {
 }
 //if broadcast message received, nodes in orange
 
-function broadcast(node){
+function sonar(node){
     for (var i = 0; i < objects.length; i++) {
         if (objects[i].name == node){
             var col = 0xff8400;//(Math.abs(parseFloat(sonarlist[j][1]))/100);
