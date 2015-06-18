@@ -12,6 +12,7 @@ Prerequisites
 -------------
 * install nodejs
 * install following nodejs packages: express, socket.io
+   ```npm install socket.io express```
 
 Run
 ---
