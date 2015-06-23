@@ -62,11 +62,17 @@ function upgradeNodes(data){
     }
 }
 
+
+
+function rest(param){
+	
+	param.empty();	
+}
+
 /*
 *Fonction d'initialisation de la scene 3D
 *
 */
-
 function init_3d() {
 
     container= document.getElementById('div3d');
