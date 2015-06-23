@@ -4,8 +4,7 @@ socket.on('welcome', function(data) {
     console.log('Got welcome from the server');
 });
 socket.on('nodes',handle_nodes);
-socket.on('message', handle_message);
-
+socket.on('message',handle_broadcast);
 var prout = "";
 
 function handle_nodes(data) {
@@ -14,12 +13,26 @@ function handle_nodes(data) {
     data = data.split(',');
 }
 
-function handle_message(data) {
+//broadcast message reçu
+var map = [];
+var i = 1;
+
+function handle_broadcast(data) {
     $("#messages").prepend("<li><strong>" + data.node + ":</strong>" + data.message + "</li>");
-    // si message de type addr;addr;rssi, c'est que le noeud a recu le ping
-    if(data.message.split(";").length == 3)
-        sonar(data.node);
+
+  	if(data.message.match("ping")){
+
+           broadcast(data.node);
+	   map.splice(1,0,data.node);
+	   console.log(map);
+	 }
+	else if (data.message.match("pong")) {
+	     unicast(map.slice(i-1,i));
+	     console.log(map.slice(i-1,i));
+	     i++;  
+   }
 }
+
 
 var site = $("#site");
 reset($("#div3d"));
@@ -40,17 +53,13 @@ $("#resources").on("click", function() {
                 node[4] = resources[i].archi;
                 node[5] = resources[i].state;
                 nodes[i] = node;
-            }
+	    }
             loadNodes(nodes);
             //upgradeNodes([]);
             init_3d();
+		
+   	    
         });
-});
-
-$("#site").on("change", function() {
-    var isCC2420 = site.val() == "euratech" || site.val()=="rennes"
-    $("#sonar7").prop("disabled",isCC2420);
-    $("#sonar8").prop("disabled",isCC2420);
 });
 
 $('#reset').on("click", function () {
@@ -61,6 +70,7 @@ $('#reset').on("click", function () {
 
 $('#nodes').on("click", function() {
     socket.emit('nodes');
+
 });
 
 //$('#send').on("submit", function() {
@@ -70,50 +80,9 @@ $('#send').on("click", function() {
     socket.emit('message', $("#command").val());
 });
 
-//Sonar -30dbm
-$('#sonar1').click(function () {
-    socket.emit('message', selectedNodes[0]+';a');
-    
-})
-
-//Sonar -20dbm
-$('#sonar2').click(function () {
+//Broadcast
+$('#broadcast').click(function () {
     socket.emit('message', selectedNodes[0]+';b');
     
-})
+});
 
-//Sonar -15dbm
-$('#sonar3').click(function () {
-    socket.emit('message', selectedNodes[0]+';c');
-    
-})
-
-//Sonar -10dbm
-$('#sonar4').click(function () {
-    socket.emit('message', selectedNodes[0]+';d');
-    
-})    
-
-//Sonar -5dbm
-$('#sonar5').click(function () {
-    socket.emit('message', selectedNodes[0]+';e');
-    
-}) 
-
-//Sonar 0dbm
-$('#sonar6').click(function () {
-    socket.emit('message', selectedNodes[0]+';f');
-    
-})    
-
-//Sonar +5dbm
-$('#sonar7').click(function () {
-    socket.emit('message', selectedNodes[0]+';g');
-    
-})
-
-//Sonar +10dbm
-$('#sonar8').click(function () {
-    socket.emit('message', selectedNodes[0]+';h');
-    
-})
