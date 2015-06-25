@@ -62,6 +62,29 @@ function upgradeNodes(data){
     }
 }
 
+
+
+//Show power values for sonar test in case of m3 or WSN430
+function id(obj) {
+   nodeId = obj.object.name;
+    	if (nodeId.substring(0,2) == "m3") {               
+		$('#sonar_M3').show();
+        	$('#sonar_WSN430_CC1101').hide();
+                $('#sonar_WSN430_CC2420').hide();
+        	
+                }
+    else if (nodeId.substring(0,6) == "wsn430") {
+		$('#sonar_M3').hide();
+		if (obj.object.archi.substring(7,13) == "cc1101"){
+		$('#sonar_WSN430_CC1101').show();
+		}
+		else {
+                $('#sonar_WSN430_CC2420').show();
+		}
+		}
+}
+
+
 /*
 *Fonction d'initialisation de la scene 3D
 *
@@ -181,48 +204,8 @@ function create_particle(nodes_list){
     init_color();
 }
 
-//Show power values for sonar test in case of m3 or WSN430
-function id(obj) {
-   nodeId = obj.object.name;
-    	if (nodeId.substring(0,2) == "m3") {               
-		$('#sonar_M3').show();
-        	$('#sonar_WSN430_CC1101').hide();
-                $('#sonar_WSN430_CC2420').hide();
-        	
-                }
-    else if (nodeId.substring(0,6) == "wsn430") {
-		$('#sonar_M3').hide();
-		if (obj.object.archi.substring(7,13) == "cc1101"){
-		$('#sonar_WSN430_CC1101').show();
-		}
-		else {
-                $('#sonar_WSN430_CC2420').show();
-		}
-		}
-}
-//if broadcast message received, nodes in orange
 
-function sonar(node){
-    for (var i = 0; i < objects.length; i++) {
-        if (objects[i].name == node){
-            var col = 0xff8400;//(Math.abs(parseFloat(sonarlist[j][1]))/100);
-            objects[i].material.color.setHex(col);
-        }
-} 
-     myrender();
-}
 
-//if unicast message received, nodes in gray  
-
-function unicast(node){
-    for (var i = 0; i < objects.length; i++){
- 	if (objects[i].name == node){ 
-	   var col  =  0xA9A9A9;
-	   objects[i].material.color.setHex(col);
-	}
-   }  
-   myrender();
-}
 
 function init_color() {
     receptionNodes=[];
@@ -311,8 +294,8 @@ function toggleNode(obj) {
     if (i == -1) selectedNodes.push(nodeId);
     else selectedNodes.splice(i, 1);
     init_color();
-    id(obj);
-    myrender();
+	id(obj);
+	myrender();
 }
 
 /*
