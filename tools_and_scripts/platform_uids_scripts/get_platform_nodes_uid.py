@@ -36,8 +36,8 @@ if not os.path.isdir(FW_DIR):
 FW_DICT = {
     'm3:at86rf231': os.path.join(FW_DIR, 'm3_print_uids.elf'),
     'a8:at86rf231': os.path.join(FW_DIR, 'a8_print_uids.elf'),
-    'wsn430:cc1101': os.path.join(FW_DIR, 'wsn430_print_uids.elf'),
-    'wsn430:cc2420': os.path.join(FW_DIR, 'wsn430_print_uids.elf'),
+    'wsn430:cc1101': os.path.join(FW_DIR, 'wsn430_print_uids.hex'),
+    'wsn430:cc2420': os.path.join(FW_DIR, 'wsn430_print_uids.hex'),
 }
 
 
@@ -312,7 +312,7 @@ def main():
     for site, archi in targets:
         # replace ':' in host to prevent it being interpreted as port
         host = '%s-%s' % (archi.replace(':', '+'), site)
-        if not vars(opts)[archi]:
+        if vars(opts)[archi]:
             config[host] = {
                 'site': site, 'archi': archi, 'firmware': FW_DICT[archi],
             }
