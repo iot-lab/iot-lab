@@ -35,7 +35,6 @@ function handle_broadcast(data) {
 
 
 var site = $("#site");
-reset($("#div3d"));
 $("#resources").on("click", function() {
     if(site.val() != "")
         socket.emit('resources', site.val(), function(data){

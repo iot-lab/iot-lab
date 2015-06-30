@@ -62,8 +62,6 @@ function upgradeNodes(data){
     }
 }
 
-
-
 function rest(param){
 	
 	param.empty();	
@@ -74,11 +72,11 @@ function rest(param){
 *
 */
 function init_3d() {
-
+     
     container= document.getElementById('div3d');
     infobox= document.getElementById('infobox');
-
-    objects=new Array();
+    rest($("#div3d"));
+	objects=new Array();
 
     renderer= new THREE.CanvasRenderer();
     scene = new THREE.Scene();
