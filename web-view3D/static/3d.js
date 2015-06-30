@@ -62,6 +62,7 @@ function upgradeNodes(data){
     }
 }
 
+<<<<<<< HEAD
 
 
 //Show power values for sonar test in case of m3 or WSN430
@@ -85,17 +86,23 @@ function id(obj) {
 }
 
 
+=======
+function rest(param){
+	
+	param.empty();	
+}
+
+>>>>>>> web3dTest
 /*
 *Fonction d'initialisation de la scene 3D
 *
 */
-
 function init_3d() {
-
+     
     container= document.getElementById('div3d');
     infobox= document.getElementById('infobox');
-
-    objects=new Array();
+    rest($("#div3d"));
+	objects=new Array();
 
     renderer= new THREE.CanvasRenderer();
     scene = new THREE.Scene();
@@ -204,6 +211,20 @@ function create_particle(nodes_list){
     init_color();
 }
 
+<<<<<<< HEAD
+=======
+//if broadcast message received, nodes in orange
+
+function broadcast(node){
+    for (var i = 0; i < objects.length; i++) {
+        if (objects[i].name == node){
+            var col = 0xff8400;//(Math.abs(parseFloat(sonarlist[j][1]))/100);
+            objects[i].material.color.setHex(col);
+        }
+} 
+     myrender();
+}
+>>>>>>> web3dTest
 
 
 
@@ -294,8 +315,12 @@ function toggleNode(obj) {
     if (i == -1) selectedNodes.push(nodeId);
     else selectedNodes.splice(i, 1);
     init_color();
+<<<<<<< HEAD
 	id(obj);
 	myrender();
+=======
+    myrender();
+>>>>>>> web3dTest
 }
 
 /*
