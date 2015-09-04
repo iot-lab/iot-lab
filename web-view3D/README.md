@@ -11,7 +11,7 @@ For now, the index.html file implements the sonar example, available at (github:
 Prerequisites
 -------------
 * install nodejs
-* install following nodejs packages: express, socket.io
+* install following nodejs packages: express, socket.io, hashmap
 
 Run
 ---
