@@ -3,16 +3,7 @@ console.log("connected to websocket");
 socket.on('welcome', function(data) {
     console.log('Got welcome from the server');
 });
-socket.on('nodes',handle_nodes);
 socket.on('message', handle_message);
-
-var prout = "";
-
-function handle_nodes(data) {
-    data = data.replace("nodes:","");
-    $("#messages").prepend("<li><i><strong>nodes:</strong>" + data + "</i></li>");
-    data = data.split(',');
-}
 
 function handle_message(data) {
     $("#messages").prepend("<li><strong>" + data.node + ":</strong>" + data.message + "</li>");
@@ -20,6 +11,31 @@ function handle_message(data) {
     if(data.message.split(";").length == 3)
         sonar(data.node);
 }
+
+// init power panels visibility
+function init_panel_powers() {
+    $('#power_none').show();
+    $('#power_1101').hide();
+    $('#power_2420').hide();
+    $('#power_m3').hide();
+}
+
+// deals with node seletion in 3D view
+function handle_selected(obj) {
+    var archi = obj.object.archi;
+    init_panel_powers();
+
+    var radio = '';
+    if (archi.indexOf("m3") >= 0) radio='m3';
+    else if (archi.indexOf("1101") >= 0) radio='1101';
+    else if (archi.indexOf("2420") >= 0) radio='2420';
+    if(radio != ''){
+        $('#power_none').hide();
+        $('#power_'+radio).show();
+    }
+}
+
+init_panel_powers();
 
 var site = $("#site");
 $("#resources").on("click", function() {
@@ -46,73 +62,44 @@ $("#resources").on("click", function() {
         });
 });
 
-$("#site").on("change", function() {
-    var isCC2420 = site.val() == "euratech" || site.val()=="rennes"
-    $("#sonar7").prop("disabled",isCC2420);
-    $("#sonar8").prop("disabled",isCC2420);
-});
-
 $('#reset').on("click", function () {
     unselect();
     init_color();
     myrender();
+    $('#power_none').show();
+    $('#power_1101').hide();
+    $('#power_2420').hide();
+    $('#power_m3').hide();
 });
 
-$('#nodes').on("click", function() {
-    socket.emit('nodes');
-});
 
-//$('#send').on("submit", function() {
-//    preventDefault();
 $('#send').on("click", function() {
     console.log("envoi");
     socket.emit('message', $("#command").val());
 });
 
-//Sonar -30dbm
-$('#sonar1').click(function () {
+// power button click sends corresponding character by serial
+$('.serial_a').click(function () {
     socket.emit('message', selectedNodes[0]+';a');
-    
 })
-
-//Sonar -20dbm
-$('#sonar2').click(function () {
+$('.serial_b').click(function () {
     socket.emit('message', selectedNodes[0]+';b');
-    
 })
-
-//Sonar -15dbm
-$('#sonar3').click(function () {
+$('.serial_c').click(function () {
     socket.emit('message', selectedNodes[0]+';c');
-    
 })
-
-//Sonar -10dbm
-$('#sonar4').click(function () {
+$('.serial_d').click(function () {
     socket.emit('message', selectedNodes[0]+';d');
-    
 })    
-
-//Sonar -5dbm
-$('#sonar5').click(function () {
+$('.serial_e').click(function () {
     socket.emit('message', selectedNodes[0]+';e');
-    
 }) 
-
-//Sonar 0dbm
-$('#sonar6').click(function () {
+$('.serial_f').click(function () {
     socket.emit('message', selectedNodes[0]+';f');
-    
 })    
-
-//Sonar +5dbm
-$('#sonar7').click(function () {
+$('.serial_g').click(function () {
     socket.emit('message', selectedNodes[0]+';g');
-    
 })
-
-//Sonar +10dbm
-$('#sonar8').click(function () {
+$('.serial_h').click(function () {
     socket.emit('message', selectedNodes[0]+';h');
-    
 })

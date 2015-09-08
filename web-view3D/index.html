@@ -30,7 +30,6 @@
                 <option value="strasbourg">strasbourg</option>
             </select>
             <input id="resources" type="button" class="btn btn-default" value="Get resources" />
-            <input id="nodes" type="button" class="btn btn-default" value="Get nodes" />
             <input id="reset" type="button" class="btn btn-default" value="Reset" />
             <!--<input id="command" type="text" />
             <input id="send" type="submit" class="btn btn-default" value="Send" />-->
@@ -46,18 +45,64 @@
         </div>
         </div>
         
-        <div class="row">
+        <hr/>
+        
+        <!--information about power buttons -->
+        <div class="row" id="power_none" >
         <div class="col-md-12 text-center">
         <p>
         <div class="btn-group" role="group">
-            <button id="sonar1" type="button" class="btn btn-info">-30 dBm</button>
-            <button id="sonar2" type="button" class="btn btn-info">-20 dBm</button>
-            <button id="sonar3" type="button" class="btn btn-info">-15 dBm</button>
-            <button id="sonar4" type="button" class="btn btn-info">-10 dBm</button>
-            <button id="sonar5" type="button" class="btn btn-info">-5 dBm</button>
-            <button id="sonar6" type="button" class="btn btn-primary">0 dBm</button>
-            <button id="sonar7" type="button" class="btn btn-primary">5 dBm</button>
-            <button id="sonar8" type="button" class="btn btn-primary">10 dBm</button>
+            <button type="button" class="btn btn-default" disabled="disabled">Power buttons will appear depending on node type selected</button>
+        </div>
+        </p>
+        </div>
+        </div>
+        
+        <!--power buttons for wsn430:cc1101 -->
+        <div class="row" id="power_1101">
+        <div class="col-md-12 text-center">
+        <p>
+        <div class="btn-group" role="group">
+        <button id="power_1101_a" type="button" class="btn btn-info serial_a">-30 dBm</button>
+        <button id="power_1101_b" type="button" class="btn btn-info serial_b">-20 dBm</button>
+        <button id="power_1101_c" type="button" class="btn btn-info serial_c">-15 dBm</button>
+        <button id="power_1101_d" type="button" class="btn btn-info serial_d">-10 dBm</button>
+        <button id="power_1101_e" type="button" class="btn btn-info serial_e">-6 dBm</button>
+        <button id="power_1101_f" type="button" class="btn btn-primary serial_f">0 dBm</button>
+        <button id="power_1101_f" type="button" class="btn btn-primary serial_g">5 dBm</button>
+        <button id="power_1101_h" type="button" class="btn btn-primary serial_h">10 dBm</button>
+        </div>
+        </p>
+        </div>
+        </div>
+        
+        <!-- power buttons for wsn430:cc2420 -->
+        <div class="row" id="power_2420">
+        <div class="col-md-12 text-center">
+        <p>
+        <div class="btn-group" role="group">
+            <button id="power_2420_a" type="button" class="btn btn-info serial_a">-25 dBm</button>
+            <button id="power_2420_b" type="button" class="btn btn-info serial_b">-15 dBm</button>
+            <button id="power_2420_c" type="button" class="btn btn-info serial_c">-10 dBm</button>
+            <button id="power_2420_d" type="button" class="btn btn-info serial_d">-5 dBm</button>
+            <button id="power_2420_e" type="button" class="btn btn-primary serial_e">0 dBm</button>
+        </div>
+        </p>
+        </div>
+        </div>
+        
+        <!-- power buttons for M3 -->
+        <div class="row" id="power_m3">
+        <div class="col-md-12 text-center">
+        <p>
+        <div class="btn-group" role="group">
+            <button id="power_m3_a" type="button" class="btn btn-info serial_a">-17 dBm</button>
+            <button id="power_m3_b" type="button" class="btn btn-info serial_b">-12 dBm</button>
+            <button id="power_m3_c" type="button" class="btn btn-info serial_c">-7 dBm</button>
+            <button id="power_m3_d" type="button" class="btn btn-info serial_d">-3 dBm</button>
+            <button id="power_m3_e" type="button" class="btn btn-primary serial_e">0 dBm</button>
+            <button id="power_m3_f" type="button" class="btn btn-primary serial_f">3 dBm</button>
+            <button id="sonar_help" type="button" class="btn btn-success serial_h">?</button>
         </div>
         </p>
         </div>
