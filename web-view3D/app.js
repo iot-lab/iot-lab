@@ -20,9 +20,7 @@ function aggregator_client(socket) {
             var val = messages[message];
             if(val != "") {
                 var index = val.indexOf(";")
-                if(index < 0)
-                    socket.emit('nodes', val);
-                else {
+                if(index >= 0) {
                     var index2 = val.indexOf(";",index+1);
                     socket.emit('message', { timestamp: val.slice(0, index), node: val.slice(index+1, index2), message: val.slice(index2+1,val.length) });
                 }
@@ -57,10 +55,6 @@ function getResources(site, callback) {
     });
 }
 
-function getNodes(){
-    aggregator.write("nodes");
-}
-
 function send(data){
     aggregator.write(data + "\n");
 }
@@ -79,7 +73,6 @@ io.on('connection', function(socket) {
     console.log('Client connected.');
     socket.emit('welcome', {message: 'salut les amis'});
     socket.on('resources', getResources);
-    socket.on('nodes', getNodes);
     socket.on('message',send);
     
     aggregator_client(socket);

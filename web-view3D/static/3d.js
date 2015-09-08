@@ -270,14 +270,19 @@ function findNodeUnderMouse(event) {
 }
 
 /*
-*Fonction permettant de selectionner un neoud
+*Fonction permettant de selectionner un noeud
 *
 */
 function toggleNode(obj) {
     nodeId = obj.object.name;
     var i = selectedNodes.indexOf(nodeId);
-    if (i == -1) selectedNodes.push(nodeId);
-    else selectedNodes.splice(i, 1);
+    if (i == -1) {
+        selectedNodes.push(nodeId);
+        handle_selected(obj);
+    }
+    else {
+        selectedNodes.splice(i, 1);
+    }
     init_color();
     myrender();
 
