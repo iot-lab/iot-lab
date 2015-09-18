@@ -2,6 +2,7 @@
 
 IOTLAB_REPOS = iot-lab.wiki contiki wsn430 openlab cli-tools aggregation-tools
 IOTLAB_REPOS += contiki-upstream-unstable
+IOTLAB_REPOS += oml-plot-tools
 EXTERN_REPOS = riot
 REPOS = $(IOTLAB_REPOS) $(EXTERN_REPOS)
 
@@ -44,7 +45,7 @@ setup-wsn430: parts/wsn430
 	cat parts/wsn430/README.md
 setup-openlab: parts/openlab
 	cat parts/openlab/README-IoT-LAB.md
-setup-contiki: parts/contiki
+setup-contiki: parts/contiki parts/openlab
 	cat parts/contiki/README-IoT-LAB.md
 
 
