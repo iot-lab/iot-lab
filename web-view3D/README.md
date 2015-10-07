@@ -16,7 +16,6 @@ Prerequisites
 Run
 ---
 0. You need a running experiment.
-
 1. Run `serial_aggregator` on testbed site ssh frontend as tcp server:
 ```sh
 socat tcp-listen:9000,fork,reuseaddr exec:'ssh <user>@<site>.iot-lab.info "serial_aggregator -i <experiment id>"'
