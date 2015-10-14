@@ -17,8 +17,13 @@ Requirements
 
 **Managing VM** : 
 
-  * Virtualbox : https://www.virtualbox.org/wiki/Downloads (testing with 4.3.18)
-  * Vagrant : https://www.vagrantup.com/downloads.html (testing with 1.6.5)
+  * Virtualbox : https://www.virtualbox.org/wiki/Downloads (testing with 4.3.28)
+  * Vagrant : https://www.vagrantup.com/downloads.html (testing with 1.7.2)
+  
+``` 
+wget https://dl.bintray.com/mitchellh/vagrant/vagrant_1.7.2_x86_64.deb
+dpkg -i vagrant_1.7.2_x86_64.deb
+```
 
 **Building VM** :
 
