@@ -531,6 +531,7 @@ m3-87.grenoble.iot-lab.info,9277
 m3-88.grenoble.iot-lab.info,a475
 m3-89.grenoble.iot-lab.info,9882
 m3-90.grenoble.iot-lab.info,a878
+m3-91.grenoble.iot-lab.info,1662
 m3-92.grenoble.iot-lab.info,b078
 m3-93.grenoble.iot-lab.info,3960
 m3-94.grenoble.iot-lab.info,2960
@@ -552,6 +553,7 @@ m3-109.grenoble.iot-lab.info,1062
 m3-110.grenoble.iot-lab.info,a071
 m3-111.grenoble.iot-lab.info,9172
 m3-112.grenoble.iot-lab.info,a578
+m3-113.grenoble.iot-lab.info,a671
 m3-114.grenoble.iot-lab.info,a879
 m3-115.grenoble.iot-lab.info,8471
 m3-116.grenoble.iot-lab.info,8969
@@ -571,11 +573,13 @@ m3-129.grenoble.iot-lab.info,9783
 m3-130.grenoble.iot-lab.info,a272
 m3-131.grenoble.iot-lab.info,9369
 m3-132.grenoble.iot-lab.info,a369
+m3-133.grenoble.iot-lab.info,2360
 m3-134.grenoble.iot-lab.info,a069
 m3-135.grenoble.iot-lab.info,1761
 m3-136.grenoble.iot-lab.info,9669
 m3-137.grenoble.iot-lab.info,9371
 m3-139.grenoble.iot-lab.info,a778
+m3-140.grenoble.iot-lab.info,b483
 m3-141.grenoble.iot-lab.info,8579
 m3-142.grenoble.iot-lab.info,a783
 m3-143.grenoble.iot-lab.info,9779
@@ -583,7 +587,9 @@ m3-144.grenoble.iot-lab.info,c069
 m3-145.grenoble.iot-lab.info,9680
 m3-146.grenoble.iot-lab.info,a668
 m3-147.grenoble.iot-lab.info,9380
+m3-148.grenoble.iot-lab.info,9976
 m3-149.grenoble.iot-lab.info,9683
+m3-150.grenoble.iot-lab.info,b676
 m3-151.grenoble.iot-lab.info,9576
 m3-152.grenoble.iot-lab.info,b769
 m3-153.grenoble.iot-lab.info,b081
@@ -612,6 +618,7 @@ m3-175.grenoble.iot-lab.info,a870
 m3-176.grenoble.iot-lab.info,9572
 m3-177.grenoble.iot-lab.info,3061
 m3-178.grenoble.iot-lab.info,a281
+m3-179.grenoble.iot-lab.info,a776
 m3-180.grenoble.iot-lab.info,0762
 m3-181.grenoble.iot-lab.info,b583
 m3-182.grenoble.iot-lab.info,9968
@@ -623,6 +630,7 @@ m3-187.grenoble.iot-lab.info,9571
 m3-188.grenoble.iot-lab.info,9072
 m3-189.grenoble.iot-lab.info,9480
 m3-190.grenoble.iot-lab.info,b882
+m3-191.grenoble.iot-lab.info,8872
 m3-192.grenoble.iot-lab.info,b579
 m3-193.grenoble.iot-lab.info,a376
 m3-194.grenoble.iot-lab.info,a375
@@ -1292,6 +1300,7 @@ m3-254.lille.iot-lab.info,b371
 m3-255.lille.iot-lab.info,2858
 m3-256.lille.iot-lab.info,2554
 m3-257.lille.iot-lab.info,0859
+m3-259.lille.iot-lab.info,3054
 a8-1.paris.iot-lab.info,2490
 a8-2.paris.iot-lab.info,a355
 a8-3.paris.iot-lab.info,a855
@@ -1956,6 +1965,7 @@ m3-62.strasbourg.iot-lab.info,b386
 m3-63.strasbourg.iot-lab.info,9887
 m3-64.strasbourg.iot-lab.info,9687
 m3-96.strasbourg.iot-lab.info,9286
+m3-97.strasbourg.iot-lab.info,b785
 wsn430-1.strasbourg.iot-lab.info,c0d8
 wsn430-2.strasbourg.iot-lab.info,b2a7
 wsn430-3.strasbourg.iot-lab.info,c6f0

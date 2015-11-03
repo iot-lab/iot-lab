@@ -39,15 +39,7 @@ a8-140.grenoble.iot-lab.info,
 m3-65.grenoble.iot-lab.info,8778
 m3-73.grenoble.iot-lab.info,8771
 m3-82.grenoble.iot-lab.info,8767
-m3-91.grenoble.iot-lab.info,1662
-m3-113.grenoble.iot-lab.info,a671
-m3-133.grenoble.iot-lab.info,2360
 m3-138.grenoble.iot-lab.info,b169
-m3-140.grenoble.iot-lab.info,b483
-m3-148.grenoble.iot-lab.info,9976
-m3-150.grenoble.iot-lab.info,b676
-m3-179.grenoble.iot-lab.info,a776
-m3-191.grenoble.iot-lab.info,8872
 m3-291.grenoble.iot-lab.info,9975
 m3-342.grenoble.iot-lab.info,b079
 m3-351.grenoble.iot-lab.info,9781
@@ -83,6 +75,7 @@ wsn430-170.grenoble.iot-lab.info,b978
 wsn430-209.grenoble.iot-lab.info,b9a2
 wsn430-255.grenoble.iot-lab.info,
 wsn430-256.grenoble.iot-lab.info,b806
+m3-258.lille.iot-lab.info,
 wsn430-4.rennes.iot-lab.info,
 wsn430-6.rennes.iot-lab.info,
 wsn430-23.rennes.iot-lab.info,1c15
@@ -195,7 +188,6 @@ wsn430-117.rocquencourt.iot-lab.info,
 wsn430-118.rocquencourt.iot-lab.info,
 wsn430-119.rocquencourt.iot-lab.info,
 wsn430-120.rocquencourt.iot-lab.info,
-m3-97.strasbourg.iot-lab.info,
 m3-102.strasbourg.iot-lab.info,
 wsn430-35.strasbourg.iot-lab.info,ba03
 wsn430-241.strasbourg.iot-lab.info,
