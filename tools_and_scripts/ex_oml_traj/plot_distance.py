@@ -12,7 +12,7 @@ see https://github.com/iot-lab/iot-lab/wiki/Distance-mobile-fixed-nodes
 
 import sys
 import plot_oml_traj
-import geo.grenoble
+import geo
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -38,7 +38,7 @@ def plot_m3_node_distance(robot_traj_file, node_id):
     mobnode = plot_oml_traj.oml_load(robot_traj_file)[S_BEG:S_END, :]
     # Load 3D coordinates of node node_id
     #   Maybe use 'cli-tools' here to get the nodes
-    geonodes = geo.grenoble.list_nodes_offset("m3", OFX_GRE, OFY_GRE, 0.0)
+    geonodes = geo.list_nodes("grenoble", "m3", ofx=OFX_GRE, ofy=OFY_GRE)
     fixnode = geonodes[node_id]
     print "fixnode ", geonodes[node_id]
     # Compute the distance between the mobile node and node num 'node_id'
