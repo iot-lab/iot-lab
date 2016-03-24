@@ -5,6 +5,7 @@
 
 ./plot_oml_traj.py --input=<oml_filename> --maps=<map_filename.txt>
         --circuit=<circuit_filename.json> --time --angle --label=<MyExperiment>
+        --output=<image.png>
 
 for help use --help or -h
 for time verification --time or -t
@@ -14,6 +15,7 @@ for end sample --end=<sample_end> or -e <sample_end>
 for label title plot --label=<title> or -l <title>
 for plot maps and elements --maps=<filename> or -m <filename>
 for plot circuit --circuit=<filename> or -c <filename>
+for output as a file --output=<image.png> or -o <image.png>
 """
 
 # disabling pylint errors 'E1101' no-member, false positive from pylint
@@ -328,9 +330,9 @@ def main(argv):
     options = []
     filename = ""
     try:
-        opts, _ = getopt.getopt(argv, "i:hta:m:b:e:l:c:",
+        opts, _ = getopt.getopt(argv, "i:hta:m:b:e:l:c:o:",
                                 ["input=", "help", "time", "angle", "maps=",
-                                 "begin=", "end=", "label=", "circuit="])
+                                 "begin=", "end=", "label=", "circuit=", "output="])
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -361,6 +363,9 @@ def main(argv):
             filename_circuit = arg
         elif opt in ("-a", "--angle"):
             options.append("-a")
+        elif opt in ("-o", "--output"):
+            options.append("-o")
+            output_filename = arg
 
     # Load file
     if "-i" in options:
@@ -383,8 +388,11 @@ def main(argv):
     # Clock verification
     if "-t" in options:
         oml_clock(data)
-
-    plt.show()
+    # Save as png file or display
+    if "-o" in options:
+        plt.savefig(output_filename)
+    else:
+        plt.show()
 
 
 if __name__ == "__main__":
