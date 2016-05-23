@@ -6,6 +6,8 @@
 import sys
 import os.path
 import time
+import tempfile
+
 import argparse
 import fabric.network
 import fabric.operations
@@ -69,13 +71,52 @@ NODE_PARSER.add_argument('--wsn430:cc2420', '--cc2420', action='store_true')
 
 
 UID_SCRIPT = os.path.join(UTILS_DIR, 'get_iotlab_uid.py')
-env.ssh_config_path = os.path.join(UTILS_DIR, 'ssh_config')
-env.use_ssh_config = True
 
 env.reject_unknown_hosts = False
 env.disable_known_hosts = True
-env.abort_on_prompts = True
+# env.abort_on_prompts = True
 env.skip_bad_hosts = True
+
+
+def use_custom_ssh_config(username):
+    """Use generated ssh config for fabric."""
+    utils_ssh_file = os.path.join(UTILS_DIR, 'ssh_config')
+    env.ssh_config_path = ssh_config(username, utils_ssh_file)
+    env.use_ssh_config = True
+
+
+def ssh_config(username, filepath=None):
+    """Generate ssh config for username and return it's path.
+    If `filepath` is given, it is used instead of creating a temporary file.
+
+    :return: config file path
+    """
+    try:
+        cfg_file = open(filepath, 'w+')
+    except TypeError:
+        # delete=False as the reference will be lost but file should remain
+        cfg_file = tempfile.NamedTemporaryFile('w+', delete=False)
+        filepath = cfg_file.name
+
+    sites = iotlabcli.parser.common.sites_list()
+
+    cfg_file.write('Host node-a8-*\n')
+    cfg_file.write('  User root\n')
+    cfg_file.write('  StrictHostKeyChecking no\n')
+    cfg_file.write('\n')
+
+    for site in sites:
+        cfg_file.write('# Use ssh frontend as proxy\n')
+        cfg_file.write('Host *.%s*\n' % site)
+        cfg_file.write('  ProxyCommand ssh %s.iot-lab.info -W %%h:%%p\n' %
+                       site)
+        cfg_file.write('\n')
+
+    cfg_file.write('# Iot-Lab username for frontends\n')
+    cfg_file.write('User %s\n' % username)
+    cfg_file.write('\n')
+
+    return filepath
 
 
 class RunExperiment(object):
@@ -301,7 +342,7 @@ def main():
 
     user, passwd = get_user_credentials(opts.username, opts.password)
     api = iotlabcli.Api(user, passwd)
-    env.user = user
+    use_custom_ssh_config(user)
 
     fabric.utils.puts("Get platform nodes...")
     sites_dict = RunExperiment.site_archi_dict(api)
