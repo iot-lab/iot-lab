@@ -113,7 +113,8 @@ def ssh_config(username, filepath=None):
         cfg_file.write('\n')
 
     cfg_file.write('# Iot-Lab username for frontends\n')
-    cfg_file.write('User %s\n' % username)
+    cfg_file.write('Host *\n')
+    cfg_file.write('  User %s\n' % username)
     cfg_file.write('\n')
 
     return filepath
