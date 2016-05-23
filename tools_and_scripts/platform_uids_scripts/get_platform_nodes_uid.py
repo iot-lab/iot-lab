@@ -312,7 +312,7 @@ def main():
     for site, archi in targets:
         # replace ':' in host to prevent it being interpreted as port
         host = '%s-%s' % (archi.replace(':', '+'), site)
-        if vars(opts)[archi]:
+        if vars(opts).get(archi, False):
             config[host] = {
                 'site': site, 'archi': archi, 'firmware': FW_DICT[archi],
             }
