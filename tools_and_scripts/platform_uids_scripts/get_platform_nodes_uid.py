@@ -29,6 +29,8 @@ from fabric.api import env
 SCRIPT_DIR = os.path.relpath(os.path.dirname(__file__))
 UTILS_DIR = os.path.join(SCRIPT_DIR, 'utils')
 
+ANSI_RESET = '\x1b[0m'
+
 FW_DIR = 'firmwares/'
 if not os.path.isdir(FW_DIR):
     fabric.utils.puts('Cannot find firmwares folder, run:')
@@ -372,7 +374,14 @@ def main():
         result = {}
         for ret in result_dict.values():
             if ret is not None:
-                result.update(json.loads(ret))
+                if ret.endswith(ANSI_RESET):
+                    # Remove ANSI_RESET if at the end, got it on devlille
+                    ret = ret.replace(ANSI_RESET, '')
+                try:
+                    result.update(json.loads(ret))
+                except ValueError:
+                    print >> sys.stderr, 'Error loading ret as json %r' % ret
+
         result_str = json.dumps(result, indent=4, sort_keys=True)
 
         print result_str
