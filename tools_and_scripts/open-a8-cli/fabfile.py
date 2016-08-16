@@ -178,6 +178,26 @@ def flash_firmware(firmware):
     return run("flash_a8_m3 %s 2>/dev/null" % remote_firmware).return_code
 
 
+# Execute with screen
+
+@exp_task
+def screen(script):
+    """ Update the firmware on all experiment nodes """
+    execute(_upload_to_a8, script, mode='0755')
+    return execute(exec_screen, script)
+
+@parallel
+@roles('nodes')
+def exec_screen(script):
+    """Execute under screen."""
+    remote = '~/A8/' + os.path.basename(script)
+    #run('killall screen || sleep 1')
+    run("screen -ls | grep Detached | cut -d. -f1 | awk '{print $1}'"
+        " | xargs kill  > /dev/null 2>/dev/null"
+        " && echo 'Killed' || echo 'Not killed'")
+    return run('screen -d -m %s; sleep 5' % remote, pty=False).return_code
+
+
 # # # # # # # # # # #
 # Reset Open A8-M3
 # # # # # # # # # # #
