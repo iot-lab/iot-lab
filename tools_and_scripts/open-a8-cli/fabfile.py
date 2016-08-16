@@ -83,6 +83,12 @@ def exp_task(func):
 
     return wrapper
 
+def host_sort_key(value):
+    """Hosts sort key. Sort nodes by archi/numbers, or return host."""
+    try:
+        return iotlabcli.helpers.node_url_sort_key(value)
+    except ValueError:
+        return value
 
 def inv_dict(in_d):
     """ Invert dict and store values in a list """
@@ -92,7 +98,7 @@ def inv_dict(in_d):
 
     # sort values
     for vals in out_d.itervalues():
-        vals.sort(key=iotlabcli.helpers.node_url_sort_key)
+        vals.sort(key=host_sort_key)
     return out_d
 
 
@@ -109,9 +115,13 @@ def print_result(execute_res):
 
 
 @exp_task
-def redirect():
+def redirect(command='start'):
     """ Start Open A8 node m3 serial port redirection """
-    return execute(restart_redirect)
+    assert command in ('start', 'stop')
+    if command == 'start':
+        return execute(restart_redirect)
+    elif command == 'stop':
+        return execute(stop_redirect)
 
 
 @parallel
@@ -119,6 +129,30 @@ def redirect():
 def restart_redirect():
     """ Redirect the serial port to port 20000 """
     return run("/etc/init.d/serial_redirection restart", pty=False).return_code
+
+@parallel
+@roles('nodes')
+def stop_redirect():
+    """ Stop Redirect the serial port to port 20000 """
+    return run("/etc/init.d/serial_redirection stop", pty=False).return_code
+
+
+# # # #
+# Upload file to A8 directory
+# # # #
+@exp_task
+def upload_a8(filepath, mode=None):
+    return execute(_upload_to_a8, filepath, mode=mode)
+
+
+@roles('frontends')
+def _upload_to_a8(filepath, mode=None):
+    """ Upload the file at filepath to the frontends A8 shared directory """
+    remote = '~/A8/' + os.path.basename(filepath)
+    operations.put(filepath, '~/A8')
+    if mode:
+        run('chmod %s %s' % (mode, remote))
+    return 0
 
 
 # # # # # # # # # # # # # # # # # # # # # # # # # #
@@ -133,16 +167,8 @@ def restart_redirect():
 @exp_task
 def update(firmware):
     """ Update the firmware on all experiment nodes """
-    execute(upload_firmware, firmware)
+    execute(_upload_to_a8, firmware)
     return execute(flash_firmware, firmware)
-
-
-@parallel
-@roles('frontends')
-def upload_firmware(firmware):
-    """ Upload the firmware to the frontends A8 shared directory """
-    operations.put(firmware, '~/A8')
-
 
 @parallel
 @roles('nodes')
