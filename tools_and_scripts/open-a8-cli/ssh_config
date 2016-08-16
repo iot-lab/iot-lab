@@ -5,9 +5,13 @@ Host node-a8-*
 # Add all sites with a8 nodes here
 Host *.grenoble*
   ProxyCommand ssh grenoble.iot-lab.info -W %h:%p
+Host *.devgrenoble*
+  ProxyCommand ssh devgrenoble.iot-lab.info -W %h:%p
 Host *.lille*
   ProxyCommand ssh lille.iot-lab.info -W %h:%p
 Host *.rocquencourt*
   ProxyCommand ssh rocquencourt.iot-lab.info -W %h:%p
 Host *.strasbourg*
   ProxyCommand ssh strasbourg.iot-lab.info -W %h:%p
+Host *.saclay*
+  ProxyCommand ssh saclay.iot-lab.info -W %h:%p
