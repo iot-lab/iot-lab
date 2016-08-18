@@ -142,6 +142,22 @@ def stop_redirect():
 
 
 # # # #
+# Execute command
+# # # #
+
+
+@exp_task
+def run_cmd(command):
+    """Run command on nodes."""
+    return execute(_run, command)
+
+@parallel
+@roles('nodes')
+def _run(command):
+    return run(command, pty=False).return_code
+
+
+# # # #
 # Upload file to A8 directory
 # # # #
 @exp_task
