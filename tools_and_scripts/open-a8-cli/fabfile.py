@@ -35,6 +35,10 @@ env.colorize_errors = True
 env.pool_size = 10
 
 
+def _remote(filepath):
+    return os.path.join('~/A8/', os.path.basename(filepath))
+
+
 def _get_exp_a8_nodes(api, exp_id=None):
     """ Get the list of a8 nodes from given experiment """
     experiment = iotlabcli.experiment.get_experiment(api, exp_id)
@@ -148,8 +152,8 @@ def upload_a8(filepath, mode=None):
 @roles('frontends')
 def _upload_to_a8(filepath, mode=None):
     """ Upload the file at filepath to the frontends A8 shared directory """
-    remote = '~/A8/' + os.path.basename(filepath)
-    operations.put(filepath, '~/A8')
+    remote = _remote(filepath)
+    operations.put(filepath, remote)
     if mode:
         run('chmod %s %s' % (mode, remote))
     return 0
@@ -168,14 +172,14 @@ def _upload_to_a8(filepath, mode=None):
 def update(firmware):
     """ Update the firmware on all experiment nodes """
     execute(_upload_to_a8, firmware)
+    firmware = _remote(firmware)
     return execute(flash_firmware, firmware)
 
 @parallel
 @roles('nodes')
 def flash_firmware(firmware):
     """ Flash the nodes """
-    remote_firmware = '~/A8/' + os.path.basename(firmware)
-    return run("flash_a8_m3 %s 2>/dev/null" % remote_firmware).return_code
+    return run("flash_a8_m3 %s 2>/dev/null" % firmware).return_code
 
 
 # Execute with screen
@@ -184,18 +188,18 @@ def flash_firmware(firmware):
 def screen(script):
     """ Update the firmware on all experiment nodes """
     execute(_upload_to_a8, script, mode='0755')
+    script = _remote(script)
     return execute(exec_screen, script)
 
 @parallel
 @roles('nodes')
 def exec_screen(script):
     """Execute under screen."""
-    remote = '~/A8/' + os.path.basename(script)
-    #run('killall screen || sleep 1')
+    # Kill all screen sessions
     run("screen -ls | grep Detached | cut -d. -f1 | awk '{print $1}'"
         " | xargs kill  > /dev/null 2>/dev/null"
         " && echo 'Killed' || echo 'Not killed'")
-    return run('screen -d -m %s; sleep 5' % remote, pty=False).return_code
+    return run('screen -d -m %s; sleep 5' % script, pty=False).return_code
 
 
 # # # # # # # # # # #
