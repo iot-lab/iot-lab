@@ -68,6 +68,7 @@ def exp(exp_id=None):
 
     nodes = _get_exp_a8_nodes(api, exp_id)
     env.roledefs['nodes'] = nodes
+    env.roledefs['first_node'] = nodes[0:1]
 
     sites = list(set([url.split('.', 1)[1] for url in nodes]))
     env.roledefs['frontends'] = sites
@@ -173,6 +174,35 @@ def _upload_to_a8(filepath, mode=None):
     if mode:
         run('chmod %s %s' % (mode, remote))
     return 0
+
+
+# # # #
+# Install with opkg. Install on one node and run postinstall on all:
+# # # #
+
+RUN_POSTINSTALL = 'ar  p {ipk} control.tar.gz | tar xzf - ./postinst -O | sh'
+
+@exp_task
+def opkg_install(package):
+    """Install package and run postinstall on all experiment nodes."""
+    execute(_upload_to_a8, package)
+
+    package = _remote(package)
+    execute(_opkg_install, package)
+    return execute(_ipk_post_install, package)
+
+
+@roles('first_node')
+def _opkg_install(package):
+    """Install on one node."""
+    return run('opkg install %s' % package).return_code
+
+
+@parallel
+@roles('nodes')
+def _ipk_post_install(package):
+    """Run missing post install on all nodes."""
+    return run(RUN_POSTINSTALL.format(ipk=package), pty=False).return_code
 
 
 # # # # # # # # # # # # # # # # # # # # # # # # # #
