@@ -184,13 +184,14 @@ CONTROL_FILES = 'ar p {ipk} control.tar.gz | tar tzf -'
 RUN_POSTINSTALL = 'ar  p {ipk} control.tar.gz | tar xzf - ./postinst -O | sh'
 
 @exp_task
-def opkg_install(package):
+def opkg_install(package, postinstall='1'):
     """Install package and run postinstall on all experiment nodes."""
+    postinstall = bool(int(postinstall))
     execute(_upload_to_a8, package)
 
     package = _remote(package)
     execute(_opkg_install, package)
-    return execute(_ipk_post_install, package)
+    return execute(_ipk_post_install, package, postinstall)
 
 
 @roles('first_node')
@@ -201,12 +202,16 @@ def _opkg_install(package):
 
 @parallel
 @roles('nodes')
-def _ipk_post_install(package):
+def _ipk_post_install(package, postinstall=True):
     """Run missing post install on all nodes."""
-    if './postinst' in run(CONTROL_FILES.format(ipk=package)):
-        return run(RUN_POSTINSTALL.format(ipk=package), pty=False).return_code
-    else:
+    if not postinstall:
         return 0
+
+    has_postinstall = './postinst' in run(CONTROL_FILES.format(ipk=package))
+    if not has_postinstall:
+        return 0
+
+    return run(RUN_POSTINSTALL.format(ipk=package), pty=False).return_code
 
 
 # # # # # # # # # # # # # # # # # # # # # # # # # #
