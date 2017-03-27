@@ -1,15 +1,17 @@
 """ Fabric methods to help running commands on A8 nodes """
 import os
-import iotlabcli
-import iotlabcli.helpers
-import iotlabcli.experiment
-import iotlabcli.parser.common
 import functools
 import logging
+
 from fabric.api import env, run, execute
 from fabric.api import task, parallel, roles, runs_once
 from fabric.utils import abort, puts
 from fabric import operations
+
+import iotlabcli
+import iotlabcli.helpers
+import iotlabcli.experiment
+import iotlabcli.parser.common
 
 _VERSION = (int(n) for n in env.version.split('.'))
 assert (1, 5, 0) >= _VERSION, \
