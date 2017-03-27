@@ -31,7 +31,7 @@ UTILS_DIR = os.path.join(SCRIPT_DIR, 'utils')
 
 ANSI_RESET = '\x1b[0m'
 
-FW_DIR = 'firmwares/'
+FW_DIR = os.path.join(SCRIPT_DIR, 'firmwares/')
 if not os.path.isdir(FW_DIR):
     fabric.utils.puts('Cannot find firmwares folder, run:')
     fabric.utils.puts('    make -C ../.. setup-iot-lab.wiki')
