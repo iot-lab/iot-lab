@@ -1,2 +1,0 @@
-# marker color size x y /'f' filename ratio sizex sizey offsetx offsety
-f strasbourg-iotlab.pgm 0.05 640 608 -10 -10

@@ -1,2 +1,0 @@
-# marker color size x y /'f' filename ratio sizex sizey
-f lille-iotlab.pgm 0.025 1472 1120 -10.218000 -10.038800
