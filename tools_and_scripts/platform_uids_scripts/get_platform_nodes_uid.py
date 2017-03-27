@@ -7,8 +7,12 @@ import sys
 import os.path
 import time
 import tempfile
+import json
+import multiprocessing
+import traceback
 
 import argparse
+from fabric.api import env
 import fabric.network
 import fabric.operations
 import fabric.tasks
@@ -16,14 +20,12 @@ import fabric.context_managers
 import fabric.api
 import fabric.utils
 import fabric.decorators
-import traceback
-
-import json
-import multiprocessing
 
 from iotlabcli import experiment, get_user_credentials
 import iotlabcli.parser.common
-from fabric.api import env
+
+# Issue with pylint context_managers
+# pylint:disable=not-context-manager
 
 
 SCRIPT_DIR = os.path.relpath(os.path.dirname(__file__))
@@ -125,7 +127,8 @@ def ssh_config(username, filepath=None):
 class RunExperiment(object):
     """ Run an automated experiment """
 
-    def __init__(self, api, firmware, site, archi, all_bookable):
+    def __init__(self,  # pylint:disable=too-many-arguments
+                 api, firmware, site, archi, all_bookable):
         env.host_string = '%s.iot-lab.info' % site
 
         self.api = api
@@ -151,7 +154,7 @@ class RunExperiment(object):
         try:
             self.submit_exp(full_name, duration)
             self.wait_exp()
-            if 'a8:at86rf231' == self.archi:
+            if self.archi == 'a8:at86rf231':
                 setup_ret = self.setup_a8_nodes()
                 if 0 not in setup_ret.values():
                     raise StandardError("Setup A8 failed for all")
