@@ -6,8 +6,8 @@ Create a **Xubuntu 14.04 x64** VM with following features :
   * user vagrant (login=vagrant/password=vagrant)
   * git clone Iot-LAB github (in ~/vagrant/iot-lab) 
   * toolchains compilation (arm-gcc & msp430-gcc)
-  * CLI Tools installation
-  * Contiki tunslip binary (in ~/vagrant/tunslip6)
+  * IoT-LAB CLI + Aggregation + Plot Tools installation
+  * TODO Contiki tunslip6 binary (in ~/vagrant/tunslip6)
   * autologin
   * login screen with keyboard layout en/fr CTRL+SHIFT
   * Virtualbox guest additions

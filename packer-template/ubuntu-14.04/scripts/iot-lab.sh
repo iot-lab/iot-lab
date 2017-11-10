@@ -12,7 +12,11 @@ cd /home/vagrant && git clone https://github.com/iot-lab/iot-lab.git
 echo "install Iot-LAB CLI Toools"
 pip install -e git+https://github.com/iot-lab/cli-tools.git#egg=iotlabcli[secure]
 
+echo "install Iot-LAB Aggregation Tools"
+pip install -e git+https://github.com/iot-lab/aggregation-tools.git#egg=iotlabcli[secure]
+
+echo "install Iot-LAB Plot Tools"
+pip install -e git+https://github.com/iot-lab/oml-plot-tools.git#egg=iotlabcli[secure]
+
 echo "install tunslip6 Contiki tool"
-wget -qO - https://github.com/iot-lab/contiki/raw/master/tools/tunslip6.c > /home/vagrant/tunslip6.c
-cc /home/vagrant/tunslip6.c -o /home/vagrant/tunslip6
-rm -f /home/vagrant/tunslip6.c
+# TODO since Contiki 3.x need to clone the repo and use `cd tools && make tunslip6`
