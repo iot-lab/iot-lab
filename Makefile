@@ -30,7 +30,7 @@ endif
 # External repositories
 setup-riot: parts/RIOT
 parts/RIOT:
-	git clone $(GITHUB_URL)RIOT-OS/RIOT.git $@
+	git clone -b 2017.10-branch $(GITHUB_URL)RIOT-OS/RIOT.git $@
 
 
 # IoT-Lab repositories
