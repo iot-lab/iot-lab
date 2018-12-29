@@ -44,6 +44,18 @@ FW_DICT = {
     'a8:at86rf231': os.path.join(FW_DIR, 'a8_print_uids.elf'),
     'wsn430:cc1101': os.path.join(FW_DIR, 'wsn430_print_uids.hex'),
     'wsn430:cc2420': os.path.join(FW_DIR, 'wsn430_print_uids.hex'),
+    'samr21:at86rf233': os.path.join(FW_DIR, 'samr21_print_uids.elf'),
+    'arduino-zero:xbee': os.path.join(FW_DIR, 'arduino-zero_print_uids.elf'),
+    'st-lrwan1:sx1276': os.path.join(FW_DIR, 'st-lrwan1_print_uids.elf'),
+    'st-iotnode:multi': os.path.join(FW_DIR, 'st-iotnode_print_uids.elf'),
+    'nrf52dk:ble': os.path.join(FW_DIR, 'nrf52dk_print_uids.elf'),
+    'nrf52840dk:multi': os.path.join(FW_DIR, 'nrf52840dk_print_uids.elf'),
+    'nrf51dk:ble': os.path.join(FW_DIR, 'nrf51dk_print_uids.elf'),
+    'frdm-kw41z:multi': os.path.join(FW_DIR, 'frdm-kw41z_print_uids.elf'),
+    'samr30:at86rf212b': os.path.join(FW_DIR, 'samr30_print_uids.elf'),
+    'microbit:ble': os.path.join(FW_DIR, 'microbit_print_uids.elf'),
+    'phynode:kw2xrf': os.path.join(FW_DIR, 'phynode_print_uids.elf'),
+    'nrf52840mdk:multi': os.path.join(FW_DIR, 'nrf52840mdk_print_uids.elf'),
 }
 
 
@@ -72,7 +84,18 @@ NODE_PARSER.add_argument('--m3:at86rf231', '--m3', action='store_true')
 NODE_PARSER.add_argument('--a8:at86rf231', '--a8', action='store_true')
 NODE_PARSER.add_argument('--wsn430:cc1101', '--cc1101', action='store_true')
 NODE_PARSER.add_argument('--wsn430:cc2420', '--cc2420', action='store_true')
-
+NODE_PARSER.add_argument('--samr21:at86rf233', '--samr21', action='store_true')
+NODE_PARSER.add_argument('--arduino-zero:xbee', '--arduino-zero', action='store_true')
+NODE_PARSER.add_argument('--st-lrwan1:sx1276', '--st-lrwan1', action='store_true')
+NODE_PARSER.add_argument('--st-iotnode:multi', '--st-iotnode', action='store_true')
+NODE_PARSER.add_argument('--nrf52dk:ble', '--nrf52dk', action='store_true')
+NODE_PARSER.add_argument('--nrf52840dk:multi', '--nrf52840dk', action='store_true')
+NODE_PARSER.add_argument('--nrf51dk:ble', '--nrf51dk', action='store_true')
+NODE_PARSER.add_argument('--frdm-kw41z:multi', '--frdm-kw41z', action='store_true')
+NODE_PARSER.add_argument('--samr30:at86rf212b', '--samr30', action='store_true')
+NODE_PARSER.add_argument('--microbit:ble', '--microbit', action='store_true')
+NODE_PARSER.add_argument('--phynode:kw2xrf', '--phynode', action='store_true')
+NODE_PARSER.add_argument('--nrf52840mdk:multi', '--nrf52840mdk', action='store_true')
 
 UID_SCRIPT = os.path.join(UTILS_DIR, 'get_iotlab_uid.py')
 
@@ -359,7 +382,7 @@ def main():
     for site, archi in targets:
         # replace ':' in host to prevent it being interpreted as port
         host = '%s-%s' % (archi.replace(':', '+'), site)
-        if vars(opts).get(archi, False):
+        if vars(opts).get(archi.replace('-', '_'), False):
             config[host] = {
                 'site': site, 'archi': archi, 'firmware': FW_DICT[archi],
             }
