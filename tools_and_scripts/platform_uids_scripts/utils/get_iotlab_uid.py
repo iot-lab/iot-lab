@@ -25,7 +25,7 @@ NODES_UID = {}
 
 def handle_uid(identifier, line):
     """ Print one line prefixed by id in format: """
-    node_id = re.sub('node-', '', identifier)  # remove node- from a8 nodes
+    node_id = re.sub('^node-', '', identifier)  # remove node- from a8 nodes
     url = '%s.%s.iot-lab.info' % (node_id, iotlabaggregator.common.HOSTNAME)
 
     if url in NODES_UID:
