@@ -228,9 +228,9 @@ class RunExperiment(object):
             with fabric.context_managers.cd(log_path):
                 # use cat to get count in one line
                 ok_nodes = fabric.operations.run(
-                    'cat a8-* | grep -c "Start experiment succeeded"')
+                    'cat a8_* | grep -c "Start experiment succeeded"')
                 booted = fabric.operations.run(
-                    'cat a8-* | grep -c "Boot A8 succeeded"')
+                    'cat a8_* | grep -c "Boot A8 succeeded"')
         return int(ok_nodes), int(booted)
 
     @staticmethod
@@ -240,9 +240,9 @@ class RunExperiment(object):
         with fabric.api.hide('warnings'):
             with fabric.context_managers.cd(log_path):
                 fabric.operations.run(
-                    'grep "Boot A8 succeeded" --color=auto a8-*')
+                    'grep "Boot A8 succeeded" --color=auto a8_*')
                 fabric.operations.run(
-                    'grep "Boot A8 failed" --color=auto a8-* ''')
+                    'grep "Boot A8 failed" --color=auto a8_* ''')
 
     def wait_a8_started(self, num_loop_max=20, step=30):
         """ Wait for A8 nodes to be booted
