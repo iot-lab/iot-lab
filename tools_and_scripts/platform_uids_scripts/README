@@ -10,8 +10,8 @@ get_platform_nodes_uid.py
 Returns the uids for specified site/nodes (also handles A8 nodes)
 
 
-check_uid_jsons.py
-------------------
+check_uids_jsons.py
+-------------------
 
 Uses the given jsons uids files and compare them with the
 'experiment-cli info' results
@@ -23,7 +23,7 @@ Usage
     $ ./get_platform_nodes_uid.py --site grenoble --m3
     $ ./get_platform_nodes_uid.py --m3 --a8 --cc1101 --cc2420 --all-bookable -o all_platform_uid.json
 
-    $ ./check_uid_jsons.py prod/*json *uid_json
+    $ ./check_uids_jsons.py prod/*json *uid_json
     outdated: 0
     ok: 1981
     no_data: 432
