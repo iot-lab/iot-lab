@@ -56,6 +56,7 @@ FW_DICT = {
     'microbit:ble': os.path.join(FW_DIR, 'microbit_print_uids.elf'),
     'phynode:kw2xrf': os.path.join(FW_DIR, 'phynode_print_uids.elf'),
     'nrf52840mdk:multi': os.path.join(FW_DIR, 'nrf52840mdk_print_uids.elf'),
+    'firefly:multi': os.path.join(FW_DIR, 'firefly_print_uids.elf'),
 }
 
 
@@ -96,6 +97,7 @@ NODE_PARSER.add_argument('--samr30:at86rf212b', '--samr30', action='store_true')
 NODE_PARSER.add_argument('--microbit:ble', '--microbit', action='store_true')
 NODE_PARSER.add_argument('--phynode:kw2xrf', '--phynode', action='store_true')
 NODE_PARSER.add_argument('--nrf52840mdk:multi', '--nrf52840mdk', action='store_true')
+NODE_PARSER.add_argument('--firefly:multi', '--firefly', action='store_true')
 
 UID_SCRIPT = os.path.join(UTILS_DIR, 'get_iotlab_uid.py')
 
