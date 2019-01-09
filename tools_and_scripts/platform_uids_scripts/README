@@ -4,8 +4,8 @@ Platform UID Scripts
 Scripts to automatically get nodes uids for the testbed
 
 
-get_iotlab_uid.py
------------------
+get_platform_nodes_uid.py
+-------------------------
 
 Returns the uids for specified site/nodes (also handles A8 nodes)
 
@@ -20,8 +20,8 @@ Uses the given jsons uids files and compare them with the
 Usage
 -----
 
-    $ ./get_iotlab_uip.py --site grenoble --m3
-    $ ./get_iotlab_uip.py --m3 --a8 --cc1101 --cc2420 --all-bookable -o all_platform_uid.json
+    $ ./get_platform_nodes_uid.py --site grenoble --m3
+    $ ./get_platform_nodes_uid.py --m3 --a8 --cc1101 --cc2420 --all-bookable -o all_platform_uid.json
 
     $ ./check_uid_jsons.py prod/*json *uid_json
     outdated: 0
