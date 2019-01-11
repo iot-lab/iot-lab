@@ -86,17 +86,24 @@ NODE_PARSER.add_argument('--a8:at86rf231', '--a8', action='store_true')
 NODE_PARSER.add_argument('--wsn430:cc1101', '--cc1101', action='store_true')
 NODE_PARSER.add_argument('--wsn430:cc2420', '--cc2420', action='store_true')
 NODE_PARSER.add_argument('--samr21:at86rf233', '--samr21', action='store_true')
-NODE_PARSER.add_argument('--arduino-zero:xbee', '--arduino-zero', action='store_true')
-NODE_PARSER.add_argument('--st-lrwan1:sx1276', '--st-lrwan1', action='store_true')
-NODE_PARSER.add_argument('--st-iotnode:multi', '--st-iotnode', action='store_true')
+NODE_PARSER.add_argument('--arduino-zero:xbee', '--arduino-zero',
+                         action='store_true')
+NODE_PARSER.add_argument('--st-lrwan1:sx1276', '--st-lrwan1',
+                         action='store_true')
+NODE_PARSER.add_argument('--st-iotnode:multi', '--st-iotnode',
+                         action='store_true')
 NODE_PARSER.add_argument('--nrf52dk:ble', '--nrf52dk', action='store_true')
-NODE_PARSER.add_argument('--nrf52840dk:multi', '--nrf52840dk', action='store_true')
+NODE_PARSER.add_argument('--nrf52840dk:multi', '--nrf52840dk',
+                         action='store_true')
 NODE_PARSER.add_argument('--nrf51dk:ble', '--nrf51dk', action='store_true')
-NODE_PARSER.add_argument('--frdm-kw41z:multi', '--frdm-kw41z', action='store_true')
-NODE_PARSER.add_argument('--samr30:at86rf212b', '--samr30', action='store_true')
+NODE_PARSER.add_argument('--frdm-kw41z:multi', '--frdm-kw41z',
+                         action='store_true')
+NODE_PARSER.add_argument('--samr30:at86rf212b', '--samr30',
+                         action='store_true')
 NODE_PARSER.add_argument('--microbit:ble', '--microbit', action='store_true')
 NODE_PARSER.add_argument('--phynode:kw2xrf', '--phynode', action='store_true')
-NODE_PARSER.add_argument('--nrf52840mdk:multi', '--nrf52840mdk', action='store_true')
+NODE_PARSER.add_argument('--nrf52840mdk:multi', '--nrf52840mdk',
+                         action='store_true')
 NODE_PARSER.add_argument('--firefly:multi', '--firefly', action='store_true')
 
 UID_SCRIPT = os.path.join(UTILS_DIR, 'get_iotlab_uid.py')
