@@ -2,7 +2,7 @@
 
 IOTLAB_REPOS = iot-lab.wiki contiki wsn430 openlab cli-tools aggregation-tools
 IOTLAB_REPOS += oml-plot-tools
-EXTERN_REPOS = riot
+EXTERN_REPOS = riot zephyr
 REPOS = $(IOTLAB_REPOS) $(EXTERN_REPOS)
 
 SETUP_REPOS = $(sort $(addprefix setup-, $(REPOS)))
@@ -32,6 +32,9 @@ setup-riot: parts/RIOT
 parts/RIOT:
 	git clone -b 2017.10-branch $(GITHUB_URL)RIOT-OS/RIOT.git $@
 
+setup-zephyr: parts/zephyr
+parts/zephyr:
+	git clone --depth=1 $(GITHUB_URL)zephyrproject-rtos/zephyr.git $@
 
 # IoT-Lab repositories
 $(addprefix setup-, $(IOTLAB_REPOS)): setup-%: parts/%
