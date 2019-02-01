@@ -2,6 +2,7 @@
 
 IOTLAB_REPOS = iot-lab.wiki contiki wsn430 openlab cli-tools aggregation-tools
 IOTLAB_REPOS += oml-plot-tools
+IOTLAB_REPOS += iot-lab-contiki-ng
 EXTERN_REPOS = riot zephyr
 REPOS = $(IOTLAB_REPOS) $(EXTERN_REPOS)
 
@@ -49,7 +50,9 @@ setup-openlab: parts/openlab
 	cat parts/openlab/README-IoT-LAB.md
 setup-contiki: parts/contiki parts/openlab
 	cat parts/contiki/README-IoT-LAB.md
-
+setup-iot-lab-contiki-ng: parts/iot-lab-contiki-ng
+	cd parts/iot-lab-contiki-ng; git submodule update --init
+	cat parts/iot-lab-contiki-ng/README.md
 
 
 # Pull in new changes
