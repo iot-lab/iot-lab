@@ -35,7 +35,7 @@ parts/RIOT:
 
 setup-zephyr: parts/zephyr
 parts/zephyr:
-	git clone --depth=1 $(GITHUB_URL)zephyrproject-rtos/zephyr.git $@
+	git clone --depth=1 -b zephyr-v1.14.0 $(GITHUB_URL)zephyrproject-rtos/zephyr.git $@
 
 # IoT-Lab repositories
 $(addprefix setup-, $(IOTLAB_REPOS)): setup-%: parts/%
