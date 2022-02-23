@@ -31,7 +31,7 @@ endif
 # External repositories
 setup-riot: parts/RIOT
 parts/RIOT:
-	git clone --depth=1 -b 2019.01-branch $(GITHUB_URL)RIOT-OS/RIOT.git $@
+	git clone --depth=1 -b 2022.01-branch $(GITHUB_URL)RIOT-OS/RIOT.git $@
 
 setup-zephyr: parts/zephyr
 parts/zephyr:
